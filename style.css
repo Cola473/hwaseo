@@ -18,9 +18,9 @@
   --color-text:      #222222;
   --color-border:    #dddddd;
 
-  --font-sans: 'Noto Sans KR', sans-serif;
-  --font-serif: 'Noto Sans KR', sans-serif;
-  --font-en: 'Noto Sans KR', sans-serif;
+  --font-sans: 'Noto Sans KR', sans;
+  --font-serif: 'Noto Sans KR', sans;
+  --font-en: 'Noto Sans KR', sans;
 
   --header-h: 72px;
   --container-w: 1200px;
