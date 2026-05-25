@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>자유게시판 | 화서문화유산연구원</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="board.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header id="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="logo">
+        <img src="images/logo.png" alt="화서문화유산연구원 로고" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <div class="logo-fallback" style="display:none;"><span class="logo-ko">화서문화유산연구원</span><span class="logo-en">HwaSeo Institute Of Cultural Heritage</span></div>
+      </a>
+      <nav class="gnb" id="gnb">
+        <ul class="gnb-list">
+          <li class="gnb-item has-sub"><a href="#" class="gnb-link">연구원소개</a><ul class="sub-menu"><li><a href="#">설립목적 및 연혁</a></li><li><a href="#">조직 및 인원</a></li><li><a href="#">찾아오시는 길</a></li></ul></li>
+          <li class="gnb-item has-sub"><a href="#" class="gnb-link">매장유산조사안내</a><ul class="sub-menu"><li><a href="#">문화유산조사란?</a></li><li><a href="#">조사의뢰 및 방법</a></li><li><a href="#">국비지원</a></li><li><a href="#">조사비용 자동계산</a></li></ul></li>
+          <li class="gnb-item has-sub"><a href="#" class="gnb-link">조사현황</a><ul class="sub-menu"><li><a href="#">지표조사</a></li><li><a href="#">발굴조사</a></li><li><a href="#">학술연구용역</a></li></ul></li>
+          <li class="gnb-item has-sub"><a href="#" class="gnb-link">자료실</a><ul class="sub-menu"><li><a href="#">보고서 자료</a></li><li><a href="#">사진 자료</a></li><li><a href="#">학술 자료</a></li></ul></li>
+          <li class="gnb-item has-sub active"><a href="#" class="gnb-link">게시판</a>
+            <ul class="sub-menu">
+              <li><a href="board-news.html">학계소식</a></li>
+              <li><a href="board-free.html" style="color:var(--color-navy);font-weight:600;">자유게시판</a></li>
+              <li><a href="#">공지사항</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-banner">
+    <div class="container">
+      <div><p class="page-banner-sub">Board / Free Board</p><h1 class="page-banner-title">자유게시판</h1></div>
+      <nav class="breadcrumb"><a href="index.html">홈</a><span>›</span><a href="#">게시판</a><span>›</span><strong>자유게시판</strong></nav>
+    </div>
+  </div>
+
+  <section class="board-page">
+    <div class="container">
+      <div class="board-wrap">
+        <div class="board-toolbar">
+          <span class="board-toolbar-title">자유게시판</span>
+          <span class="board-total">총 <strong id="total-count">-</strong> 건</span>
+        </div>
+        <div id="board-container"><div class="board-state"><div class="spinner"></div><p>게시글을 불러오는 중입니다...</p></div></div>
+      </div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container"><div class="footer-inner">
+      <div class="footer-logo"><img src="images/logo-white.png" alt="화서문화유산연구원" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"/><div class="footer-logo-text" style="display:none;"><span class="footer-logo-ko">화서문화유산연구원</span><span class="footer-logo-en">HwaSeo Institute Of Cultural Heritage</span></div></div>
+      <div class="footer-info">
+        <p class="footer-name">(재)화서문화유산연구원</p>
+        <p class="footer-addr">경기도 고양시 덕양구 삼송로 12 601호~604호(원흥동, 반도유스페이)</p>
+        <p class="footer-contact">전화 : <a href="tel:031-8073-9030">031-8073-9030</a> &nbsp;|&nbsp; 팩스 : 031-8073-9040</p>
+        <p class="footer-copy">COPYRIGHT© 2026 HwaSeo Institute Of Cultural Heritage. All rights reserved.</p>
+      </div>
+    </div></div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="github-api.js"></script>
+  <script src="script.js"></script>
+  <script src="board-list.js"></script>
+  <script>
+    initBoardList({ dataFile: SITE_CONFIG.DATA_FILE_FREE, boardSlug: 'free', boardLabel: '자유게시판' });
+  </script>
+</body>
+</html>

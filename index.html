@@ -168,34 +168,10 @@
           <div class="board-box">
             <div class="board-header">
               <h2 class="board-title">학계소식</h2>
-              <a href="#" class="board-more">더보기 <span>›</span></a>
+              <a href="board-news.html" class="board-more">더보기 <span>›</span></a>
             </div>
-            <ul class="board-list" id="news-list">
-              <li>
-                <a href="#">
-                  <span class="board-tag">공지</span>
-                  <span class="board-text">제50회 한국고고학전국대회 자유패널/포스터 발표자 공모 안내</span>
-                  <span class="board-date">2026.05.20</span>
-                </a>
-              </li>
-              <li>
-                <a href="#">
-                  <span class="board-text">[학술대회] 국립중원문화유산연구소·한국첨기학회 공동학술대회 안내</span>
-                  <span class="board-date">2026.05.15</span>
-                </a>
-              </li>
-              <li>
-                <a href="#">
-                  <span class="board-text">2026년 매장문화재 조사기관 실무교육 안내</span>
-                  <span class="board-date">2026.05.10</span>
-                </a>
-              </li>
-              <li>
-                <a href="#">
-                  <span class="board-text">한국문화재조사연구기관협회 정기총회 개최 안내</span>
-                  <span class="board-date">2026.04.28</span>
-                </a>
-              </li>
+            <ul class="board-list" id="main-news-list">
+              <li><a href="#"><span class="board-text" style="color:#aaa;">불러오는 중...</span></a></li>
             </ul>
           </div>
 
@@ -203,27 +179,10 @@
           <div class="board-box">
             <div class="board-header">
               <h2 class="board-title">자유게시판</h2>
-              <a href="#" class="board-more">더보기 <span>›</span></a>
+              <a href="board-free.html" class="board-more">더보기 <span>›</span></a>
             </div>
-            <ul class="board-list">
-              <li>
-                <a href="#">
-                  <span class="board-text">[현장공개] 서울성수초등학교 교육환경 개선사업부지 내 유적 발굴</span>
-                  <span class="board-date">2026.05.18</span>
-                </a>
-              </li>
-              <li>
-                <a href="#">
-                  <span class="board-text">[안전교육] 국민안전원 CPR&amp;AED 교육 안내</span>
-                  <span class="board-date">2026.05.12</span>
-                </a>
-              </li>
-              <li>
-                <a href="#">
-                  <span class="board-text">연구원 하계 워크숍 일정 공지</span>
-                  <span class="board-date">2026.05.05</span>
-                </a>
-              </li>
+            <ul class="board-list" id="main-free-list">
+              <li><a href="#"><span class="board-text" style="color:#aaa;">불러오는 중...</span></a></li>
             </ul>
           </div>
 
@@ -304,6 +263,33 @@
     </div>
   </footer>
 
+  <script src="config.js"></script>
+  <script src="github-api.js"></script>
   <script src="script.js"></script>
+  <script>
+    async function loadMainBoard(dataFile, listId, boardSlug) {
+      const ul = document.getElementById(listId);
+      try {
+        const { content } = await GithubDB.readFile(dataFile);
+        if (!content.length) {
+          ul.innerHTML = '<li><a href="#"><span class="board-text" style="color:#aaa;">등록된 글이 없습니다.</span></a></li>';
+          return;
+        }
+        ul.innerHTML = content.slice(0, SITE_CONFIG.MAIN_LIST_COUNT).map(row => `
+          <li>
+            <a href="post.html?board=${boardSlug}&id=${row.id}">
+              ${row.type === '공지' ? '<span class="board-tag">공지</span>' : ''}
+              <span class="board-text">${row.title || '(제목 없음)'}</span>
+              <span class="board-date">${row.date || ''}</span>
+            </a>
+          </li>`).join('');
+      } catch (e) {
+        ul.innerHTML = '<li><a href="#"><span class="board-text" style="color:#aaa;">게시글이 없습니다.</span></a></li>';
+      }
+    }
+
+    loadMainBoard(SITE_CONFIG.DATA_FILE_NEWS, 'main-news-list', 'news');
+    loadMainBoard(SITE_CONFIG.DATA_FILE_FREE, 'main-free-list', 'free');
+  </script>
 </body>
 </html>

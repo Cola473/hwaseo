@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>관리자 | 화서문화유산연구원</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="board.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <header id="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="logo">
+        <img src="images/logo.png" alt="화서문화유산연구원 로고" class="logo-img"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <div class="logo-fallback" style="display:none;">
+          <span class="logo-ko">화서문화유산연구원</span>
+          <span class="logo-en">HwaSeo Institute Of Cultural Heritage</span>
+        </div>
+      </a>
+      <div style="display:flex; align-items:center; gap:16px;">
+        <span id="admin-badge" style="display:none; font-size:0.8rem; color:var(--color-navy); font-weight:600; background:#e8f0fe; padding:4px 12px; border-radius:20px;">관리자 모드</span>
+        <a href="index.html" style="font-size:0.85rem; color:var(--color-gray-dk);">← 사이트로 돌아가기</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== 로그인 화면 ===== -->
+  <div id="login-screen" class="admin-screen">
+    <div class="login-box">
+      <div class="login-logo">
+        <img src="images/logo.png" alt="" style="height:48px;"
+          onerror="this.style.display='none';" />
+        <h1>관리자 로그인</h1>
+        <p>화서문화유산연구원 게시판 관리</p>
+      </div>
+
+      <div class="form-group">
+        <label>관리자 비밀번호</label>
+        <input type="password" id="input-password" placeholder="비밀번호 입력"
+          onkeydown="if(event.key==='Enter') nextStep()" />
+      </div>
+
+      <div class="form-group">
+        <label>GitHub Personal Access Token
+          <a href="https://github.com/settings/tokens/new" target="_blank" class="help-link">
+            발급받기 →
+          </a>
+        </label>
+        <input type="password" id="input-token" placeholder="ghp_xxxxxxxxxxxxxxxx"
+          onkeydown="if(event.key==='Enter') doLogin()" />
+        <p class="field-hint">토큰은 이 브라우저 세션에만 저장되며, 탭을 닫으면 사라집니다.</p>
+      </div>
+
+      <button class="btn-primary" onclick="doLogin()">로그인</button>
+      <p id="login-error" class="error-msg" style="display:none;"></p>
+    </div>
+  </div>
+
+  <!-- ===== 관리자 대시보드 ===== -->
+  <div id="admin-screen" class="admin-screen" style="display:none;">
+    <div class="admin-wrap">
+
+      <!-- 사이드바 -->
+      <aside class="admin-sidebar">
+        <div class="sidebar-title">게시판 관리</div>
+        <ul class="sidebar-menu">
+          <li>
+            <button class="sidebar-btn active" onclick="showTab('news', this)">
+              📰 학계소식
+            </button>
+          </li>
+          <li>
+            <button class="sidebar-btn" onclick="showTab('free', this)">
+              📋 자유게시판
+            </button>
+          </li>
+        </ul>
+        <div class="sidebar-divider"></div>
+        <button class="sidebar-btn-logout" onclick="doLogout()">로그아웃</button>
+      </aside>
+
+      <!-- 메인 영역 -->
+      <main class="admin-main">
+
+        <!-- 탭: 학계소식 -->
+        <div id="tab-news" class="admin-tab">
+          <div class="admin-toolbar">
+            <h2 class="admin-section-title">학계소식</h2>
+            <button class="btn-write" onclick="openWriteModal('news')">+ 새 글 작성</button>
+          </div>
+          <div id="list-news" class="admin-list">
+            <div class="board-state"><div class="spinner"></div><p>불러오는 중...</p></div>
+          </div>
+        </div>
+
+        <!-- 탭: 자유게시판 -->
+        <div id="tab-free" class="admin-tab" style="display:none;">
+          <div class="admin-toolbar">
+            <h2 class="admin-section-title">자유게시판</h2>
+            <button class="btn-write" onclick="openWriteModal('free')">+ 새 글 작성</button>
+          </div>
+          <div id="list-free" class="admin-list">
+            <div class="board-state"><div class="spinner"></div><p>불러오는 중...</p></div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ===== 글쓰기/수정 모달 ===== -->
+  <div id="write-modal" class="modal-backdrop" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modal-title">새 글 작성</h3>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>구분</label>
+          <select id="write-type">
+            <option value="">일반</option>
+            <option value="공지">공지</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>제목 <span class="required">*</span></label>
+          <input type="text" id="write-title" placeholder="제목을 입력하세요" />
+        </div>
+        <div class="form-group">
+          <label>날짜</label>
+          <input type="text" id="write-date" placeholder="YYYY.MM.DD" />
+        </div>
+        <div class="form-group">
+          <label>작성자</label>
+          <input type="text" id="write-author" placeholder="관리자" value="관리자" />
+        </div>
+        <div class="form-group">
+          <label>내용 <span class="required">*</span></label>
+          <textarea id="write-content" rows="12" placeholder="내용을 입력하세요"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal()">취소</button>
+        <button class="btn-submit" id="btn-submit" onclick="submitPost()">저장</button>
+      </div>
+      <p id="modal-error" class="error-msg" style="display:none;"></p>
+    </div>
+  </div>
+
+  <!-- ===== 삭제 확인 모달 ===== -->
+  <div id="delete-modal" class="modal-backdrop" style="display:none;">
+    <div class="modal-box modal-box--sm">
+      <div class="modal-header">
+        <h3>게시글 삭제</h3>
+        <button class="modal-close" onclick="closeDeleteModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.95rem; line-height:1.7;">이 게시글을 삭제하시겠습니까?<br>삭제 후에는 복구할 수 없습니다.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeDeleteModal()">취소</button>
+        <button class="btn-delete" id="btn-delete-confirm">삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="github-api.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
