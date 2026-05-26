@@ -293,7 +293,7 @@ img { max-width: 100%; height: auto; display: block; }
   font-family: var(--font-sans);
   font-size: clamp(2rem, 5vw, 3.4rem);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.00em;
   line-height: 1.15;
   margin-bottom: 16px;
   text-shadow: 0 2px 12px rgba(0,0,0,0.3);
@@ -301,7 +301,7 @@ img { max-width: 100%; height: auto; display: block; }
 
 .hero-desc {
   font-size: clamp(0.9rem, 1.8vw, 1.05rem);
-  font-weight: 400;
+  font-weight: 500;
   opacity: 1.0;
   margin-bottom: 32px;
   line-height: 1.8;
