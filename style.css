@@ -20,7 +20,7 @@
 
   --font-sans: 'Noto Sans KR', sans-serif;
   --font-serif: 'Noto Serif KR', serif;
-  --font-en: 'EB Garamond', serif;
+  --font-en: 'Noto Sans KR', sans-serif;
 
   --header-h: 72px;
   --container-w: 1200px;
@@ -296,7 +296,7 @@ img { max-width: 100%; height: auto; display: block; }
   letter-spacing: -0.02em;
   line-height: 1.15;
   margin-bottom: 16px;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.3);
 }
 
 .hero-desc {
