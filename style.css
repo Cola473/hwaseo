@@ -284,8 +284,8 @@ img { max-width: 100%; height: auto; display: block; }
   font-family: var(--font-en);
   font-size: 1rem;
   letter-spacing: 0.12em;
-  opacity: 0.8;
-  margin-bottom: 12px;
+  opacity: 1.0;
+  margin-bottom: 10px;
   text-transform: uppercase;
 }
 
@@ -301,10 +301,10 @@ img { max-width: 100%; height: auto; display: block; }
 
 .hero-desc {
   font-size: clamp(0.9rem, 1.8vw, 1.05rem);
-  font-weight: 300;
-  opacity: 0.9;
+  font-weight: 400;
+  opacity: 1.0;
   margin-bottom: 32px;
-  line-height: 1.5;
+  line-height: 1.8;
 }
 
 .hero-btn {
