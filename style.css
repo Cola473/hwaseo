@@ -290,13 +290,13 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .hero-title {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: clamp(2rem, 5vw, 3.4rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.15;
   margin-bottom: 16px;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.5);
 }
 
 .hero-desc {
@@ -304,7 +304,7 @@ img { max-width: 100%; height: auto; display: block; }
   font-weight: 300;
   opacity: 0.9;
   margin-bottom: 32px;
-  line-height: 1.8;
+  line-height: 1.5;
 }
 
 .hero-btn {
