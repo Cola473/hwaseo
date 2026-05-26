@@ -143,10 +143,27 @@
         </div>
         <div class="form-group">
           <label>내용 <span class="required">*</span></label>
-          <textarea id="write-content" rows="12" placeholder="내용을 입력하세요"></textarea>
+          <textarea id="write-content" rows="10" placeholder="내용을 입력하세요"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>이미지 / 파일 첨부</label>
+          <div class="attach-dropzone" id="attach-dropzone">
+            <input type="file" id="attach-input" multiple accept="image/*,.pdf,.hwp,.hwpx,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip" style="display:none;" />
+            <div class="attach-placeholder" id="attach-placeholder">
+              <span class="attach-icon">📎</span>
+              <span>클릭하거나 파일을 여기에 드래그하세요</span>
+              <span class="attach-hint">이미지(JPG·PNG·GIF), PDF, HWP, Office 문서 등 / 파일당 최대 10MB</span>
+            </div>
+          </div>
+          <!-- 선택된 파일 목록 -->
+          <ul class="attach-list" id="attach-list"></ul>
+          <!-- 기존 첨부(수정 시) -->
+          <ul class="attach-list attach-list--existing" id="attach-existing"></ul>
         </div>
       </div>
       <div class="modal-footer">
+        <p id="attach-progress" style="display:none; font-size:0.82rem; color:var(--color-navy-mid); margin-right:auto; align-self:center;"></p>
         <button class="btn-cancel" onclick="closeModal()">취소</button>
         <button class="btn-submit" id="btn-submit" onclick="submitPost()">저장</button>
       </div>

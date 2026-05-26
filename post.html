@@ -107,10 +107,47 @@
     const prev = idx > 0              ? posts[idx - 1] : null;
     const next = idx < posts.length-1 ? posts[idx + 1] : null;
 
-    // 줄바꿈 처리
     const bodyHtml = (post.content || '')
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
       .replace(/\n/g, '<br>');
+
+    // 첨부파일 섹션
+    const attachments = post.attachments || [];
+    const images  = attachments.filter(a => a.isImage);
+    const files   = attachments.filter(a => !a.isImage);
+
+    const imageHtml = images.length ? `
+      <div class="post-images">
+        ${images.map(a => `
+          <figure class="post-img-wrap">
+            <a href="${a.rawUrl}" target="_blank" rel="noopener">
+              <img src="${a.rawUrl}" alt="${a.name}" loading="lazy" />
+            </a>
+            <figcaption>${a.name}</figcaption>
+          </figure>`).join('')}
+      </div>` : '';
+
+    const fileHtml = files.length ? `
+      <div class="post-files">
+        <h4 class="post-files-title">📎 첨부파일</h4>
+        <ul class="post-files-list">
+          ${files.map(a => `
+            <li>
+              <a href="${a.rawUrl}" download="${a.name}" target="_blank">
+                <span class="pf-icon">📄</span>
+                <span class="pf-name">${a.name}</span>
+                <span class="pf-size">${formatBytes(a.size)}</span>
+                <span class="pf-dl">다운로드</span>
+              </a>
+            </li>`).join('')}
+        </ul>
+      </div>` : '';
+
+    function formatBytes(b) {
+      if (b < 1024) return `${b} B`;
+      if (b < 1048576) return `${(b/1024).toFixed(1)} KB`;
+      return `${(b/1048576).toFixed(1)} MB`;
+    }
 
     wrap.innerHTML = `
       <div class="post-header">
@@ -125,6 +162,8 @@
         </div>
       </div>
       <div class="post-body">${bodyHtml || '(내용이 없습니다.)'}</div>
+      ${imageHtml}
+      ${fileHtml}
       <div class="post-footer">
         <div class="post-nav">
           <div class="post-nav-item">

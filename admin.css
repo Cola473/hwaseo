@@ -445,3 +445,109 @@
 
 /* 저장 중 스피너 인라인 */
 .saving { opacity: 0.7; pointer-events: none; }
+
+/* ── 첨부파일 드롭존 ── */
+.attach-dropzone {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius);
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+  background: var(--color-off-white);
+}
+
+.attach-dropzone:hover,
+.attach-dropzone.drag-over {
+  border-color: var(--color-navy-mid);
+  background: #edf2fa;
+}
+
+.attach-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-gray);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+.attach-icon { font-size: 1.8rem; }
+
+.attach-hint {
+  font-size: 0.75rem;
+  color: var(--color-gray);
+  opacity: 0.7;
+}
+
+/* ── 첨부파일 목록 ── */
+.attach-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.attach-existing-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-gray);
+  letter-spacing: 0.05em;
+  padding: 4px 0 2px;
+  margin-top: 6px;
+}
+
+.attach-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--color-gray-lt);
+  border-radius: var(--radius);
+  font-size: 0.83rem;
+}
+
+.attach-item--existing {
+  background: #f0f7e6;
+}
+
+.attach-file-icon { font-size: 1rem; flex-shrink: 0; }
+
+.attach-file-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--color-text);
+}
+
+.attach-file-size {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: var(--color-gray);
+  font-family: var(--font-en);
+}
+
+.attach-remove {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--color-gray);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 2px 4px;
+  border-radius: 2px;
+  transition: color var(--transition), background var(--transition);
+}
+
+.attach-remove:hover { color: #c00; background: #fee; }
+
+/* 목록에서 첨부 배지 */
+.attach-badge {
+  font-size: 0.72rem;
+  color: var(--color-navy-mid);
+  background: #e8f0fe;
+  padding: 1px 7px;
+  border-radius: 10px;
+}

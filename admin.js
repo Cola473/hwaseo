@@ -1,21 +1,75 @@
 /* =============================================
    화서문화유산연구원 | admin.js
-   관리자 페이지 로직
    ============================================= */
 (function () {
   'use strict';
 
-  // ── 상태 ────────────────────────────────────
-  let currentBoard = 'news';   // 현재 탭
-  let editingId    = null;     // 수정 중인 글 ID (null = 새 글)
-  let cache        = { news: null, free: null }; // { content, sha }
+  // ── 상태 ─────────────────────────────────────
+  let currentBoard = 'news';
+  let editingId    = null;
+  let cache        = { news: null, free: null };
+  let newFiles     = [];    // 새로 추가할 File[]
+  let keepAttach   = [];    // 수정 시 유지할 기존 첨부[]
 
-  // ── 설정 헬퍼 ───────────────────────────────
   function dataFile(board) {
-    return board === 'news'
-      ? SITE_CONFIG.DATA_FILE_NEWS
-      : SITE_CONFIG.DATA_FILE_FREE;
+    return board === 'news' ? SITE_CONFIG.DATA_FILE_NEWS : SITE_CONFIG.DATA_FILE_FREE;
   }
+
+  // ── 첨부파일 UI ──────────────────────────────
+  function initAttachUI() {
+    const zone  = document.getElementById('attach-dropzone');
+    const input = document.getElementById('attach-input');
+    if (!zone || !input) return;
+
+    zone.addEventListener('click', () => input.click());
+    input.addEventListener('change', () => { addFiles([...input.files]); input.value = ''; });
+    zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', ()  => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault(); zone.classList.remove('drag-over');
+      addFiles([...e.dataTransfer.files]);
+    });
+  }
+
+  function addFiles(files) {
+    const MAX = 10 * 1024 * 1024;
+    files.forEach(f => {
+      if (f.size > MAX) { alert(`"${f.name}"\n파일 크기가 10MB를 초과합니다.`); return; }
+      if (newFiles.find(x => x.name === f.name && x.size === f.size)) return;
+      newFiles.push(f);
+    });
+    renderNewFiles();
+  }
+
+  function renderNewFiles() {
+    const ul = document.getElementById('attach-list');
+    if (!ul) return;
+    ul.innerHTML = newFiles.map((f, i) => `
+      <li class="attach-item">
+        <span class="attach-file-icon">${f.type.startsWith('image/') ? '🖼️' : '📄'}</span>
+        <span class="attach-file-name">${f.name}</span>
+        <span class="attach-file-size">${GithubDB.formatBytes(f.size)}</span>
+        <button class="attach-remove" onclick="removeNewFile(${i})" title="제거">✕</button>
+      </li>`).join('');
+  }
+
+  function renderExistingFiles(attachments) {
+    keepAttach = attachments ? [...attachments] : [];
+    const ul   = document.getElementById('attach-existing');
+    if (!ul) return;
+    if (!keepAttach.length) { ul.innerHTML = ''; return; }
+    ul.innerHTML = `<li class="attach-existing-label">기존 첨부파일</li>` +
+      keepAttach.map((a, i) => `
+        <li class="attach-item attach-item--existing">
+          <span class="attach-file-icon">${a.isImage ? '🖼️' : '📄'}</span>
+          <span class="attach-file-name">${a.name}</span>
+          <span class="attach-file-size">${GithubDB.formatBytes(a.size)}</span>
+          <button class="attach-remove" onclick="removeExistingFile(${i})" title="삭제">✕</button>
+        </li>`).join('');
+  }
+
+  window.removeNewFile      = i => { newFiles.splice(i, 1); renderNewFiles(); };
+  window.removeExistingFile = i => { keepAttach.splice(i, 1); renderExistingFiles(keepAttach); };
 
   // ── 로그인 ───────────────────────────────────
   window.doLogin = async function () {
@@ -26,24 +80,21 @@
 
     if (pw !== SITE_CONFIG.ADMIN_PASSWORD) {
       errEl.textContent = '비밀번호가 올바르지 않습니다.';
-      errEl.style.display = 'block';
-      return;
+      errEl.style.display = 'block'; return;
     }
     if (!token) {
       errEl.textContent = 'GitHub Token을 입력하세요.';
-      errEl.style.display = 'block';
-      return;
+      errEl.style.display = 'block'; return;
     }
 
-    errEl.textContent = '토큰 확인 중...';
-    errEl.style.color = 'var(--color-navy-mid)';
+    errEl.textContent  = '토큰 확인 중...';
+    errEl.style.color  = 'var(--color-navy-mid)';
     errEl.style.display = 'block';
 
     const ok = await GithubDB.validateToken(token);
     if (!ok) {
       errEl.textContent = '토큰이 유효하지 않거나 저장소 접근 권한이 없습니다.';
-      errEl.style.color = '#c00';
-      return;
+      errEl.style.color = '#c00'; return;
     }
 
     sessionStorage.setItem('hwaseo_token', token);
@@ -52,6 +103,7 @@
     document.getElementById('admin-badge').style.display  = 'inline-block';
     errEl.style.display = 'none';
 
+    initAttachUI();
     loadList('news');
     loadList('free');
   };
@@ -61,7 +113,7 @@
     location.reload();
   };
 
-  // ── 탭 전환 ─────────────────────────────────
+  // ── 탭 전환 ──────────────────────────────────
   window.showTab = function (board, btnEl) {
     currentBoard = board;
     document.querySelectorAll('.admin-tab').forEach(t => t.style.display = 'none');
@@ -74,7 +126,6 @@
   async function loadList(board) {
     const listEl = document.getElementById(`list-${board}`);
     listEl.innerHTML = '<div class="board-state"><div class="spinner"></div><p>불러오는 중...</p></div>';
-
     try {
       const data = await GithubDB.readFile(dataFile(board));
       cache[board] = data;
@@ -96,51 +147,63 @@
         <span class="admin-post-title">
           ${p.type === '공지' ? '<span class="tag-notice">공지</span>' : ''}
           ${p.title}
+          ${(p.attachments && p.attachments.length) ? `<span class="attach-badge">📎 ${p.attachments.length}</span>` : ''}
         </span>
         <span class="admin-post-date">${p.date}</span>
         <span class="admin-post-actions">
-          <button class="btn-edit" onclick="openEditModal('${board}', '${p.id}')">수정</button>
-          <button class="btn-del"  onclick="openDeleteModal('${board}', '${p.id}')">삭제</button>
+          <button class="btn-edit" onclick="openEditModal('${board}','${p.id}')">수정</button>
+          <button class="btn-del"  onclick="openDeleteModal('${board}','${p.id}')">삭제</button>
         </span>
-      </div>
-    `).join('');
+      </div>`).join('');
   }
 
-  // ── 글쓰기 모달 ─────────────────────────────
+  // ── 모달 열기/닫기 ───────────────────────────
+  function resetForm() {
+    newFiles   = [];
+    keepAttach = [];
+    ['write-type','write-title','write-date','write-author','write-content'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = id === 'write-author' ? '관리자'
+                       : id === 'write-date'   ? GithubDB.today() : '';
+    });
+    renderNewFiles();
+    renderExistingFiles([]);
+    const errEl = document.getElementById('modal-error');
+    if (errEl) errEl.style.display = 'none';
+    const prog = document.getElementById('attach-progress');
+    if (prog) prog.style.display = 'none';
+  }
+
   window.openWriteModal = function (board) {
     currentBoard = board;
     editingId    = null;
-    document.getElementById('modal-title').textContent  = '새 글 작성';
-    document.getElementById('write-type').value         = '';
-    document.getElementById('write-title').value        = '';
-    document.getElementById('write-date').value         = GithubDB.today();
-    document.getElementById('write-author').value       = '관리자';
-    document.getElementById('write-content').value      = '';
-    document.getElementById('modal-error').style.display = 'none';
-    document.getElementById('btn-submit').textContent   = '저장';
+    resetForm();
+    document.getElementById('modal-title').textContent   = '새 글 작성';
+    document.getElementById('btn-submit').textContent    = '저장';
     document.getElementById('write-modal').style.display = 'flex';
   };
 
   window.openEditModal = function (board, id) {
     currentBoard = board;
     editingId    = id;
-    const posts  = (cache[board] && cache[board].content) || [];
-    const post   = posts.find(p => p.id === id);
+    resetForm();
+    const post = (cache[board]?.content || []).find(p => p.id === id);
     if (!post) return;
 
     document.getElementById('modal-title').textContent   = '게시글 수정';
-    document.getElementById('write-type').value          = post.type || '';
-    document.getElementById('write-title').value         = post.title;
-    document.getElementById('write-date').value          = post.date;
+    document.getElementById('write-type').value          = post.type   || '';
+    document.getElementById('write-title').value         = post.title  || '';
+    document.getElementById('write-date').value          = post.date   || '';
     document.getElementById('write-author').value        = post.author || '관리자';
-    document.getElementById('write-content').value       = post.content;
-    document.getElementById('modal-error').style.display = 'none';
+    document.getElementById('write-content').value       = post.content || '';
     document.getElementById('btn-submit').textContent    = '수정 저장';
+    renderExistingFiles(post.attachments || []);
     document.getElementById('write-modal').style.display = 'flex';
   };
 
   window.closeModal = function () {
     document.getElementById('write-modal').style.display = 'none';
+    newFiles = []; keepAttach = [];
   };
 
   // ── 저장 ─────────────────────────────────────
@@ -149,21 +212,45 @@
     const content = document.getElementById('write-content').value.trim();
     const errEl   = document.getElementById('modal-error');
     const btn     = document.getElementById('btn-submit');
+    const prog    = document.getElementById('attach-progress');
     errEl.style.display = 'none';
 
     if (!title)   { showModalError('제목을 입력하세요.'); return; }
     if (!content) { showModalError('내용을 입력하세요.'); return; }
 
-    btn.textContent = '저장 중...';
     btn.disabled    = true;
+    btn.textContent = '저장 중...';
+
+    const token = sessionStorage.getItem('hwaseo_token');
+    let uploadedAttachments = [...keepAttach]; // 유지할 기존 첨부
+
+    // 새 파일 업로드
+    if (newFiles.length) {
+      prog.style.display = 'block';
+      for (let i = 0; i < newFiles.length; i++) {
+        prog.textContent = `파일 업로드 중... (${i + 1}/${newFiles.length}) ${newFiles[i].name}`;
+        try {
+          const result = await GithubDB.uploadFile(newFiles[i], token);
+          uploadedAttachments.push(result);
+        } catch (e) {
+          showModalError(`"${newFiles[i].name}" 업로드 실패: ${e.message}`);
+          btn.disabled = false;
+          btn.textContent = editingId ? '수정 저장' : '저장';
+          prog.style.display = 'none';
+          return;
+        }
+      }
+      prog.textContent = '게시글 저장 중...';
+    }
 
     const post = {
-      id:      editingId || `post_${Date.now()}`,
-      type:    document.getElementById('write-type').value,
+      id:          editingId || `post_${Date.now()}`,
+      type:        document.getElementById('write-type').value,
       title,
-      date:    document.getElementById('write-date').value || GithubDB.today(),
-      author:  document.getElementById('write-author').value || '관리자',
+      date:        document.getElementById('write-date').value || GithubDB.today(),
+      author:      document.getElementById('write-author').value || '관리자',
       content,
+      attachments: uploadedAttachments,
     };
 
     try {
@@ -172,35 +259,27 @@
 
       if (editingId) {
         const idx = posts.findIndex(p => p.id === editingId);
-        if (idx !== -1) posts[idx] = post;
+        if (idx !== -1) posts[idx] = post; else posts.unshift(post);
       } else {
-        posts.unshift(post); // 최신 글이 맨 위
+        posts.unshift(post);
       }
 
-      const token = sessionStorage.getItem('hwaseo_token');
       const result = await GithubDB.writeFile(dataFile(currentBoard), posts, cached.sha, token);
-
-      // sha 업데이트
-      cache[currentBoard] = {
-        content: posts,
-        sha: result.content.sha,
-      };
-
+      cache[currentBoard] = { content: posts, sha: result.content.sha };
       renderList(currentBoard, posts);
       closeModal();
     } catch (e) {
       showModalError(`저장 실패: ${e.message}`);
     } finally {
-      btn.textContent = editingId ? '수정 저장' : '저장';
       btn.disabled    = false;
+      btn.textContent = editingId ? '수정 저장' : '저장';
+      prog.style.display = 'none';
     }
   };
 
   function showModalError(msg) {
     const el = document.getElementById('modal-error');
-    el.textContent     = msg;
-    el.style.display   = 'block';
-    el.style.color     = '#c00';
+    el.textContent = msg; el.style.color = '#c00'; el.style.display = 'block';
   }
 
   // ── 삭제 ─────────────────────────────────────
@@ -219,32 +298,24 @@
   async function confirmDelete() {
     const { board, id } = deleteTarget;
     const btn = document.getElementById('btn-delete-confirm');
-    btn.textContent = '삭제 중...';
-    btn.disabled    = true;
-
+    btn.textContent = '삭제 중...'; btn.disabled = true;
     try {
       const cached = cache[board] || { content: [], sha: null };
       const posts  = cached.content.filter(p => p.id !== id);
       const token  = sessionStorage.getItem('hwaseo_token');
       const result = await GithubDB.writeFile(dataFile(board), posts, cached.sha, token);
-
       cache[board] = { content: posts, sha: result.content.sha };
       renderList(board, posts);
       closeDeleteModal();
     } catch (e) {
       alert(`삭제 실패: ${e.message}`);
     } finally {
-      btn.textContent = '삭제';
-      btn.disabled    = false;
+      btn.textContent = '삭제'; btn.disabled = false;
     }
   }
 
-  // ── ESC 키로 모달 닫기 ───────────────────────
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') {
-      closeModal();
-      closeDeleteModal();
-    }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeModal(); closeDeleteModal(); }
   });
 
 })();
