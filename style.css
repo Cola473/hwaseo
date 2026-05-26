@@ -283,7 +283,7 @@ img { max-width: 100%; height: auto; display: block; }
 .hero-sub {
   font-family: var(--font-en);
   font-size: 1rem;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.08em;
   opacity: 1.0;
   margin-bottom: 10px;
   text-transform: uppercase;
@@ -293,7 +293,7 @@ img { max-width: 100%; height: auto; display: block; }
   font-family: var(--font-sans);
   font-size: clamp(2rem, 5vw, 3.4rem);
   font-weight: 700;
-  letter-spacing: -0.00em;
+  letter-spacing: -0.01em;
   line-height: 1.15;
   margin-bottom: 16px;
   text-shadow: 0 2px 12px rgba(0,0,0,0.3);
