@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>오시는 길 | 화서문화유산연구원</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- 헤더 -->
+  <header id="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="logo">
+        <img src="images/logo.png" alt="화서문화유산연구원 로고" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <div class="logo-fallback" style="display:none;"><span class="logo-ko">화서문화유산연구원</span><span class="logo-en">HwaSeo Institute Of Cultural Heritage</span></div>
+      </a>
+      <nav class="gnb" id="gnb">
+        <ul class="gnb-list">
+          <li class="gnb-item has-sub active"><a href="#" class="gnb-link">연구원소개</a>
+            <ul class="sub-menu">
+              <li><a href="about-greeting.html">인사말</a></li>
+              <li><a href="about-ci.html">로고 CI 유래와 이름의 의미</a></li>
+              <li><a href="about-org.html">조직도/부서안내</a></li>
+              <li><a href="about-map.html" style="color:var(--color-navy);font-weight:600;">오시는 길</a></li>
+            </ul>
+          </li>
+          <li class="gnb-item has-sub"><a href="#" class="gnb-link">매장유산조사안내</a>
+            <ul class="sub-menu">
+              <li><a href="survey-about.html">문화유산조사란?</a></li>
+              <li><a href="survey-request.html">조사의뢰 및 방법</a></li>
+              <li><a href="survey-support.html">국비지원</a></li>
+              <li><a href="survey-calc.html">조사비용 자동계산</a></li>
+            </ul>
+          </li>
+          <li class="gnb-item has-sub"><a href="#" class="gnb-link">조사현황</a>
+            <ul class="sub-menu">
+              <li><a href="#">지표조사</a></li>
+              <li><a href="#">발굴조사</a></li>
+              <li><a href="#">학술연구용역</a></li>
+            </ul>
+          </li>
+          <li class="gnb-item has-sub"><a href="#" class="gnb-link">자료실</a>
+            <ul class="sub-menu">
+              <li><a href="#">보고서 자료</a></li>
+              <li><a href="#">사진 자료</a></li>
+              <li><a href="#">학술 자료</a></li>
+            </ul>
+          </li>
+          <li class="gnb-item has-sub"><a href="#" class="gnb-link">게시판</a>
+            <ul class="sub-menu">
+              <li><a href="board-news.html">학계소식</a></li>
+              <li><a href="board-free.html">자유게시판</a></li>
+              <li><a href="#">공지사항</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 섹션 배너 -->
+  <div class="sub-banner">
+    <img src="images/sub-banner.jpg" alt="연구원소개 배너"
+      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+    <div class="sub-banner-fallback"></div>
+  </div>
+
+  <!-- 본문 -->
+  <section class="sub-body">
+    <div class="container">
+      <div class="sub-layout">
+
+        <!-- 좌측 사이드바 -->
+        <aside class="sub-sidebar">
+          <div class="sidebar-section-title">
+            <span class="section-name">
+              <img src="images/logo-icon.png" alt="" class="section-logo"
+                onerror="this.style.display='none';" />
+              연구원소개
+            </span>
+            <span class="sidebar-section-arrow">▶</span>
+          </div>
+          <nav class="sidebar-nav">
+            <a href="about-greeting.html">인사말</a>
+            <a href="about-ci.html">로고 CI 유래와 이름의 의미</a>
+            <a href="about-org.html">조직도/부서안내</a>
+            <a href="about-map.html" style="color:var(--color-navy);font-weight:600;">오시는 길</a>
+          </nav>
+
+          <!-- 퀵링크 -->
+          <div class="sidebar-quick">
+            <a href="survey-request.html" class="sidebar-quick-item accent">
+              <div class="sq-icon">💬</div>
+              <div class="sq-text">
+                <strong>상담문의</strong>
+                <span>(문서작성양식)</span>
+              </div>
+            </a>
+            <a href="survey-about.html" class="sidebar-quick-item">
+              <div class="sq-icon">
+                <img src="images/icon-survey.png" alt="" onerror="this.textContent='🏺';" />
+              </div>
+              <div class="sq-text">
+                <strong>문화유산조사란?</strong>
+                <span>What is a cultural property survey</span>
+              </div>
+            </a>
+            <a href="survey-request.html" class="sidebar-quick-item">
+              <div class="sq-icon">
+                <img src="images/icon-request.png" alt="" onerror="this.textContent='📋';" />
+              </div>
+              <div class="sq-text">
+                <strong>조사의뢰 및 방법</strong>
+                <span>Request for investigation</span>
+              </div>
+            </a>
+            <a href="survey-support.html" class="sidebar-quick-item">
+              <div class="sq-icon">
+                <img src="images/icon-support.png" alt="" onerror="this.textContent='🏛️';" />
+              </div>
+              <div class="sq-text">
+                <strong>국비지원</strong>
+                <span>Government support</span>
+              </div>
+            </a>
+            <a href="https://blog.naver.com" target="_blank" rel="noopener" class="sidebar-quick-item" style="background:var(--color-green); border-color:var(--color-green);">
+              <div class="sq-icon"><span class="blog-badge-sm">blog</span></div>
+              <div class="sq-text">
+                <strong style="color:white;">화서문화유산연구원</strong>
+                <span style="color:rgba(255,255,255,0.85);">블로그 바로가기</span>
+              </div>
+            </a>
+          </div>
+        </aside>
+
+        <!-- 우측 콘텐츠 -->
+        <div class="sub-content">
+          <div class="sub-content-inner">
+            <div class="content-header">
+              <h1 class="content-title">오시는 길</h1>
+              <div class="content-breadcrumb">
+                <a href="index.html">HOME</a>
+                <span>›</span>
+                <a href="about-greeting.html">연구원소개</a>
+                <span>›</span>
+                <strong>오시는 길</strong>
+              </div>
+            </div>
+            <div class="content-body">
+              <div class="map-wrap">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3161.234567!2d126.8800!3d37.6500!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z!5e0!3m2!1sko!2skr!4v1234567890"
+                  allowfullscreen loading="lazy">
+                </iframe>
+              </div>
+
+              <div class="location-info">
+                <div class="location-item">
+                  <strong>📍 주소</strong>
+                  <span>경기도 고양시 덕양구 삼송로 12<br>601호~604호 (원흥동, 반도유스페이)</span>
+                </div>
+                <div class="location-item">
+                  <strong>📞 전화 / 팩스</strong>
+                  <span>전화 : 031-8073-9030<br>팩스 : 031-8073-9040</span>
+                </div>
+                <div class="location-item">
+                  <strong>🚇 지하철</strong>
+                  <span>3호선 원흥역 1번 출구<br>도보 약 5분</span>
+                </div>
+                <div class="location-item">
+                  <strong>🚌 버스</strong>
+                  <span>원흥역 정류장 하차 후<br>도보 약 5분</span>
+                </div>
+                <div class="location-item">
+                  <strong>🚗 자가용</strong>
+                  <span>삼송IC 진출 후 삼송로 방면<br>건물 내 주차 가능</span>
+                </div>
+                <div class="location-item">
+                  <strong>⏰ 업무시간</strong>
+                  <span>평일 09:00 ~ 18:00<br>토·일·공휴일 휴무</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 푸터 -->
+  <footer class="site-footer">
+    <div class="container"><div class="footer-inner">
+      <div class="footer-logo">
+        <img src="images/logo-white.png" alt="화서문화유산연구원" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"/>
+        <div class="footer-logo-text" style="display:none;"><span class="footer-logo-ko">화서문화유산연구원</span><span class="footer-logo-en">HwaSeo Institute Of Cultural Heritage</span></div>
+      </div>
+      <div class="footer-info">
+        <p class="footer-name">(재)화서문화유산연구원</p>
+        <p class="footer-addr">경기도 고양시 덕양구 삼송로 12 601호~604호(원흥동, 반도유스페이)</p>
+        <p class="footer-contact">전화 : <a href="tel:031-8073-9030">031-8073-9030</a> &nbsp;|&nbsp; 팩스 : 031-8073-9040</p>
+        <p class="footer-copy">COPYRIGHT© 2026 HwaSeo Institute Of Cultural Heritage. All rights reserved.</p>
+      </div>
+    </div></div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
