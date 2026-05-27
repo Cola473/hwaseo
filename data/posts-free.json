@@ -1,5 +1,14 @@
 [
   {
+    "id": "post_1779859927432",
+    "type": "",
+    "title": "test2",
+    "date": "2026.05.27",
+    "author": "관리자",
+    "content": "작성내용2",
+    "attachments": []
+  },
+  {
     "id": "post_1779859910545",
     "type": "",
     "title": "test1",
