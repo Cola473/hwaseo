@@ -12,7 +12,16 @@
   let keepAttach   = [];    // 수정 시 유지할 기존 첨부[]
 
   function dataFile(board) {
-    return board === 'news' ? SITE_CONFIG.DATA_FILE_NEWS : SITE_CONFIG.DATA_FILE_FREE;
+    const map = {
+      news:       SITE_CONFIG.DATA_FILE_NEWS,
+      free:       SITE_CONFIG.DATA_FILE_FREE,
+      notice:     SITE_CONFIG.DATA_FILE_NOTICE,
+      surface:    SITE_CONFIG.DATA_FILE_SURVEY1,
+      excavation: SITE_CONFIG.DATA_FILE_SURVEY2,
+      academic:   SITE_CONFIG.DATA_FILE_SURVEY3,
+      report:     SITE_CONFIG.DATA_FILE_REPORT,
+    };
+    return map[board] || `data/posts-${board}.json`;
   }
 
   // ── 첨부파일 UI ──────────────────────────────
@@ -104,8 +113,7 @@
     errEl.style.display = 'none';
 
     initAttachUI();
-    loadList('news');
-    loadList('free');
+    ['surface','excavation','academic','report','news','free','notice'].forEach(b => loadList(b));
   };
 
   window.doLogout = function () {

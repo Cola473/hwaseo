@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- ===== CSS 연결코드 ===== -->
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
@@ -17,8 +16,9 @@
   <header id="site-header">
     <div class="header-inner">
       <a href="index.html" class="logo">
-        
-        <div class="logo-fallback" style="display:hidden;">
+        <img src="images/logo.png" alt="화서문화유산연구원 로고" class="logo-img"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <div class="logo-fallback" style="display:none;">
           <span class="logo-ko">화서문화유산연구원</span>
           <span class="logo-en">HwaSeo Institute Of Cultural Heritage</span>
         </div>
@@ -34,7 +34,8 @@
   <div id="login-screen" class="admin-screen">
     <div class="login-box">
       <div class="login-logo">
-        
+        <img src="images/logo.png" alt="" style="height:48px;"
+          onerror="this.style.display='none';" />
         <h1>관리자 로그인</h1>
         <p>화서문화유산연구원 게시판 관리</p>
       </div>
@@ -68,17 +69,21 @@
       <!-- 사이드바 -->
       <aside class="admin-sidebar">
         <div class="sidebar-title">게시판 관리</div>
+        <div style="font-size:0.68rem;color:rgba(255,255,255,0.3);padding:8px 20px 4px;letter-spacing:0.05em;">조사현황</div>
         <ul class="sidebar-menu">
-          <li>
-            <button class="sidebar-btn active" onclick="showTab('news', this)">
-              📰 학계소식
-            </button>
-          </li>
-          <li>
-            <button class="sidebar-btn" onclick="showTab('free', this)">
-              📋 자유게시판
-            </button>
-          </li>
+          <li><button class="sidebar-btn active" onclick="showTab('surface', this)">🗺️ 지표조사</button></li>
+          <li><button class="sidebar-btn" onclick="showTab('excavation', this)">⛏️ 발굴조사</button></li>
+          <li><button class="sidebar-btn" onclick="showTab('academic', this)">📖 학술연구용역</button></li>
+        </ul>
+        <div style="font-size:0.68rem;color:rgba(255,255,255,0.3);padding:12px 20px 4px;letter-spacing:0.05em;">자료실</div>
+        <ul class="sidebar-menu">
+          <li><button class="sidebar-btn" onclick="showTab('report', this)">📚 발간보고서</button></li>
+        </ul>
+        <div style="font-size:0.68rem;color:rgba(255,255,255,0.3);padding:12px 20px 4px;letter-spacing:0.05em;">게시판</div>
+        <ul class="sidebar-menu">
+          <li><button class="sidebar-btn" onclick="showTab('news', this)">📰 학계소식</button></li>
+          <li><button class="sidebar-btn" onclick="showTab('free', this)">📋 자유게시판</button></li>
+          <li><button class="sidebar-btn" onclick="showTab('notice', this)">📢 공지사항</button></li>
         </ul>
         <div class="sidebar-divider"></div>
         <button class="sidebar-btn-logout" onclick="doLogout()">로그아웃</button>
@@ -87,15 +92,49 @@
       <!-- 메인 영역 -->
       <main class="admin-main">
 
+        <!-- 탭: 지표조사 -->
+        <div id="tab-surface" class="admin-tab">
+          <div class="admin-toolbar">
+            <h2 class="admin-section-title">지표조사</h2>
+            <button class="btn-write" onclick="openWriteModal('surface')">+ 새 글 작성</button>
+          </div>
+          <div id="list-surface" class="admin-list"><div class="board-state"><div class="spinner"></div><p>불러오는 중...</p></div></div>
+        </div>
+
+        <!-- 탭: 발굴조사 -->
+        <div id="tab-excavation" class="admin-tab" style="display:none;">
+          <div class="admin-toolbar">
+            <h2 class="admin-section-title">발굴조사</h2>
+            <button class="btn-write" onclick="openWriteModal('excavation')">+ 새 글 작성</button>
+          </div>
+          <div id="list-excavation" class="admin-list"><div class="board-state"><div class="spinner"></div><p>불러오는 중...</p></div></div>
+        </div>
+
+        <!-- 탭: 학술연구용역 -->
+        <div id="tab-academic" class="admin-tab" style="display:none;">
+          <div class="admin-toolbar">
+            <h2 class="admin-section-title">학술연구용역</h2>
+            <button class="btn-write" onclick="openWriteModal('academic')">+ 새 글 작성</button>
+          </div>
+          <div id="list-academic" class="admin-list"><div class="board-state"><div class="spinner"></div><p>불러오는 중...</p></div></div>
+        </div>
+
+        <!-- 탭: 발간보고서 -->
+        <div id="tab-report" class="admin-tab" style="display:none;">
+          <div class="admin-toolbar">
+            <h2 class="admin-section-title">발간보고서</h2>
+            <button class="btn-write" onclick="openWriteModal('report')">+ 새 글 작성</button>
+          </div>
+          <div id="list-report" class="admin-list"><div class="board-state"><div class="spinner"></div><p>불러오는 중...</p></div></div>
+        </div>
+
         <!-- 탭: 학계소식 -->
-        <div id="tab-news" class="admin-tab">
+        <div id="tab-news" class="admin-tab" style="display:none;">
           <div class="admin-toolbar">
             <h2 class="admin-section-title">학계소식</h2>
             <button class="btn-write" onclick="openWriteModal('news')">+ 새 글 작성</button>
           </div>
-          <div id="list-news" class="admin-list">
-            <div class="board-state"><div class="spinner"></div><p>불러오는 중...</p></div>
-          </div>
+          <div id="list-news" class="admin-list"><div class="board-state"><div class="spinner"></div><p>불러오는 중...</p></div></div>
         </div>
 
         <!-- 탭: 자유게시판 -->
@@ -104,9 +143,16 @@
             <h2 class="admin-section-title">자유게시판</h2>
             <button class="btn-write" onclick="openWriteModal('free')">+ 새 글 작성</button>
           </div>
-          <div id="list-free" class="admin-list">
-            <div class="board-state"><div class="spinner"></div><p>불러오는 중...</p></div>
+          <div id="list-free" class="admin-list"><div class="board-state"><div class="spinner"></div><p>불러오는 중...</p></div></div>
+        </div>
+
+        <!-- 탭: 공지사항 -->
+        <div id="tab-notice" class="admin-tab" style="display:none;">
+          <div class="admin-toolbar">
+            <h2 class="admin-section-title">공지사항</h2>
+            <button class="btn-write" onclick="openWriteModal('notice')">+ 새 글 작성</button>
           </div>
+          <div id="list-notice" class="admin-list"><div class="board-state"><div class="spinner"></div><p>불러오는 중...</p></div></div>
         </div>
 
       </main>

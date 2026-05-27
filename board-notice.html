@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>학계소식 | 화서문화유산연구원</title>
+  <title>공지사항 | 화서문화유산연구원</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="board.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -14,8 +14,12 @@
   <header id="site-header">
     <div class="header-inner">
       <a href="index.html" class="logo">
-        <img src="images/logo.png" alt="화서문화유산연구원 로고" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-        <div class="logo-fallback" style="display:none;"><span class="logo-ko">화서문화유산연구원</span><span class="logo-en">HwaSeo Institute Of Cultural Heritage</span></div>
+        <img src="images/logo.png" alt="화서문화유산연구원 로고" class="logo-img"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <div class="logo-fallback" style="display:none;">
+          <span class="logo-ko">화서문화유산연구원</span>
+          <span class="logo-en">HwaSeo Institute Of Cultural Heritage</span>
+        </div>
       </a>
       <nav class="gnb" id="gnb"></nav>
     </div>
@@ -37,15 +41,15 @@
         <aside class="sub-sidebar">
           <div class="sidebar-section-title">
             <span class="section-name">
-              <img src="images/logo-icon.png" alt="" class="section-logo" onerror="this.style.display='none';" />
+              <span style="font-size:1.1rem;">📢</span>
               게시판
             </span>
             <span class="sidebar-section-arrow">▶</span>
           </div>
           <nav class="sidebar-nav">
-            <a href="board-news.html" class="active">학계소식</a>
+            <a href="board-news.html">학계소식</a>
             <a href="board-free.html">자유게시판</a>
-            <a href="#">공지사항</a>
+            <a href="board-notice.html">공지사항</a>
           </nav>
 
           <div class="sidebar-quick">
@@ -91,34 +95,26 @@
         <!-- 우측 콘텐츠: 게시판 -->
         <div class="sub-content">
           <div class="sub-content-inner">
-
             <div class="content-header">
-              <h1 class="content-title">학계소식</h1>
+              <h1 class="content-title">공지사항</h1>
               <div class="content-breadcrumb">
                 <a href="index.html">HOME</a>
                 <span>›</span>
                 <a href="board-news.html">게시판</a>
                 <span>›</span>
-                <strong>학계소식</strong>
+                <strong>공지사항</strong>
               </div>
             </div>
-
-            <!-- 게시판 툴바 -->
-            <div class="board-toolbar" style="border-top:none; border-bottom:1px solid var(--color-border); padding:12px 24px;">
+            <div class="board-toolbar" style="border-top:none;border-bottom:1px solid var(--color-border);padding:12px 24px;">
               <span class="board-total">총 <strong id="total-count">-</strong> 건</span>
             </div>
-
-            <!-- 게시글 목록 -->
             <div id="board-container">
               <div class="board-state">
                 <div class="spinner"></div>
                 <p>게시글을 불러오는 중입니다...</p>
               </div>
             </div>
-
           </div>
-
-          <!-- 페이지네이션 -->
           <div class="pagination" id="pagination"></div>
         </div>
 
@@ -129,8 +125,12 @@
   <footer class="site-footer">
     <div class="container"><div class="footer-inner">
       <div class="footer-logo">
-        <img src="images/logo-white.png" alt="화서문화유산연구원" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"/>
-        <div class="footer-logo-text" style="display:none;"><span class="footer-logo-ko">화서문화유산연구원</span><span class="footer-logo-en">HwaSeo Institute Of Cultural Heritage</span></div>
+        <img src="images/logo-white.png" alt="화서문화유산연구원"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"/>
+        <div class="footer-logo-text" style="display:none;">
+          <span class="footer-logo-ko">화서문화유산연구원</span>
+          <span class="footer-logo-en">HwaSeo Institute Of Cultural Heritage</span>
+        </div>
       </div>
       <div class="footer-info">
         <p class="footer-name">(재)화서문화유산연구원</p>
@@ -142,12 +142,12 @@
   </footer>
 
   <script src="config.js"></script>
-  <script src="gnb.js"></script>
   <script src="github-api.js"></script>
+  <script src="gnb.js"></script>
   <script src="script.js"></script>
   <script src="board-list.js"></script>
   <script>
-    initBoardList({ dataFile: SITE_CONFIG.DATA_FILE_NEWS, boardSlug: 'news', boardLabel: '학계소식' });
+    initBoardList({ dataFile: SITE_CONFIG.DATA_FILE_NOTICE, boardSlug: 'notice', boardLabel: '공지사항' });
   </script>
 </body>
 </html>
