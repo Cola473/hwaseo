@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
 </head>
 <body>
+
   <header id="site-header">
     <div class="header-inner">
       <a href="index.html" class="logo">
@@ -18,10 +19,36 @@
       </a>
       <nav class="gnb" id="gnb">
         <ul class="gnb-list">
-          <li class="gnb-item has-sub"><a href="#" class="gnb-link">연구원소개</a><ul class="sub-menu"><li><a href="#">설립목적 및 연혁</a></li><li><a href="#">조직 및 인원</a></li><li><a href="#">찾아오시는 길</a></li></ul></li>
-          <li class="gnb-item has-sub"><a href="#" class="gnb-link">매장유산조사안내</a><ul class="sub-menu"><li><a href="#">문화유산조사란?</a></li><li><a href="#">조사의뢰 및 방법</a></li><li><a href="#">국비지원</a></li><li><a href="#">조사비용 자동계산</a></li></ul></li>
-          <li class="gnb-item has-sub"><a href="#" class="gnb-link">조사현황</a><ul class="sub-menu"><li><a href="#">지표조사</a></li><li><a href="#">발굴조사</a></li><li><a href="#">학술연구용역</a></li></ul></li>
-          <li class="gnb-item has-sub"><a href="#" class="gnb-link">자료실</a><ul class="sub-menu"><li><a href="#">보고서 자료</a></li><li><a href="#">사진 자료</a></li><li><a href="#">학술 자료</a></li></ul></li>
+          <li class="gnb-item has-sub"><a href="#" class="gnb-link">연구원소개</a>
+            <ul class="sub-menu">
+              <li><a href="about-greeting.html">인사말</a></li>
+              <li><a href="about-ci.html">로고 CI 유래와 이름의 의미</a></li>
+              <li><a href="about-org.html">조직도/부서안내</a></li>
+              <li><a href="about-map.html">오시는 길</a></li>
+            </ul>
+          </li>
+          <li class="gnb-item has-sub"><a href="#" class="gnb-link">매장유산조사안내</a>
+            <ul class="sub-menu">
+              <li><a href="survey-about.html">문화유산조사란?</a></li>
+              <li><a href="survey-request.html">조사의뢰 및 방법</a></li>
+              <li><a href="survey-support.html">국비지원</a></li>
+              <li><a href="survey-calc.html">조사비용 자동계산</a></li>
+            </ul>
+          </li>
+          <li class="gnb-item has-sub"><a href="#" class="gnb-link">조사현황</a>
+            <ul class="sub-menu">
+              <li><a href="#">지표조사</a></li>
+              <li><a href="#">발굴조사</a></li>
+              <li><a href="#">학술연구용역</a></li>
+            </ul>
+          </li>
+          <li class="gnb-item has-sub"><a href="#" class="gnb-link">자료실</a>
+            <ul class="sub-menu">
+              <li><a href="#">보고서 자료</a></li>
+              <li><a href="#">사진 자료</a></li>
+              <li><a href="#">학술 자료</a></li>
+            </ul>
+          </li>
           <li class="gnb-item has-sub active"><a href="#" class="gnb-link">게시판</a>
             <ul class="sub-menu">
               <li><a href="board-news.html">학계소식</a></li>
@@ -34,24 +61,105 @@
     </div>
   </header>
 
-  <div class="page-banner">
-    <div class="container">
-      <div><p class="page-banner-sub" id="banner-sub">Board</p><h1 class="page-banner-title" id="banner-title">게시글</h1></div>
-      <nav class="breadcrumb"><a href="index.html">홈</a><span>›</span><a href="#">게시판</a><span>›</span><a href="#" id="breadcrumb-board">-</a><span>›</span><strong>글 보기</strong></nav>
-    </div>
+  <!-- 섹션 배너 -->
+  <div class="sub-banner">
+    <img src="images/sub-banner.jpg" alt="게시판 배너"
+      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+    <div class="sub-banner-fallback"></div>
   </div>
 
-  <section class="board-page">
+  <!-- 본문 -->
+  <section class="sub-body">
     <div class="container">
-      <div class="post-wrap" id="post-wrap">
-        <div class="board-state"><div class="spinner"></div><p>게시글을 불러오는 중입니다...</p></div>
+      <div class="sub-layout">
+
+        <!-- 좌측 사이드바 (JS로 active 처리) -->
+        <aside class="sub-sidebar">
+          <div class="sidebar-section-title">
+            <span class="section-name">
+              <img src="images/logo-icon.png" alt="" class="section-logo" onerror="this.style.display='none';" />
+              게시판
+            </span>
+            <span class="sidebar-section-arrow">▶</span>
+          </div>
+          <nav class="sidebar-nav">
+            <a href="board-news.html" id="nav-news">학계소식</a>
+            <a href="board-free.html" id="nav-free">자유게시판</a>
+            <a href="#">공지사항</a>
+          </nav>
+
+          <div class="sidebar-quick">
+            <a href="survey-request.html" class="sidebar-quick-item accent">
+              <div class="sq-icon">💬</div>
+              <div class="sq-text">
+                <strong>상담문의</strong>
+                <span>(문서작성양식)</span>
+              </div>
+            </a>
+            <a href="survey-about.html" class="sidebar-quick-item">
+              <div class="sq-icon"><img src="images/icon-survey.png" alt="" onerror="this.textContent='🏺';" /></div>
+              <div class="sq-text">
+                <strong>문화유산조사란?</strong>
+                <span>What is a cultural property survey</span>
+              </div>
+            </a>
+            <a href="survey-request.html" class="sidebar-quick-item">
+              <div class="sq-icon"><img src="images/icon-request.png" alt="" onerror="this.textContent='📋';" /></div>
+              <div class="sq-text">
+                <strong>조사의뢰 및 방법</strong>
+                <span>Request for investigation</span>
+              </div>
+            </a>
+            <a href="survey-support.html" class="sidebar-quick-item">
+              <div class="sq-icon"><img src="images/icon-support.png" alt="" onerror="this.textContent='🏛️';" /></div>
+              <div class="sq-text">
+                <strong>국비지원</strong>
+                <span>Government support</span>
+              </div>
+            </a>
+            <a href="https://blog.naver.com" target="_blank" rel="noopener"
+               class="sidebar-quick-item" style="background:var(--color-green);border-color:var(--color-green);">
+              <div class="sq-icon"><span class="blog-badge-sm">blog</span></div>
+              <div class="sq-text">
+                <strong style="color:white;">화서문화유산연구원</strong>
+                <span style="color:rgba(255,255,255,0.85);">블로그 바로가기</span>
+              </div>
+            </a>
+          </div>
+        </aside>
+
+        <!-- 우측 콘텐츠: 글 상세 -->
+        <div class="sub-content">
+          <div class="sub-content-inner" id="post-outer">
+
+            <!-- 헤더 (JS로 채워짐) -->
+            <div class="content-header" id="post-content-header">
+              <div class="board-state" style="padding:20px 0;">
+                <div class="spinner"></div>
+              </div>
+            </div>
+
+            <!-- 글 본문 (JS로 채워짐) -->
+            <div id="post-wrap">
+              <div class="board-state">
+                <div class="spinner"></div>
+                <p>게시글을 불러오는 중입니다...</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
 
   <footer class="site-footer">
     <div class="container"><div class="footer-inner">
-      <div class="footer-logo"><img src="images/logo-white.png" alt="화서문화유산연구원" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"/><div class="footer-logo-text" style="display:none;"><span class="footer-logo-ko">화서문화유산연구원</span><span class="footer-logo-en">HwaSeo Institute Of Cultural Heritage</span></div></div>
+      <div class="footer-logo">
+        <img src="images/logo-white.png" alt="화서문화유산연구원" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"/>
+        <div class="footer-logo-text" style="display:none;"><span class="footer-logo-ko">화서문화유산연구원</span><span class="footer-logo-en">HwaSeo Institute Of Cultural Heritage</span></div>
+      </div>
       <div class="footer-info">
         <p class="footer-name">(재)화서문화유산연구원</p>
         <p class="footer-addr">경기도 고양시 덕양구 삼송로 12 601호~604호(원흥동, 반도유스페이)</p>
@@ -66,33 +174,42 @@
   <script src="script.js"></script>
   <script>
   (async function () {
-    const wrap      = document.getElementById('post-wrap');
-    const board     = GithubDB.getParam('board');
-    const targetId  = GithubDB.getParam('id');
+    const headerEl = document.getElementById('post-content-header');
+    const wrapEl   = document.getElementById('post-wrap');
+    const board    = GithubDB.getParam('board');
+    const targetId = GithubDB.getParam('id');
 
     const META = {
-      news: { label: '학계소식', dataFile: SITE_CONFIG.DATA_FILE_NEWS, listUrl: 'board-news.html', subEn: 'Academic News' },
-      free: { label: '자유게시판', dataFile: SITE_CONFIG.DATA_FILE_FREE, listUrl: 'board-free.html', subEn: 'Free Board' },
+      news: { label: '학계소식', dataFile: SITE_CONFIG.DATA_FILE_NEWS, listUrl: 'board-news.html', navId: 'nav-news' },
+      free: { label: '자유게시판', dataFile: SITE_CONFIG.DATA_FILE_FREE, listUrl: 'board-free.html', navId: 'nav-free' },
     };
 
     const meta = META[board];
+
     if (!meta || !targetId) {
-      wrap.innerHTML = '<div class="error-box">잘못된 접근입니다.</div>';
+      headerEl.innerHTML = '<div class="error-box" style="margin:0;">잘못된 접근입니다.</div>';
+      wrapEl.innerHTML   = '';
       return;
     }
 
-    document.getElementById('banner-sub').textContent       = `Board / ${meta.subEn}`;
-    document.getElementById('banner-title').textContent     = meta.label;
-    document.getElementById('breadcrumb-board').textContent = meta.label;
-    document.getElementById('breadcrumb-board').href        = meta.listUrl;
+    // 사이드바 active
+    const navEl = document.getElementById(meta.navId);
+    if (navEl) navEl.classList.add('active');
+
+    // GNB active 서브메뉴 항목
+    const gnbLink = document.querySelector(`a[href="${meta.listUrl}"]`);
+    if (gnbLink) { gnbLink.style.color = 'var(--color-navy)'; gnbLink.style.fontWeight = '600'; }
+
     document.title = `${meta.label} | 화서문화유산연구원`;
 
+    // 데이터 로드
     let posts;
     try {
       const { content } = await GithubDB.readFile(meta.dataFile);
       posts = content;
     } catch (e) {
-      wrap.innerHTML = `<div class="error-box">데이터를 불러오지 못했습니다.<br><small>${e.message}</small></div>`;
+      headerEl.innerHTML = `<div class="error-box" style="margin:0;">데이터를 불러오지 못했습니다.<br><small>${e.message}</small></div>`;
+      wrapEl.innerHTML   = '';
       return;
     }
 
@@ -100,21 +217,43 @@
     const post = posts[idx];
 
     if (!post) {
-      wrap.innerHTML = '<div class="error-box">해당 게시글을 찾을 수 없습니다.</div>';
+      headerEl.innerHTML = '<div class="error-box" style="margin:0;">해당 게시글을 찾을 수 없습니다.</div>';
+      wrapEl.innerHTML   = '';
       return;
     }
 
     const prev = idx > 0              ? posts[idx - 1] : null;
     const next = idx < posts.length-1 ? posts[idx + 1] : null;
 
+    // 콘텐츠 헤더
+    headerEl.innerHTML = `
+      <h1 class="content-title">${post.title || '(제목 없음)'}</h1>
+      <div class="content-breadcrumb">
+        <a href="index.html">HOME</a>
+        <span>›</span>
+        <a href="${meta.listUrl}">게시판</a>
+        <span>›</span>
+        <a href="${meta.listUrl}">${meta.label}</a>
+        <span>›</span>
+        <strong>글 보기</strong>
+      </div>`;
+
+    // 본문 렌더
     const bodyHtml = (post.content || '')
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/\n/g, '<br>');
+      .replace(/\n/g,'<br>');
 
-    // 첨부파일 섹션
+    // 첨부파일
     const attachments = post.attachments || [];
-    const images  = attachments.filter(a => a.isImage);
-    const files   = attachments.filter(a => !a.isImage);
+    const images = attachments.filter(a => a.isImage);
+    const files  = attachments.filter(a => !a.isImage);
+
+    function fmtBytes(b) {
+      if (!b) return '';
+      if (b < 1024) return b + ' B';
+      if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+      return (b/1048576).toFixed(1) + ' MB';
+    }
 
     const imageHtml = images.length ? `
       <div class="post-images">
@@ -132,34 +271,23 @@
         <h4 class="post-files-title">📎 첨부파일</h4>
         <ul class="post-files-list">
           ${files.map(a => `
-            <li>
-              <a href="${a.rawUrl}" download="${a.name}" target="_blank">
-                <span class="pf-icon">📄</span>
-                <span class="pf-name">${a.name}</span>
-                <span class="pf-size">${formatBytes(a.size)}</span>
-                <span class="pf-dl">다운로드</span>
-              </a>
-            </li>`).join('')}
+            <li><a href="${a.rawUrl}" download="${a.name}" target="_blank">
+              <span class="pf-icon">📄</span>
+              <span class="pf-name">${a.name}</span>
+              <span class="pf-size">${fmtBytes(a.size)}</span>
+              <span class="pf-dl">다운로드</span>
+            </a></li>`).join('')}
         </ul>
       </div>` : '';
 
-    function formatBytes(b) {
-      if (b < 1024) return `${b} B`;
-      if (b < 1048576) return `${(b/1024).toFixed(1)} KB`;
-      return `${(b/1048576).toFixed(1)} MB`;
-    }
-
-    wrap.innerHTML = `
-      <div class="post-header">
-        <div class="post-meta-top">
-          <span class="post-category">${meta.label}</span>
-          ${post.type === '공지' ? '<span class="tag-notice">공지</span>' : ''}
-        </div>
-        <h1 class="post-title">${post.title || '(제목 없음)'}</h1>
-        <div class="post-meta">
+    // 글 메타 + 본문 + 이미지 + 파일 + 이전다음
+    wrapEl.innerHTML = `
+      <div class="post-meta-bar">
+        <span>${post.type === '공지' ? '<span class="tag-notice">공지</span>' : ''}</span>
+        <span class="post-meta-info">
           <span>📅 ${post.date || '-'}</span>
           <span>✍️ ${post.author || '관리자'}</span>
-        </div>
+        </span>
       </div>
       <div class="post-body">${bodyHtml || '(내용이 없습니다.)'}</div>
       ${imageHtml}
@@ -168,11 +296,15 @@
         <div class="post-nav">
           <div class="post-nav-item">
             <span class="post-nav-label">이전글</span>
-            ${prev ? `<a href="post.html?board=${board}&id=${prev.id}">${prev.title}</a>` : '<span>이전 게시글이 없습니다.</span>'}
+            ${prev
+              ? `<a href="post.html?board=${board}&id=${prev.id}">${prev.title}</a>`
+              : '<span>이전 게시글이 없습니다.</span>'}
           </div>
           <div class="post-nav-item">
             <span class="post-nav-label">다음글</span>
-            ${next ? `<a href="post.html?board=${board}&id=${next.id}">${next.title}</a>` : '<span>다음 게시글이 없습니다.</span>'}
+            ${next
+              ? `<a href="post.html?board=${board}&id=${next.id}">${next.title}</a>`
+              : '<span>다음 게시글이 없습니다.</span>'}
           </div>
         </div>
         <a href="${meta.listUrl}" class="btn-list">← 목록으로</a>

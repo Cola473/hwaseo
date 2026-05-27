@@ -442,3 +442,51 @@
   padding: 3px 10px;
   border-radius: 20px;
 }
+
+/* ── 글 상세: 서브페이지 레이아웃용 메타바 ── */
+.post-meta-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-gray-lt);
+  font-size: 0.82rem;
+}
+
+.post-meta-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: var(--color-gray);
+}
+
+/* 서브페이지 레이아웃에서 post-body 패딩 조정 */
+.sub-content .post-body {
+  padding: 28px 24px;
+}
+
+.sub-content .post-images {
+  padding: 0 24px 24px;
+}
+
+.sub-content .post-files {
+  margin: 0 24px 24px;
+}
+
+.sub-content .post-footer {
+  margin: 0;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+/* 서브페이지에서 board-table 패딩 */
+.sub-content .board-table tbody td,
+.sub-content .board-table thead th {
+  padding: 12px 20px;
+}
+
+/* board-toolbar 서브페이지용 */
+.sub-content .board-toolbar {
+  border-top: none;
+  background: var(--color-gray-lt);
+}

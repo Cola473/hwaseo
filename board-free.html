@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
 </head>
 <body>
+
   <header id="site-header">
     <div class="header-inner">
       <a href="index.html" class="logo">
@@ -18,10 +19,36 @@
       </a>
       <nav class="gnb" id="gnb">
         <ul class="gnb-list">
-          <li class="gnb-item has-sub"><a href="#" class="gnb-link">연구원소개</a><ul class="sub-menu"><li><a href="#">설립목적 및 연혁</a></li><li><a href="#">조직 및 인원</a></li><li><a href="#">찾아오시는 길</a></li></ul></li>
-          <li class="gnb-item has-sub"><a href="#" class="gnb-link">매장유산조사안내</a><ul class="sub-menu"><li><a href="#">문화유산조사란?</a></li><li><a href="#">조사의뢰 및 방법</a></li><li><a href="#">국비지원</a></li><li><a href="#">조사비용 자동계산</a></li></ul></li>
-          <li class="gnb-item has-sub"><a href="#" class="gnb-link">조사현황</a><ul class="sub-menu"><li><a href="#">지표조사</a></li><li><a href="#">발굴조사</a></li><li><a href="#">학술연구용역</a></li></ul></li>
-          <li class="gnb-item has-sub"><a href="#" class="gnb-link">자료실</a><ul class="sub-menu"><li><a href="#">보고서 자료</a></li><li><a href="#">사진 자료</a></li><li><a href="#">학술 자료</a></li></ul></li>
+          <li class="gnb-item has-sub"><a href="#" class="gnb-link">연구원소개</a>
+            <ul class="sub-menu">
+              <li><a href="about-greeting.html">인사말</a></li>
+              <li><a href="about-ci.html">로고 CI 유래와 이름의 의미</a></li>
+              <li><a href="about-org.html">조직도/부서안내</a></li>
+              <li><a href="about-map.html">오시는 길</a></li>
+            </ul>
+          </li>
+          <li class="gnb-item has-sub"><a href="#" class="gnb-link">매장유산조사안내</a>
+            <ul class="sub-menu">
+              <li><a href="survey-about.html">문화유산조사란?</a></li>
+              <li><a href="survey-request.html">조사의뢰 및 방법</a></li>
+              <li><a href="survey-support.html">국비지원</a></li>
+              <li><a href="survey-calc.html">조사비용 자동계산</a></li>
+            </ul>
+          </li>
+          <li class="gnb-item has-sub"><a href="#" class="gnb-link">조사현황</a>
+            <ul class="sub-menu">
+              <li><a href="#">지표조사</a></li>
+              <li><a href="#">발굴조사</a></li>
+              <li><a href="#">학술연구용역</a></li>
+            </ul>
+          </li>
+          <li class="gnb-item has-sub"><a href="#" class="gnb-link">자료실</a>
+            <ul class="sub-menu">
+              <li><a href="#">보고서 자료</a></li>
+              <li><a href="#">사진 자료</a></li>
+              <li><a href="#">학술 자료</a></li>
+            </ul>
+          </li>
           <li class="gnb-item has-sub active"><a href="#" class="gnb-link">게시판</a>
             <ul class="sub-menu">
               <li><a href="board-news.html">학계소식</a></li>
@@ -34,29 +61,117 @@
     </div>
   </header>
 
-  <div class="page-banner">
-    <div class="container">
-      <div><p class="page-banner-sub">Board / Free Board</p><h1 class="page-banner-title">자유게시판</h1></div>
-      <nav class="breadcrumb"><a href="index.html">홈</a><span>›</span><a href="#">게시판</a><span>›</span><strong>자유게시판</strong></nav>
-    </div>
+  <!-- 섹션 배너 -->
+  <div class="sub-banner">
+    <img src="images/sub-banner.jpg" alt="게시판 배너"
+      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+    <div class="sub-banner-fallback"></div>
   </div>
 
-  <section class="board-page">
+  <!-- 본문 -->
+  <section class="sub-body">
     <div class="container">
-      <div class="board-wrap">
-        <div class="board-toolbar">
-          <span class="board-toolbar-title">자유게시판</span>
-          <span class="board-total">총 <strong id="total-count">-</strong> 건</span>
+      <div class="sub-layout">
+
+        <!-- 좌측 사이드바 -->
+        <aside class="sub-sidebar">
+          <div class="sidebar-section-title">
+            <span class="section-name">
+              <img src="images/logo-icon.png" alt="" class="section-logo" onerror="this.style.display='none';" />
+              게시판
+            </span>
+            <span class="sidebar-section-arrow">▶</span>
+          </div>
+          <nav class="sidebar-nav">
+            <a href="board-news.html">학계소식</a>
+            <a href="board-free.html" style="color:var(--color-navy);font-weight:600;">자유게시판</a>
+            <a href="#">공지사항</a>
+          </nav>
+
+          <div class="sidebar-quick">
+            <a href="survey-request.html" class="sidebar-quick-item accent">
+              <div class="sq-icon">💬</div>
+              <div class="sq-text">
+                <strong>상담문의</strong>
+                <span>(문서작성양식)</span>
+              </div>
+            </a>
+            <a href="survey-about.html" class="sidebar-quick-item">
+              <div class="sq-icon"><img src="images/icon-survey.png" alt="" onerror="this.textContent='🏺';" /></div>
+              <div class="sq-text">
+                <strong>문화유산조사란?</strong>
+                <span>What is a cultural property survey</span>
+              </div>
+            </a>
+            <a href="survey-request.html" class="sidebar-quick-item">
+              <div class="sq-icon"><img src="images/icon-request.png" alt="" onerror="this.textContent='📋';" /></div>
+              <div class="sq-text">
+                <strong>조사의뢰 및 방법</strong>
+                <span>Request for investigation</span>
+              </div>
+            </a>
+            <a href="survey-support.html" class="sidebar-quick-item">
+              <div class="sq-icon"><img src="images/icon-support.png" alt="" onerror="this.textContent='🏛️';" /></div>
+              <div class="sq-text">
+                <strong>국비지원</strong>
+                <span>Government support</span>
+              </div>
+            </a>
+            <a href="https://blog.naver.com" target="_blank" rel="noopener"
+               class="sidebar-quick-item" style="background:var(--color-green);border-color:var(--color-green);">
+              <div class="sq-icon"><span class="blog-badge-sm">blog</span></div>
+              <div class="sq-text">
+                <strong style="color:white;">화서문화유산연구원</strong>
+                <span style="color:rgba(255,255,255,0.85);">블로그 바로가기</span>
+              </div>
+            </a>
+          </div>
+        </aside>
+
+        <!-- 우측 콘텐츠: 게시판 -->
+        <div class="sub-content">
+          <div class="sub-content-inner">
+
+            <div class="content-header">
+              <h1 class="content-title">자유게시판</h1>
+              <div class="content-breadcrumb">
+                <a href="index.html">HOME</a>
+                <span>›</span>
+                <a href="board-free.html">게시판</a>
+                <span>›</span>
+                <strong>자유게시판</strong>
+              </div>
+            </div>
+
+            <!-- 게시판 툴바 -->
+            <div class="board-toolbar" style="border-top:none; border-bottom:1px solid var(--color-border); padding:12px 24px;">
+              <span class="board-total">총 <strong id="total-count">-</strong> 건</span>
+            </div>
+
+            <!-- 게시글 목록 -->
+            <div id="board-container">
+              <div class="board-state">
+                <div class="spinner"></div>
+                <p>게시글을 불러오는 중입니다...</p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 페이지네이션 -->
+          <div class="pagination" id="pagination"></div>
         </div>
-        <div id="board-container"><div class="board-state"><div class="spinner"></div><p>게시글을 불러오는 중입니다...</p></div></div>
+
       </div>
-      <div class="pagination" id="pagination"></div>
     </div>
   </section>
 
   <footer class="site-footer">
     <div class="container"><div class="footer-inner">
-      <div class="footer-logo"><img src="images/logo-white.png" alt="화서문화유산연구원" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"/><div class="footer-logo-text" style="display:none;"><span class="footer-logo-ko">화서문화유산연구원</span><span class="footer-logo-en">HwaSeo Institute Of Cultural Heritage</span></div></div>
+      <div class="footer-logo">
+        <img src="images/logo-white.png" alt="화서문화유산연구원" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"/>
+        <div class="footer-logo-text" style="display:none;"><span class="footer-logo-ko">화서문화유산연구원</span><span class="footer-logo-en">HwaSeo Institute Of Cultural Heritage</span></div>
+      </div>
       <div class="footer-info">
         <p class="footer-name">(재)화서문화유산연구원</p>
         <p class="footer-addr">경기도 고양시 덕양구 삼송로 12 601호~604호(원흥동, 반도유스페이)</p>
