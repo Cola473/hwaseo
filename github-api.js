@@ -19,12 +19,18 @@
     };
   }
 
-  // ── JSON 파일 읽기 ──────────────────────────
+  // ── JSON 파일 읽기 (토큰 불필요 — Public 저장소) ──
   async function readFile(path) {
     const { GITHUB_OWNER: o, GITHUB_REPO: r, GITHUB_BRANCH: b } = SITE_CONFIG;
+    const token = getToken();
+    const headers = {
+      'Accept': 'application/vnd.github.v3+json',
+      // 토큰이 있을 때만 Authorization 헤더 추가 (없으면 빈 값으로 401 유발)
+      ...(token ? { 'Authorization': `token ${token}` } : {}),
+    };
     const res = await fetch(
       `${BASE}/repos/${o}/${r}/contents/${path}?ref=${b}&t=${Date.now()}`,
-      { headers: apiHeaders() }
+      { headers }
     );
     if (res.status === 404) return { content: [], sha: null };
     if (!res.ok) throw new Error(`읽기 실패: ${res.status}`);
