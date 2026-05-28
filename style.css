@@ -1421,12 +1421,4 @@ body.consult-modal-open {
     font-size: 1.18rem;
   }
 
-  .consult-modal-actions {
-    flex-direction: column;
-  }
-
-  .consult-modal-actions a,
-  .consult-modal-actions button {
-    width: 100%;
-  }
 }
