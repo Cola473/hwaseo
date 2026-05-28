@@ -1401,14 +1401,6 @@ img { max-width: 100%; height: auto; display: block; }
   line-height: 1.55;
 }
 
-
-
-.consult-modal-actions a {
-  border-color: var(--color-gold);
-  background: var(--color-gold);
-  color: var(--color-white);
-}
-
 body.consult-modal-open {
   overflow: hidden;
 }
