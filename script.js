@@ -167,7 +167,7 @@
             </div>
           </div>
           <div class="consult-ready-box">
-            <h3 class="consult-ready-title">문의 전에 준비하면 좋은 내용</h3>
+            <h3 class="consult-ready-title">상담 시 필요한 내용</h3>
             <ul class="consult-ready-list">
               ${consultInfo.readyItems.map(function (item) {
                 return `<li>${item}</li>`;
@@ -176,8 +176,7 @@
           </div>
         </div>
         <div class="consult-modal-actions">
-          <a href="mailto:${consultInfo.email}">메일 보내기</a>
-          <button type="button" class="consult-modal-close">확인</button>
+        <button type="button" class="consult-modal-close">확인</button>
         </div>
       </section>`;
     document.body.appendChild(modal);
