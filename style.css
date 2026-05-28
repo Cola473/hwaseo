@@ -1356,7 +1356,7 @@ img { max-width: 100%; height: auto; display: block; }
   display: block;
   margin-bottom: 8px;
   color: var(--color-navy);
-  font-size: 0.78rem;
+  font-size: 0.9rem;
   font-weight: 700;
 }
 
@@ -1386,6 +1386,7 @@ img { max-width: 100%; height: auto; display: block; }
   font-size: 1.05rem;
   font-weight: 700;
   letter-spacing: 0;
+  justify-content: center;
   }
 
 .consult-ready-list {
