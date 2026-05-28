@@ -174,10 +174,7 @@
               }).join('')}
             </ul>
           </div>
-        </div>
-        <div class="consult-modal-actions">
-        <button type="button" class="consult-modal-close">확인</button>
-        </div>
+        </div>  
       </section>`;
     document.body.appendChild(modal);
     return modal;
