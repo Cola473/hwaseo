@@ -203,7 +203,12 @@
   }
 
   document.addEventListener('click', function (e) {
-    const consultTrigger = e.target.closest('.consult-btn, .sidebar-quick-item.accent');
+    const clickedEl = e.target.closest ? e.target.closest('a, button') : null;
+    const consultTrigger = clickedEl && (
+      clickedEl.matches('.consult-btn, .sidebar-quick-item.accent') ||
+      clickedEl.getAttribute('href') === 'survey-request.html' ||
+      clickedEl.textContent.indexOf('상담문의') !== -1
+    );
     if (consultTrigger) {
       e.preventDefault();
       openConsultModal();
