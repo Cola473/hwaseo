@@ -122,4 +122,103 @@
     });
   }
 
+  /* Consultation popup */
+  const consultInfo = {
+    phone: '031-8073-9030',
+    time: '평일 09:00 - 18:00',
+    email: 'hwaseo130@naver.com',
+    readyItems: [
+      '조사 대상지 주소 또는 지번',
+      '사업 종류와 현재 진행 단계',
+      '대상지 면적, 위치도, 현장 사진',
+      '문화재 관련 인허가 또는 안내받은 공문 내용',
+      '희망 상담 방식과 연락 가능한 시간'
+    ]
+  };
+
+  function createConsultModal() {
+    if (document.getElementById('consultModal')) {
+      return document.getElementById('consultModal');
+    }
+
+    const modal = document.createElement('div');
+    modal.id = 'consultModal';
+    modal.className = 'consult-modal-backdrop';
+    modal.setAttribute('aria-hidden', 'true');
+    modal.innerHTML = `
+      <section class="consult-modal" role="dialog" aria-modal="true" aria-labelledby="consultModalTitle">
+        <div class="consult-modal-head">
+          <h2 class="consult-modal-title" id="consultModalTitle">상담문의 안내</h2>
+          <button type="button" class="consult-modal-close" aria-label="닫기">&times;</button>
+        </div>
+        <div class="consult-modal-body">
+          <div class="consult-contact-grid">
+            <div class="consult-contact-card">
+              <span class="consult-contact-label">전화번호</span>
+              <strong class="consult-contact-value"><a href="tel:${consultInfo.phone.replace(/-/g, '')}">${consultInfo.phone}</a></strong>
+            </div>
+            <div class="consult-contact-card">
+              <span class="consult-contact-label">상담시간</span>
+              <strong class="consult-contact-value">${consultInfo.time}</strong>
+            </div>
+            <div class="consult-contact-card">
+              <span class="consult-contact-label">메일주소</span>
+              <strong class="consult-contact-value"><a href="mailto:${consultInfo.email}">${consultInfo.email}</a></strong>
+            </div>
+          </div>
+          <div class="consult-ready-box">
+            <h3 class="consult-ready-title">문의 전에 준비하면 좋은 내용</h3>
+            <ul class="consult-ready-list">
+              ${consultInfo.readyItems.map(function (item) {
+                return `<li>${item}</li>`;
+              }).join('')}
+            </ul>
+          </div>
+        </div>
+        <div class="consult-modal-actions">
+          <a href="mailto:${consultInfo.email}">메일 보내기</a>
+          <button type="button" class="consult-modal-close">확인</button>
+        </div>
+      </section>`;
+    document.body.appendChild(modal);
+    return modal;
+  }
+
+  const consultModal = createConsultModal();
+
+  function openConsultModal() {
+    consultModal.classList.add('is-open');
+    consultModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('consult-modal-open');
+    const closeButton = consultModal.querySelector('.consult-modal-close');
+    if (closeButton) {
+      closeButton.focus();
+    }
+  }
+
+  function closeConsultModal() {
+    consultModal.classList.remove('is-open');
+    consultModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('consult-modal-open');
+  }
+
+  document.addEventListener('click', function (e) {
+    const consultTrigger = e.target.closest('.consult-btn, .sidebar-quick-item.accent');
+    if (consultTrigger) {
+      e.preventDefault();
+      openConsultModal();
+      return;
+    }
+
+    if (e.target === consultModal || e.target.closest('.consult-modal-close')) {
+      closeConsultModal();
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && consultModal.classList.contains('is-open')) {
+      closeConsultModal();
+    }
+  });
+
 })();
