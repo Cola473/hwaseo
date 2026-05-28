@@ -1401,28 +1401,7 @@ img { max-width: 100%; height: auto; display: block; }
   line-height: 1.55;
 }
 
-.consult-modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  padding: 0 26px 26px;
-}
 
-.consult-modal-actions a,
-.consult-modal-actions button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 42px;
-  padding: 0 18px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
-  background: var(--color-white);
-  color: var(--color-navy);
-  font-size: 0.92rem;
-  font-weight: 700;
-  cursor: pointer;
-}
 
 .consult-modal-actions a {
   border-color: var(--color-gold);
