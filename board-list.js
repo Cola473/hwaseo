@@ -19,7 +19,7 @@ async function initBoardList({ dataFile, boardSlug, boardLabel }) {
     return;
   }
 
-  totalEl.textContent = allRows.length;
+  totalEl.innerHTML = allRows.length;
 
   if (!allRows.length) {
     container.innerHTML = '<div class="board-state"><p>등록된 게시글이 없습니다.</p></div>';
