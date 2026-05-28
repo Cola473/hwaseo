@@ -15,7 +15,7 @@ async function initBoardList({ dataFile, boardSlug, boardLabel }) {
     const { content } = await GithubDB.readFile(dataFile);
     allRows = content;
   } catch (e) {
-    container.innerHTML = `<div class="error-box">데이터를 불러오지 못했습니다.<br><small>${e.message}</small></div>`;
+    container.textContent = `<div class="error-box">데이터를 불러오지 못했습니다.<br><small>${e.message}</small></div>`;
     return;
   }
 
