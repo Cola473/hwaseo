@@ -167,66 +167,7 @@
             </div>
           </div>
           <div class="consult-ready-box">
-            <h3 class="consult-ready-title">상담 시 필요한 내용      const spans = this.querySelectorAll('span');
-      const isOpen = gnb.classList.contains('open');
-      if (isOpen) {
-        spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
-        spans[1].style.opacity   = '0';
-        spans[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
-      } else {
-        spans[0].style.transform = '';
-        spans[1].style.opacity   = '';
-        spans[2].style.transform = '';
-      }
-    });
-  }
-
-  /* Consultation popup */
-  const consultInfo = {
-    phone: '031-8073-9030',
-    time: '평일 09:00 - 18:00',
-    email: 'hwaseo130@naver.com',
-    readyItems: [
-      '조사 대상지 주소 또는 지번',
-      '사업 종류와 현재 진행 단계',
-      '대상지 면적, 위치도, 현장 사진',
-      '문화재 관련 인허가 또는 안내받은 공문 내용',
-      '희망 상담 방식과 연락 가능한 시간'
-    ]
-  };
-
-  function createConsultModal() {
-    if (document.getElementById('consultModal')) {
-      return document.getElementById('consultModal');
-    }
-
-    const modal = document.createElement('div');
-    modal.id = 'consultModal';
-    modal.className = 'consult-modal-backdrop';
-    modal.setAttribute('aria-hidden', 'true');
-    modal.innerHTML = `
-      <section class="consult-modal" role="dialog" aria-modal="true" aria-labelledby="consultModalTitle">
-        <div class="consult-modal-head">
-          <h2 class="consult-modal-title" id="consultModalTitle">상담문의 안내</h2>
-          <button type="button" class="consult-modal-close" aria-label="닫기">&times;</button>
-        </div>
-        <div class="consult-modal-body">
-          <div class="consult-contact-grid">
-            <div class="consult-contact-card">
-              <span class="consult-contact-label">전화번호</span>
-              <strong class="consult-contact-value"><a href="tel:${consultInfo.phone.replace(/-/g, '')}">${consultInfo.phone}</a></strong>
-            </div>
-            <div class="consult-contact-card">
-              <span class="consult-contact-label">상담시간</span>
-              <strong class="consult-contact-value">${consultInfo.time}</strong>
-            </div>
-            <div class="consult-contact-card">
-              <span class="consult-contact-label">메일주소</span>
-              <strong class="consult-contact-value"><a href="mailto:${consultInfo.email}">${consultInfo.email}</a></strong>
-            </div>
-          </div>
-          <div class="consult-ready-box">
-            <h3 class="consult-ready-title">원활한 상담을 위한 준비사항</h3>
+            <h3 class="consult-ready-title">문의 전에 준비하면 좋은 내용</h3>
             <ul class="consult-ready-list">
               ${consultInfo.readyItems.map(function (item) {
                 return `<li>${item}</li>`;
