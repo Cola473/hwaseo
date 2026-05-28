@@ -1327,12 +1327,10 @@ img { max-width: 100%; height: auto; display: block; }
   font-size: 1.55rem;
   line-height: 1;
   cursor: pointer;
-  visibility: hidden;
 }
 
 .consult-modal-close:hover {
   background: rgba(255, 255, 255, 0.26);
-  visibility: hidden;
 }
 
 .consult-modal-body {
