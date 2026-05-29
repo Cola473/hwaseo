@@ -95,75 +95,56 @@
           </div>
         </aside>
 
-        <!-- 우측 콘텐츠 -->
-        <div class="sub-content">
-          <div class="sub-content-inner">
-            <div class="content-header">
-              <h1 class="content-title">오시는 길</h1>
-              <div class="content-breadcrumb">
-                <a href="index.html">HOME</a>
-                <span>›</span>
-                <a href="about-greeting.html">연구원소개</a>
-                <span>›</span>
-                <strong>오시는 길</strong>
-              </div>
-            </div>
-            <div class="content-body">
-               <div style="height:400px;"></div>    
-<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0ff20953645e272049eea9c61ee6eae7"></script>
-<script>
-// 이미지 지도에서 마커가 표시될 위치입니다 
-var markerPosition  = new kakao.maps.LatLng(37.649689176872265,126.8753657877704); 
+       <div class="content-body">
+  <div class="map-wrap">
+    <div id="staticMap" style="width:100%;height:100%;"></div>
+  </div>
 
-// 이미지 지도에 표시할 마커입니다
-// 이미지 지도에 표시할 마커는 Object 형태입니다
-var marker = {
-    position: markerPosition
-};
-
-var staticMapContainer  = document.getElementById('staticMap'), // 이미지 지도를 표시할 div  
-    staticMapOption = { 
-        center: new kakao.maps.LatLng(37.649689176872265,126.8753657877704), // 이미지 지도의 중심좌표
-        level: 3, // 이미지 지도의 확대 레벨
-        marker: marker // 이미지 지도에 표시할 마커 
-    };    
-
-// 이미지 지도를 생성합니다
-var staticMap = new kakao.maps.StaticMap(staticMapContainer, staticMapOption);
-</script></div>
-
-              <div class="location-info">
-                <div class="location-item">
-                  <strong>📍 주소</strong>
-                  <span>경기도 고양시 덕양구 삼송로 12<br>601호~604호 (원흥동, 반도유스퀘어)</span>
-                </div>
-                <div class="location-item">
-                  <strong>📞 전화 / 팩스</strong>
-                  <span>전화 : 031-8073-9030<br>팩스 : 031-8073-9040</span>
-                </div>
-                <div class="location-item">
-                  <strong>🚇 지하철</strong>
-                  <span>3호선 원흥역 1번 출구<br>도보 약 3분</span>
-                </div>
-                <div class="location-item">
-                  <strong>🚌 버스</strong>
-                  <span>원흥역 정류장 하차 후<br>도보 약 1분</span>
-                </div>
-                <div class="location-item">
-                  <strong>🚗 자가용</strong>
-                  <span>삼송IC 진출 후 삼송로 방면<br>건물 내 주차 가능</span>
-                </div>
-                <div class="location-item">
-                  <strong>⏰ 업무시간</strong>
-                <span>평일 09:00 ~ 18:00 / 점심시간 11:30 ~ 12:30<br>토·일·공휴일 휴무</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
+  <div class="location-info">
+    <div class="location-item">
+      <strong>📍 주소</strong>
+      <span>경기도 고양시 덕양구 삼송로 12<br>601호~604호 (원흥동, 반도유스퀘어)</span>
     </div>
+    <div class="location-item">
+      <strong>📞 전화 / 팩스</strong>
+      <span>전화 : 031-8073-9030<br>팩스 : 031-8073-9040</span>
+    </div>
+    <div class="location-item">
+      <strong>🚇 지하철</strong>
+      <span>3호선 원흥역 1번 출구<br>도보 약 3분</span>
+    </div>
+    <div class="location-item">
+      <strong>🚌 버스</strong>
+      <span>원흥역 정류장 하차 후<br>도보 약 1분</span>
+    </div>
+    <div class="location-item">
+      <strong>🚗 자가용</strong>
+      <span>삼송IC 진출 후 삼송로 방면<br>건물 내 주차 가능</span>
+    </div>
+    <div class="location-item">
+      <strong>⏰ 업무시간</strong>
+      <span>평일 09:00 ~ 18:00 / 점심시간 11:30 ~ 12:30<br>토·일·공휴일 휴무</span>
+    </div>
+  </div>
+</div>
+
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=0ff20953645e272049eea9c61ee6eae7"></script>
+<script>
+  var markerPosition = new kakao.maps.LatLng(37.649689176872265, 126.8753657877704);
+
+  var marker = {
+    position: markerPosition
+  };
+
+  var staticMapContainer = document.getElementById('staticMap');
+  var staticMapOption = {
+    center: markerPosition,
+    level: 3,
+    marker: marker
+  };
+
+  new kakao.maps.StaticMap(staticMapContainer, staticMapOption);
+</script>
   </section>
 
   <!-- 푸터 -->
