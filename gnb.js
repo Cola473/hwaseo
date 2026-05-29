@@ -21,7 +21,6 @@
         { label: '문화유산조사란?',   href: 'survey-about.html' },
         { label: '조사의뢰 및 방법', href: 'survey-request.html' },
         { label: '국비지원',         href: 'survey-support.html' },
-        { label: '조사비용 자동계산', href: 'survey-calc.html' },
       ],
     },
     {
@@ -43,7 +42,6 @@
       sub: [
         { label: '학계소식',   href: 'board-news.html' },
         { label: '자유게시판', href: 'board-free.html' },
-        { label: '공지사항',   href: 'board-notice.html' },
       ],
     },
   ];
