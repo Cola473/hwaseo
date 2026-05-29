@@ -199,10 +199,9 @@
   document.addEventListener('click', function (e) {
     const clickedEl = e.target.closest ? e.target.closest('a, button') : null;
     const consultTrigger = clickedEl && (
-      clickedEl.matches('.consult-btn, .sidebar-quick-item.accent') ||
-      clickedEl.getAttribute('href') === 'survey-request.html' ||
-      clickedEl.textContent.indexOf('상담문의') !== -1
-    );
+  clickedEl.matches('.consult-btn, .sidebar-quick-item.accent') ||
+  clickedEl.textContent.trim() === '상담문의'
+);
     if (consultTrigger) {
       e.preventDefault();
       openConsultModal();
