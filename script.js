@@ -167,7 +167,7 @@
             </div>
           </div>
           <div class="consult-ready-box">
-            <h3 class="consult-ready-title">상담 시 필요한 내용</h3>
+            <h3 class="consult-ready-title">[상담 시 필요한 내용]</h3>
             <ul class="consult-ready-list">
               ${consultInfo.readyItems.map(function (item) {
                 return `<li>${item}</li>`;
