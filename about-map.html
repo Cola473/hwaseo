@@ -111,11 +111,11 @@
     </div>
     <div class="location-item">
       <strong>🚇 지하철</strong>
-      <span>3호선 원흥역 1번 출구<br>도보 약 3분</span>
+      <span>3호선 원흥역 1번 출구<br>도보 약 5분</span>
     </div>
     <div class="location-item">
       <strong>🚌 버스</strong>
-      <span>원흥역 정류장 하차 후<br>도보 약 1분</span>
+      <span>원흥역 정류장 하차 후<br>도보 약 5분</span>
     </div>
     <div class="location-item">
       <strong>🚗 자가용</strong>
@@ -123,27 +123,31 @@
     </div>
     <div class="location-item">
       <strong>⏰ 업무시간</strong>
-      <span>평일 09:00 ~ 18:00 / 점심시간 11:30 ~ 12:30<br>토·일·공휴일 휴무</span>
+      <span>평일 09:00 ~ 18:00<br>토·일·공휴일 휴무</span>
     </div>
   </div>
 </div>
 
 <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=0ff20953645e272049eea9c61ee6eae7"></script>
 <script>
-  var markerPosition = new kakao.maps.LatLng(37.649689176872265, 126.8753657877704);
+  (function () {
+    var staticMapContainer = document.getElementById('staticMap');
+    if (!staticMapContainer || !window.kakao || !kakao.maps) {
+      return;
+    }
 
-  var marker = {
-    position: markerPosition
-  };
+    var markerPosition = new kakao.maps.LatLng(37.649689176872265, 126.8753657877704);
 
-  var staticMapContainer = document.getElementById('staticMap');
-  var staticMapOption = {
-    center: markerPosition,
-    level: 3,
-    marker: marker
-  };
+    var staticMapOption = {
+      center: markerPosition,
+      level: 3,
+      marker: {
+        position: markerPosition
+      }
+    };
 
-  new kakao.maps.StaticMap(staticMapContainer, staticMapOption);
+    new kakao.maps.StaticMap(staticMapContainer, staticMapOption);
+  })();
 </script>
   </section>
 
