@@ -132,9 +132,7 @@
       '2. 사업 종류와 현재 진행 단계',
       '3. 대상지 면적, 위치도, 현장 사진',
       '4. 문화재 관련 인허가 또는 안내받은 공문 내용',
-      '5. 희망 상담 방식과 연락 가능한 시간'
-    ]
-  };
+    };
 
   function createConsultModal() {
     if (document.getElementById('consultModal')) {
@@ -167,7 +165,7 @@
             </div>
           </div>
           <div class="consult-ready-box">
-            <h3 class="consult-ready-title">[상담 시 필요한 내용]</h3>
+            <h3 class="consult-ready-title">상담 시 필요한 내용</h3>
             <ul class="consult-ready-list">
               ${consultInfo.readyItems.map(function (item) {
                 return `<li>${item}</li>`;
