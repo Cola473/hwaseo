@@ -37,7 +37,7 @@ async function initBoardList({ dataFile, boardSlug, boardLabel }) {
       <table class="board-table">
         <thead>
           <tr>
-            <th style="width:50px;">번호</th>
+            <th style="width:70px;">번호</th>
             <th class="col-title">제목</th>
             <th style="width:120px;">작성자</th>
             <th style="width:110px;">날짜</th>
