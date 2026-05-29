@@ -109,6 +109,29 @@
               </div>
             </div>
             <div class="content-body">
+               <div id="staticMap" style="width:800px;height:400px;"></div>    
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0ff20953645e272049eea9c61ee6eae7"></script>
+<script>
+// 이미지 지도에서 마커가 표시될 위치입니다 
+var markerPosition  = new kakao.maps.LatLng(37.649689176872265,126.8753657877704); 
+
+// 이미지 지도에 표시할 마커입니다
+// 이미지 지도에 표시할 마커는 Object 형태입니다
+var marker = {
+    position: markerPosition
+};
+
+var staticMapContainer  = document.getElementById('staticMap'), // 이미지 지도를 표시할 div  
+    staticMapOption = { 
+        center: new kakao.maps.LatLng(37.649689176872265,126.8753657877704), // 이미지 지도의 중심좌표
+        level: 3, // 이미지 지도의 확대 레벨
+        marker: marker // 이미지 지도에 표시할 마커 
+    };    
+
+// 이미지 지도를 생성합니다
+var staticMap = new kakao.maps.StaticMap(staticMapContainer, staticMapOption);
+</script>
               <div class="map-wrap">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3161.234567!2d126.8800!3d37.6500!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z!5e0!3m2!1sko!2skr!4v1234567890"
