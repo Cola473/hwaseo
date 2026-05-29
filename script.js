@@ -131,8 +131,8 @@
       '1. 조사 대상지 주소 또는 지번',
       '2. 사업 종류와 현재 진행 단계',
       '3. 대상지 면적, 위치도, 현장 사진',
-      '4. 문화재 관련 인허가 또는 안내받은 공문 내용',
-    };
+      '4. 문화재 관련 인허가 또는 안내받은 공문 내용']
+    }
 
   function createConsultModal() {
     if (document.getElementById('consultModal')) {
