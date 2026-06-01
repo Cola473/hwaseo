@@ -77,14 +77,25 @@
 
   // ── 바이너리 파일 업로드 (이미지·첨부파일) ──
   // File 객체 → base64 → GitHub contents API
-  async function uploadFile(file, token) {
+  async function uploadFile(file, token, board) {
     const { GITHUB_OWNER: o, GITHUB_REPO: r, GITHUB_BRANCH: b } = SITE_CONFIG;
+
+    // 게시판별 assets 폴더 매핑
+    const boardFolderMap = {
+      surface:    '0301_surface_survey',
+      excavation: '0302_excavation_surv',
+      academic:   '0303_academic',
+      report:     '0401_publications',
+      news:       'news',
+      free:       'free',
+      notice:     'notice',
+    };
+    const boardFolder = boardFolderMap[board] || board || 'uploads';
 
     // 파일명 충돌 방지: 타임스탬프 + 원본명
     const safeName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._\-가-힣]/g, '_')}`;
     const isImage  = file.type.startsWith('image/');
-    const folder   = isImage ? 'uploads/images' : 'uploads/files';
-    const path     = `${folder}/${safeName}`;
+    const path     = `assets/${boardFolder}/${safeName}`;`${folder}/${safeName}`;
 
     // File → ArrayBuffer → base64
     const buffer  = await file.arrayBuffer();

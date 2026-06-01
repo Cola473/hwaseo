@@ -238,7 +238,7 @@
       for (let i = 0; i < newFiles.length; i++) {
         prog.textContent = `파일 업로드 중... (${i + 1}/${newFiles.length}) ${newFiles[i].name}`;
         try {
-          const result = await GithubDB.uploadFile(newFiles[i], token);
+          const result = await GithubDB.uploadFile(newFiles[i], token, currentBoard);
           uploadedAttachments.push(result);
         } catch (e) {
           showModalError(`"${newFiles[i].name}" 업로드 실패: ${e.message}`);
