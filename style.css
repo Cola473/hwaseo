@@ -192,7 +192,7 @@ img { max-width: 100%; height: auto; display: block; }
 
 .sub-menu li a {
   display: block;
-  padding: 11px 20px;
+  padding: 11px 24px;
   font-size: 0.85rem;
   font-weight: 400;
   color: var(--color-gray-dk);
