@@ -514,7 +514,7 @@
   display: none;
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, #1a2f5a 0%, #2d4a8a 50%, #1a3a6b 100%);
+  background: linear-gradient(135deg, var(--color-navy-dark) 0%, var(--color-navy-mid) 100%);
   align-items: center;
   justify-content: center;
   color: rgba(255,255,255,0.15);
