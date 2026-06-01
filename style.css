@@ -1440,3 +1440,106 @@ body.consult-modal-open {
   }
 
 }
+
+/* =============================================
+   서브페이지 공통 텍스트 위계 시스템
+   (국비지원 페이지 스타일 기준, 전체 통일)
+   ============================================= */
+
+/* ── Lv1: 대제목 ── */
+.lv1-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-navy-dark);
+  border-left: 4px solid #5a7a5a;
+  padding: 0.35rem 0 0.35rem 0.75rem;
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+}
+
+/* ── Lv2: 중제목 ── */
+.lv2-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #3a5a3a;
+  margin: 1.4rem 0 0.38rem 0;
+  line-height: 1.5;
+}
+
+/* ── Lv3: 소제목 ── */
+.lv3-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0.95rem 0 0.28rem 0;
+  line-height: 1.5;
+}
+
+/* ── 본문 단락 ── */
+.body-text {
+  font-size: 0.92rem;
+  line-height: 1.76;   /* 원래 1.85 대비 약 5% 축소 */
+  color: #444;
+  word-break: keep-all;
+  letter-spacing: -0.02em;
+  max-width: 800px;
+  margin: 0 0 0.5rem 0;
+}
+
+/* ── 목록 항목 ── */
+.list-item {
+  font-size: 0.88rem;
+  color: #555;
+  line-height: 1.71;   /* 원래 1.8 대비 약 5% 축소 */
+  padding-left: 1em;
+  text-indent: -1em;
+  word-break: keep-all;
+}
+
+/* ── 주석·비고 ── */
+.note-text {
+  font-size: 0.85rem;
+  color: #666;
+  line-height: 1.66;   /* 원래 1.75 대비 약 5% 축소 */
+  padding-left: 1.1rem;
+  word-break: keep-all;
+}
+
+/* ── 들여쓰기 블록 ── */
+.indent-lv2 { padding-left: 1.1rem; }
+.indent-lv3 { padding-left: 2rem; }
+
+/* ── 섹션 구분 ── */
+.support-section { margin-bottom: 2.4rem; }
+
+hr.divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 2rem 0;
+}
+
+/* ── 인라인 이미지 (조직도·사업계획도 등) ── */
+.support-img {
+  display: block;
+  margin: 1rem auto;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+}
+
+/* ── 출처 표기 ── */
+.source-text {
+  font-size: 0.8rem;
+  color: var(--color-gray);
+  margin: 0.4rem 0 1rem 0;
+  font-weight: 500;
+}
+
+/* ── 서명 (인사말 등) ── */
+.signature-text {
+  text-align: right;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-top: 1.6rem;
+  color: var(--color-navy-dark);
+}
