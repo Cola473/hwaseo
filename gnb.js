@@ -10,7 +10,7 @@
       label: '연구원소개',
       sub: [
         { label: '인사말',                   href: 'about-greeting.html' },
-        { label: '로고CI 유래와 이름의 의미', href: 'about-ci.html' },
+        { label: '로고 CI 유래와 이름의 의미', href: 'about-ci.html' },
         { label: '조직도/부서안내',           href: 'about-org.html' },
         { label: '오시는 길',                 href: 'about-map.html' },
       ],
