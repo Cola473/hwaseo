@@ -23,10 +23,12 @@
 
   <!-- 섹션 배너 -->
   <div class="sub-banner">
-    <img src="images/sub-banner.jpg" alt="게시판 배너"
-      onerror="this.style.display='flex'; this.nextElementSibling.style.display='block';" />
-    <div class="sub-banner-fallback"></div>
+  <img src="images/sub-banner.jpg" alt="게시판 배너"
+    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+  <div class="sub-banner-fallback" style="display:none; align-items:center; justify-content:center; width:100%; min-height:220px; background: linear-gradient(135deg, #1a2f5a 0%, #2d4a7a 60%, #1a3a6b 100%); color:white; font-size:1.4rem; font-family:'Noto Serif KR', serif; letter-spacing:0.05em;">
+    게시판
   </div>
+</div>
 
   <!-- 본문 -->
   <section class="sub-body">
