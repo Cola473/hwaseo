@@ -795,13 +795,15 @@ img { max-width: 100%; height: auto; display: block; }
    서브페이지 공통 레이아웃
    ============================================= */
 
-/* ── 섹션 배너 (풀와이드 이미지) ── */
+/* ── 섹션 배너 (풀와이드 이미지 + 네이비 오버레이) ── */
 .sub-banner {
   margin-top: var(--header-h);
   width: 100%;
   height: 220px;
   overflow: hidden;
   position: relative;
+  background: var(--color-navy-dark);
+  border-bottom: 3px solid var(--color-gold);
 }
 
 .sub-banner img {
@@ -812,10 +814,25 @@ img { max-width: 100%; height: auto; display: block; }
   display: block;
 }
 
+/* 반투명 네이비 오버레이 — 메인 히어로와 동일한 느낌 */
+.sub-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 28, 50, 0.35) 0%,
+    rgba(10, 28, 50, 0.55) 60%,
+    rgba(10, 28, 50, 0.70) 100%
+  );
+  pointer-events: none;
+}
+
 .sub-banner-fallback {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  inset: 0;
   background: linear-gradient(135deg, var(--color-navy-dark) 0%, var(--color-navy-mid) 100%);
+  display: none;
 }
 
 /* ── 서브페이지 본문 영역 ── */

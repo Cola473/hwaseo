@@ -164,6 +164,12 @@
     const navEl = document.getElementById(meta.navId);
     if (navEl) navEl.classList.add('active');
 
+    // 게시판이 아닌 페이지(조사현황/자료실)는 이미지 95% 중앙정렬 클래스 부여
+    const BOARD_TYPES = ['news', 'free', 'notice'];
+    if (!BOARD_TYPES.includes(board)) {
+      document.getElementById('post-outer').classList.add('is-research');
+    }
+
     // GNB active 서브메뉴 항목
     const gnbLink = document.querySelector(`a[href="${meta.listUrl}"]`);
     if (gnbLink) { gnbLink.style.color = 'var(--color-navy)'; gnbLink.style.fontWeight = '600'; }
