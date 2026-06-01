@@ -126,7 +126,7 @@
   const consultInfo = {
     phone: '031-8073-9030',
     time: '평일 09:00 - 18:00',
-    email: 'hwaseo130@naver.com',
+    email: 'lyj431@naver.com',
     readyItems: [
       '1. 조사 대상지 주소 또는 지번',
       '2. 사업 종류와 현재 진행 단계',
