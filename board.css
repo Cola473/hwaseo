@@ -490,3 +490,37 @@
   border-top: none;
   background: var(--color-gray-lt);
 }
+
+* ── 서브배너 (post.html 등 서브페이지) ── */
+.sub-banner {
+  margin-top: var(--header-h);
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background: var(--color-navy);
+  border-bottom: 3px solid var(--color-gold);
+}
+
+.sub-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.sub-banner-fallback {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1a2f5a 0%, #2d4a8a 50%, #1a3a6b 100%);
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.15);
+  font-family: var(--font-serif);
+  font-size: 5rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  user-select: none;
+}
