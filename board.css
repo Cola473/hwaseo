@@ -537,3 +537,9 @@
   max-width: 95%;
   flex: none;
 }
+
+/* ── 발간보고서: 이미지 40% 크기 중앙정렬 ── */
+.is-report .post-img-wrap {
+  width: 40%;
+  max-width: 40%;
+}

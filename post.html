@@ -166,6 +166,10 @@
     if (!BOARD_TYPES.includes(board)) {
       document.getElementById('post-outer').classList.add('is-research');
     }
+    // 발간보고서는 이미지 40% 크기 추가 클래스 부여
+    if (board === 'report') {
+      document.getElementById('post-outer').classList.add('is-report');
+    }
 
     // GNB active 서브메뉴 항목
     const gnbLink = document.querySelector(`a[href="${meta.listUrl}"]`);
