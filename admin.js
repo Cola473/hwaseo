@@ -169,7 +169,7 @@
   function resetForm() {
     newFiles   = [];
     keepAttach = [];
-    ['write-type','write-title','write-date','write-author','write-content'].forEach(id => {
+    ['write-title','write-date','write-author','write-content'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = id === 'write-author' ? '관리자'
                        : id === 'write-date'   ? GithubDB.today() : '';
@@ -199,7 +199,6 @@
     if (!post) return;
 
     document.getElementById('modal-title').textContent   = '게시글 수정';
-    document.getElementById('write-type').value          = post.type   || '';
     document.getElementById('write-title').value         = post.title  || '';
     document.getElementById('write-date').value          = post.date   || '';
     document.getElementById('write-author').value        = post.author || '관리자';
@@ -253,7 +252,16 @@
 
     const post = {
       id:          editingId || `post_${Date.now()}`,
-      type:        document.getElementById('write-type').value,
+      type:        (() => {
+                     const el = document.getElementById('write-type');
+                     if (el) return el.value;
+                     // write-type 요소 없으면 수정 시 기존 type 유지, 신규는 ''
+                     if (editingId) {
+                       const existing = (cache[currentBoard]?.content || []).find(p => p.id === editingId);
+                       return existing?.type || '';
+                     }
+                     return '';
+                   })(),
       title,
       date:        document.getElementById('write-date').value || GithubDB.today(),
       author:      document.getElementById('write-author').value || '관리자',
