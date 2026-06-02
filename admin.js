@@ -106,7 +106,7 @@
       errEl.style.color = '#c00'; return;
     }
 
-    sessionStorage.setItem('hwaseo_token', token);
+    localStorage.setItem('hwaseo_token', token);
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('admin-screen').style.display = 'block';
     document.getElementById('admin-badge').style.display  = 'inline-block';
@@ -117,7 +117,7 @@
   };
 
   window.doLogout = function () {
-    sessionStorage.removeItem('hwaseo_token');
+    localStorage.removeItem('hwaseo_token');
     location.reload();
   };
 
@@ -229,7 +229,7 @@
     btn.disabled    = true;
     btn.textContent = '저장 중...';
 
-    const token = sessionStorage.getItem('hwaseo_token');
+    const token = localStorage.getItem('hwaseo_token');
     let uploadedAttachments = [...keepAttach]; // 유지할 기존 첨부
 
     // 새 파일 업로드
@@ -310,7 +310,7 @@
     try {
       const cached = cache[board] || { content: [], sha: null };
       const posts  = cached.content.filter(p => p.id !== id);
-      const token  = sessionStorage.getItem('hwaseo_token');
+      const token  = localStorage.getItem('hwaseo_token');
       const result = await GithubDB.writeFile(dataFile(board), posts, cached.sha, token);
       cache[board] = { content: posts, sha: result.content.sha };
       renderList(board, posts);
@@ -325,5 +325,17 @@
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') { closeModal(); closeDeleteModal(); }
   });
+
+  // ── 새로고침 후 자동 로그인 복원 ─────────────
+  (function restoreSession() {
+    const token = localStorage.getItem('hwaseo_token');
+    if (!token) return;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-screen').style.display = 'block';
+    const badge = document.getElementById('admin-badge');
+    if (badge) badge.style.display = 'inline-block';
+    initAttachUI();
+    ['surface','excavation','academic','report','news','free','notice'].forEach(b => loadList(b));
+  })();
 
 })();
