@@ -45,7 +45,6 @@
           <nav class="sidebar-nav">
             <a href="board-news.html" id="nav-news">학계소식</a>
             <a href="board-free.html" id="nav-free">자유게시판</a>
-            <a href="#">공지사항</a>
           </nav>
 
           <div class="sidebar-quick">
@@ -255,7 +254,7 @@
     // 글 메타 + 본문 + 이미지 + 파일 + 이전다음
     wrapEl.innerHTML = `
       <div class="post-meta-bar">
-        <span>${post.type === '공지' ? '<span class="tag-notice">공지</span>' : ''}</span>
+        <span>${post.type === '라벨' ? '<span class="tag-notice">라벨</span>' : ''}</span>
         <span class="post-meta-info">
           <span>📅 ${post.date || '-'}</span>
           <span>✍️ ${post.author || '관리자'}</span>
