@@ -998,9 +998,10 @@ img { max-width: 100%; height: auto; display: block; }
 .sidebar-quick-item.accent .sq-text strong { color: white; }
 
 .sq-text span {
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   color: var(--color-gray);
   font-family: var(--font-en);
+  line-height: 1.5rem;
 }
 
 .sidebar-quick-item.accent .sq-text span { color: rgba(255,255,255,0.85); }
@@ -1484,7 +1485,7 @@ body.consult-modal-open {
   color: #444;
   word-break: keep-all;
   letter-spacing: -0.02em;
-  max-width: 800px;
+  max-width: 750px;
   margin: 0 0 0.5rem 0;
 }
 
