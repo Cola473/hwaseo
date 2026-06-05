@@ -1578,7 +1578,7 @@ hr.divider {
 
 /* ── 서명 (인사말 등) ── */
 .signature-text {
-  text-align: right;
+  text-align: left;
   font-weight: 600;
   font-size: 1rem;
   margin-top: 1.6rem;
