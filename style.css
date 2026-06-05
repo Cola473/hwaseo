@@ -242,18 +242,56 @@ img { max-width: 100%; height: auto; display: block; }
   justify-content: center;
 }
 
-.hero-bg {
+/* 슬라이더 컨테이너 */
+.hero-slider {
+  position: absolute;
+  inset: 0;
+}
+
+/* 개별 슬라이드 */
+.hero-slide {
   position: absolute;
   inset: 0;
   background-color: #4a6a8a;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  opacity: 0;
   transform: scale(1.04);
-  transition: transform 8s ease-out;
+  transition: opacity 1.2s ease, transform 8s ease-out;
 }
 
-.hero.loaded .hero-bg { transform: scale(1); }
+.hero-slide.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* 슬라이더 인디케이터 점 */
+.hero-dots {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 3;
+}
+
+.hero-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.7);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.hero-dot.active {
+  background: var(--color-white);
+  border-color: var(--color-white);
+}
 
 .hero-overlay {
   position: absolute;

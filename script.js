@@ -18,13 +18,38 @@
 
   window.addEventListener('scroll', onScroll, { passive: true });
 
-  /* ── 히어로 켄번즈 효과 시작 ── */
-  const hero = document.querySelector('.hero');
-  if (hero) {
-    window.addEventListener('load', function () {
-      hero.classList.add('loaded');
+  /* ── 히어로 이미지 슬라이더 ── */
+  (function () {
+    const slides = document.querySelectorAll('.hero-slide');
+    const dots   = document.querySelectorAll('.hero-dot');
+    if (!slides.length) return;
+
+    let current = 0;
+    const INTERVAL = 5000; // 전환 간격 (ms) — 필요 시 조정
+
+    function goTo(idx) {
+      slides[current].classList.remove('active');
+      dots[current].classList.remove('active');
+      current = (idx + slides.length) % slides.length;
+      slides[current].classList.add('active');
+      dots[current].classList.add('active');
+    }
+
+    // 점 클릭으로 수동 전환
+    dots.forEach(function (dot) {
+      dot.addEventListener('click', function () {
+        goTo(Number(dot.dataset.index));
+        resetTimer();
+      });
     });
-  }
+
+    // 자동 전환 타이머
+    let timer = setInterval(function () { goTo(current + 1); }, INTERVAL);
+    function resetTimer() {
+      clearInterval(timer);
+      timer = setInterval(function () { goTo(current + 1); }, INTERVAL);
+    }
+  })();
 
   /* ── 모바일 메뉴 토글 ── */
   const mobileBtn = document.getElementById('mobileMenuBtn');
