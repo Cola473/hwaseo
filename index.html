@@ -33,14 +33,26 @@
 
   <!-- ===== HERO ===== -->
   <section class="hero" id="hero">
-    <!-- 히어로 배경 이미지를 삽입하세요: images/hero-bg.jpg -->
-    <div class="hero-bg" style="background-image: url('images/hero.JPG');"></div>
+    <!-- ===== 히어로 슬라이더 =====
+         이미지 교체 시 아래 세 div의 style="background-image: url('...')" 경로만 수정하세요.
+         현재는 임시로 hero.JPG 3장 중복 적용 -->
+    <div class="hero-slider" id="heroSlider">
+      <div class="hero-slide active" style="background-image: url('images/hero.JPG');"></div><!-- 슬라이드 1 이미지 -->
+      <div class="hero-slide" style="background-image: url('images/hero.JPG');"></div><!-- 슬라이드 2 이미지 -->
+      <div class="hero-slide" style="background-image: url('images/hero.JPG');"></div><!-- 슬라이드 3 이미지 -->
+    </div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <p class="hero-sub">HwaSeo Institute Of Cultural Heritage</p>
       <h1 class="hero-title">화서문화유산연구원</h1>
       <p class="hero-desc">우리의 문화유산을 발굴하고 보존하며<br>미래 세대에 전달합니다.</p>
       <a href="https://cola473.github.io/hwaseo/about-greeting.html" class="hero-btn">연구원 소개 →</a>
+    </div>
+    <!-- 슬라이더 인디케이터 (점) -->
+    <div class="hero-dots" id="heroDots">
+      <button class="hero-dot active" data-index="0" aria-label="슬라이드 1"></button>
+      <button class="hero-dot" data-index="1" aria-label="슬라이드 2"></button>
+      <button class="hero-dot" data-index="2" aria-label="슬라이드 3"></button>
     </div>
     <div class="hero-scroll-indicator">
       <span></span>
