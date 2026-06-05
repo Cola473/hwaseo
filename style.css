@@ -426,7 +426,7 @@ img { max-width: 100%; height: auto; display: block; }
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .quick-text strong {
@@ -439,10 +439,11 @@ img { max-width: 100%; height: auto; display: block; }
 .quick-item--accent .quick-text strong { color: var(--color-white); }
 
 .quick-text span {
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   color: var(--color-gray);
   font-family: var(--font-en);
-  letter-spacing: 0.02em;
+  letter-spacing: -0.02em;
+  line-height: 1.2rem;
 }
 
 .quick-item--accent .quick-text span { color: rgba(255,255,255,0.8); }
