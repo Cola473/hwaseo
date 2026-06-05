@@ -426,11 +426,11 @@ img { max-width: 100%; height: auto; display: block; }
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
 .quick-text strong {
-  font-size: 0.95rem;
+  font-size: 1.0rem;
   font-weight: 600;
   color: var(--color-navy-dark);
   letter-spacing: -0.01em;
