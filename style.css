@@ -94,7 +94,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .logo-img {
-  height: 48px;
+  height: 3rem;
   width: auto;
 }
 
@@ -687,7 +687,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .link-card-fallback {
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--color-navy);
   text-align: center;
@@ -715,7 +715,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .footer-logo img {
-  height: 52px;
+  height: 5.2em;
   width: auto;
 }
 
@@ -750,6 +750,7 @@ img { max-width: 100%; height: auto; display: block; }
   font-weight: 600;
   color: var(--color-white);
   margin-bottom: 2px;
+  letter-spacing: 0.03em;
 }
 
 .footer-addr,
