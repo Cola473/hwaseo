@@ -178,7 +178,7 @@
           <div class="consult-contact-grid">
             <div class="consult-contact-card">
               <span class="consult-contact-label">전화번호</span>
-              <strong class="consult-contact-value"><a href="tel:${consultInfo.phone.replace(/-/g, '')}">${consultInfo.phone}</a></strong>
+              <strong class="consult-contact-value">${consultInfo.phone}</strong>
             </div>
             <div class="consult-contact-card">
               <span class="consult-contact-label">상담시간</span>
@@ -186,7 +186,7 @@
             </div>
             <div class="consult-contact-card">
               <span class="consult-contact-label">메일주소</span>
-              <strong class="consult-contact-value"><a href="mailto:${consultInfo.email}">${consultInfo.email}</a></strong>
+              <strong class="consult-contact-value">${consultInfo.email}</strong>
             </div>
           </div>
           <div class="consult-ready-box">
