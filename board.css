@@ -523,21 +523,48 @@
   user-select: none;
 }
 
-/* ── 조사현황·자료실 글 상세: 이미지 95% 중앙정렬 ── */
+/* ── 조사현황·자료실 글 상세: 2열 나열, 1개일 때 왼쪽정렬 ── */
 .is-research .post-images {
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 12px;
 }
 
 .is-research .post-img-wrap {
-  width: 95%;
-  max-width: 95%;
-  flex: none;
+  flex: 1 1 calc(50% - 6px);
+  max-width: calc(50% - 6px);
+  min-width: 200px;
+  width: auto;
 }
 
-/* ── 발간보고서: 이미지 40% 크기 중앙정렬 ── */
+/* 이미지 1개일 때: 왼쪽정렬 + 너비 제한 */
+.is-research .post-images:has(.post-img-wrap:only-child) .post-img-wrap {
+  flex: 0 0 auto;
+  max-width: 60%;
+  min-width: 0;
+}
+
+/* ── 발간보고서: 2열 나열, 1개일 때 왼쪽정렬 40% ── */
+.is-report .post-images {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
 .is-report .post-img-wrap {
-  width: 40%;
+  flex: 1 1 calc(50% - 6px);
+  max-width: calc(50% - 6px);
+  min-width: 160px;
+  width: auto;
+}
+
+/* 이미지 1개일 때: 왼쪽정렬 40% */
+.is-report .post-images:has(.post-img-wrap:only-child) .post-img-wrap {
+  flex: 0 0 40%;
   max-width: 40%;
+  min-width: 0;
 }
