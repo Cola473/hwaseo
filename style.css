@@ -388,6 +388,22 @@ img { max-width: 100%; height: auto; display: block; }
   50%       { transform: rotate(45deg) translateY(6px); opacity: 1; }
 }
 
+/* ── 히어로 캡션 ── */
+.hero-caption {
+  position: absolute;
+  bottom: 56px;
+  right: 32px;
+  background: rgba(30, 60, 120, 0.82);
+  color: #fff;
+  font-size: 0.85rem;
+  padding: 6px 16px;
+  border-radius: 4px;
+  max-width: 320px;
+  text-align: right;
+  pointer-events: none;
+  z-index: 10;
+}
+
 /* =============================================
    QUICK LINKS
    ============================================= */
