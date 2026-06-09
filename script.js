@@ -20,8 +20,9 @@
 
   /* ── 히어로 이미지 슬라이더 ── */
   (function () {
-    const slides = document.querySelectorAll('.hero-slide');
-    const dots   = document.querySelectorAll('.hero-dot');
+    const slides  = document.querySelectorAll('.hero-slide');
+    const dots    = document.querySelectorAll('.hero-dot');
+    const caption = document.getElementById('heroCaption');
     if (!slides.length) return;
 
     let current = 0;
@@ -33,6 +34,10 @@
       current = (idx + slides.length) % slides.length;
       slides[current].classList.add('active');
       dots[current].classList.add('active');
+      // 캡션 업데이트
+      if (caption) {
+        caption.textContent = slides[current].dataset.caption || '';
+      }
     }
 
     // 점 클릭으로 수동 전환
