@@ -252,6 +252,11 @@
     function renderContent(raw) {
       if (!raw) return '';
 
+      // 0) HTML 이스케이프 헬퍼 (먼저 정의)
+      function escHtml(str) {
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      }
+
       // 1) [TABLE]...[/TABLE] 블록을 실제 <table>로 변환 (이스케이프 전에 먼저 추출)
       const TABLE_RE = /\[TABLE\]([\s\S]*?)\[\/TABLE\]/g;
       const placeholders = [];
@@ -277,9 +282,6 @@
       });
 
       // 2) 나머지 텍스트 이스케이프 + 줄바꿈
-      function escHtml(str) {
-        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      }
       const escaped = escHtml(withPlaceholders).replace(/\n/g,'<br>');
 
       // 3) 플레이스홀더를 실제 테이블 HTML로 복원
