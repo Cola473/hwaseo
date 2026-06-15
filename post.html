@@ -6,6 +6,41 @@
   <title>게시글 보기 | 화서문화유산연구원</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="board.css" />
+  <style>
+    /* ── 게시글 본문 표 ── */
+    .post-table-wrap {
+      overflow-x: auto;
+      margin: 1.2em 0;
+    }
+    .post-table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 0.92em;
+      line-height: 1.5;
+    }
+    .post-table th,
+    .post-table td {
+      border: 1px solid #d0d5dd;
+      padding: 8px 14px;
+      text-align: left;
+      vertical-align: middle;
+    }
+    .post-table td {
+      white-space: normal;
+    }
+    .post-table thead th {
+      background: #f0f3f7;
+      font-weight: 600;
+      color: #1a2c4e;
+      white-space: nowrap;
+    }
+    .post-table tbody tr:nth-child(even) td {
+      background: #fafbfc;
+    }
+    .post-table tbody tr:hover td {
+      background: #eef2f8;
+    }
+  </style>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
 </head>
@@ -214,9 +249,44 @@
       </div>`;
 
     // 본문 렌더
-    const bodyHtml = (post.content || '')
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/\n/g,'<br>');
+    function renderContent(raw) {
+      if (!raw) return '';
+
+      // 1) [TABLE]...[/TABLE] 블록을 실제 <table>로 변환 (이스케이프 전에 먼저 추출)
+      const TABLE_RE = /\[TABLE\]([\s\S]*?)\[\/TABLE\]/g;
+      const placeholders = [];
+      const withPlaceholders = raw.replace(TABLE_RE, (_, inner) => {
+        const rows = [];
+        // THEAD
+        const theadMatch = inner.match(/\[THEAD\]([\s\S]*?)\[\/THEAD\]/);
+        if (theadMatch) {
+          const cells = [...theadMatch[1].matchAll(/\[TD\]([\s\S]*?)\[\/TD\]/g)]
+            .map(m => `<th>${escHtml(m[1])}</th>`).join('');
+          rows.push(`<thead><tr>${cells}</tr></thead>`);
+        }
+        // TR
+        const tbodyRows = [...inner.matchAll(/\[TR\]([\s\S]*?)\[\/TR\]/g)].map(rm => {
+          const cells = [...rm[1].matchAll(/\[TD\]([\s\S]*?)\[\/TD\]/g)]
+            .map(m => `<td>${escHtml(m[1])}</td>`).join('');
+          return `<tr>${cells}</tr>`;
+        });
+        if (tbodyRows.length) rows.push(`<tbody>${tbodyRows.join('')}</tbody>`);
+        const tableHtml = `<div class="post-table-wrap"><table class="post-table">${rows.join('')}</table></div>`;
+        placeholders.push(tableHtml);
+        return `\x00TABLE${placeholders.length - 1}\x00`;
+      });
+
+      // 2) 나머지 텍스트 이스케이프 + 줄바꿈
+      function escHtml(str) {
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      }
+      const escaped = escHtml(withPlaceholders).replace(/\n/g,'<br>');
+
+      // 3) 플레이스홀더를 실제 테이블 HTML로 복원
+      return escaped.replace(/\x00TABLE(\d+)\x00/g, (_, i) => placeholders[+i]);
+    }
+
+    const bodyHtml = renderContent(post.content || '');
 
     // 첨부파일
     const attachments = post.attachments || [];
