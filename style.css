@@ -43,7 +43,7 @@ body {
   font-family: var(--font-sans);
   color: var(--color-text);
   background: var(--color-white);
-  line-height: 1.6;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -1042,7 +1042,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .sq-text strong {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--color-navy-dark);
   letter-spacing: -0.01em;
