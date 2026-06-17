@@ -269,20 +269,39 @@
       </div>`;
 
     // 본문 렌더
-    // https:// URL을 <a> 태그로 변환 (이미 링크 안에 있는 건 제외)
+    // URL·도메인 자동 링크 변환
+    // - https://... 또는 http://... (끝 구두점 제외)
+    // - www.xxx.xxx 형태
+    // - xxx.com / .net / .org / .kr / .co.kr 등 도메인처럼 생긴 단어
+    const LINK_RE = /(?:https?:\/\/[^\s<>"'()\[\]]+|(?:www\.)[a-zA-Z0-9\-]+(?:\.[a-zA-Z]{2,})+(?:\/[^\s<>"'()\[\]]*)?|[a-zA-Z0-9\-]+(?:\.[a-zA-Z0-9\-]+)*\.(?:com|net|org|kr|co\.kr|go\.kr|ac\.kr|or\.kr|io|ai|app|dev|info|biz|me|tv|co|edu|gov)(?:\/[^\s<>"'()\[\]]*)?)/g;
+
+    // URL 끝의 구두점(.,;:!?)'") 제거
+    function trimTrailing(url) {
+      return url.replace(/[.,;:!?)\]'"]+$/, '');
+    }
+
+    // href 생성: 프로토콜 없으면 https:// 붙임
+    function toHref(url) {
+      return /^https?:\/\//i.test(url) ? url : 'https://' + url;
+    }
+
     function autoLink(node) {
       if (node.nodeType === Node.TEXT_NODE) {
         const text = node.textContent;
-        if (!text.includes('https://')) return;
-        const URL_RE = /(https?:\/\/[^\s<>"']+)/g;
-        if (!URL_RE.test(text)) return;
+        if (!LINK_RE.test(text)) return;
+        LINK_RE.lastIndex = 0;
         const span = document.createElement('span');
-        span.innerHTML = text.replace(/(https?:\/\/[^\s<>"']+)/g, url =>
-          `<a href="${url}" target="_blank" rel="noopener">${url}</a>`);
+        span.innerHTML = text.replace(LINK_RE, match => {
+          const url = trimTrailing(match);
+          const href = toHref(url);
+          // 원본 텍스트에서 url 뒤에 남은 구두점 보존
+          const trail = match.slice(url.length);
+          return `<a href="${href}" target="_blank" rel="noopener">${url}</a>${trail}`;
+        });
         node.parentNode.replaceChild(span, node);
       } else if (
         node.nodeType === Node.ELEMENT_NODE &&
-        node.tagName !== 'A' &&   // 이미 링크인 요소 건너뜀
+        node.tagName !== 'A' &&
         node.tagName !== 'SCRIPT' &&
         node.tagName !== 'STYLE'
       ) {
@@ -348,9 +367,13 @@
           '<a href="$1" target="_blank" rel="noopener">$2</a>')
         .replace(/\x00IMG_(https?:\/\/[^\x00]+)\x00/g,
           '<img src="$1" style="max-width:100%;display:block;margin:8px 0;border-radius:4px;">')
-        // 링크로 감싸지지 않은 https:// URL 자동 링크
-        .replace(/(https?:\/\/[^\s<>"'&]+)/g,
-          '<a href="$1" target="_blank" rel="noopener">$1</a>');
+        // 링크로 감싸지지 않은 URL·도메인 자동 링크
+        .replace(/(?:https?:\/\/[^\s<>"'()\[\]]+|(?:www\.)[a-zA-Z0-9\-]+(?:\.[a-zA-Z]{2,})+(?:\/[^\s<>"'()\[\]]*)?|[a-zA-Z0-9\-]+(?:\.[a-zA-Z0-9\-]+)*\.(?:com|net|org|kr|co\.kr|go\.kr|ac\.kr|or\.kr|io|ai|app|dev|info|biz|me|tv|co|edu|gov)(?:\/[^\s<>"'()\[\]]*)?)/g, match => {
+          const url  = match.replace(/[.,;:!?)\]'"]+$/, '');
+          const trail = match.slice(url.length);
+          const href = /^https?:\/\//i.test(url) ? url : 'https://' + url;
+          return `<a href="${href}" target="_blank" rel="noopener">${url}</a>${trail}`;
+        });
       return result;
     }
 
