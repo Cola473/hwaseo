@@ -16,7 +16,7 @@
     .post-body a:hover { color: var(--color-navy, #1a2c4e); }
     .post-body strong, .post-body b { font-weight: 700; }
     /* Quill HTML 요소 스타일 */
-    .post-body p { margin: 0 0 0.6em 0; line-height: 1.7; }
+    .post-body p { margin: 0 0 0.6em 0; line-height: 1.8; }
     .post-body h1 { font-size: 1.4rem; font-weight: 700; margin: 1.2em 0 0.5em; color: var(--color-navy-dark, #1a2c4e); }
     .post-body h2 { font-size: 1.2rem; font-weight: 700; margin: 1em 0 0.4em; color: var(--color-navy-dark, #1a2c4e); }
     .post-body h3 { font-size: 1.05rem; font-weight: 700; margin: 0.8em 0 0.3em; }
@@ -269,15 +269,34 @@
       </div>`;
 
     // 본문 렌더
+    // https:// URL을 <a> 태그로 변환 (이미 링크 안에 있는 건 제외)
+    function autoLink(node) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent;
+        if (!text.includes('https://')) return;
+        const URL_RE = /(https?:\/\/[^\s<>"']+)/g;
+        if (!URL_RE.test(text)) return;
+        const span = document.createElement('span');
+        span.innerHTML = text.replace(/(https?:\/\/[^\s<>"']+)/g, url =>
+          `<a href="${url}" target="_blank" rel="noopener">${url}</a>`);
+        node.parentNode.replaceChild(span, node);
+      } else if (
+        node.nodeType === Node.ELEMENT_NODE &&
+        node.tagName !== 'A' &&   // 이미 링크인 요소 건너뜀
+        node.tagName !== 'SCRIPT' &&
+        node.tagName !== 'STYLE'
+      ) {
+        [...node.childNodes].forEach(autoLink);
+      }
+    }
+
     function renderContent(raw) {
       if (!raw) return '';
 
-      // Quill HTML 판별: <p>, <h1~3>, <ul>, <ol>, <strong>, <em> 등으로 시작하면 HTML로 간주
-      const looksLikeHtml = /^\s*<(p|h[1-6]|ul|ol|li|div|strong|em|br|img|a)[\s>]/i.test(raw.trim());
+      // Quill이 저장한 HTML 판별 — <p>, <h*, <ul>, <ol>, <img>, <a>, <br> 등으로 시작
+      const looksLikeHtml = /^\s*<[a-zA-Z]/.test(raw.trim());
 
       if (looksLikeHtml) {
-        // Quill이 저장한 HTML — 그대로 렌더링
-        // 단, 외부 링크에 target=_blank 보장
         const tmp = document.createElement('div');
         tmp.innerHTML = raw;
         tmp.querySelectorAll('a').forEach(a => {
@@ -289,6 +308,8 @@
           img.style.margin   = '8px 0';
           img.style.borderRadius = '4px';
         });
+        // 링크 아닌 텍스트 노드의 URL 자동 링크 처리
+        autoLink(tmp);
         return tmp.innerHTML;
       }
 
@@ -326,7 +347,10 @@
         .replace(/\x00LS_(https?:\/\/[^\x00]+)\x00([\s\S]*?)\x00LE\x00/g,
           '<a href="$1" target="_blank" rel="noopener">$2</a>')
         .replace(/\x00IMG_(https?:\/\/[^\x00]+)\x00/g,
-          '<img src="$1" style="max-width:100%;display:block;margin:8px 0;border-radius:4px;">');
+          '<img src="$1" style="max-width:100%;display:block;margin:8px 0;border-radius:4px;">')
+        // 링크로 감싸지지 않은 https:// URL 자동 링크
+        .replace(/(https?:\/\/[^\s<>"'&]+)/g,
+          '<a href="$1" target="_blank" rel="noopener">$1</a>');
       return result;
     }
 
