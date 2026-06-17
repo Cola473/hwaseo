@@ -20,21 +20,37 @@
   }
 
   // ── JSON 파일 읽기 ──────────────────────────
-  // raw URL로 직접 읽기 (토큰 불필요, Public 저장소)
   async function readFile(path) {
     const { GITHUB_OWNER: o, GITHUB_REPO: r, GITHUB_BRANCH: b } = SITE_CONFIG;
+    const token = getToken();
 
-    // raw.githubusercontent.com은 Public 저장소에서 토큰 없이 바로 읽힘
+    // 토큰이 있으면 (관리자) GitHub API로 직접 읽기 → 캐시 없음
+    if (token) {
+      try {
+        const res = await fetch(
+          `${BASE}/repos/${o}/${r}/contents/${path}?ref=${b}&t=${Date.now()}`,
+          { headers: apiHeaders(token) }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          const content = JSON.parse(atob(data.content.replace(/\n/g, '')));
+          return { content, sha: data.sha };
+        }
+        if (res.status === 404) return { content: [], sha: null };
+      } catch (e) {
+        // API 실패 시 raw로 폴백
+      }
+    }
+
+    // 비로그인(방문자)은 raw URL 사용 (캐시 있지만 토큰 불필요)
     const rawUrl = `https://raw.githubusercontent.com/${o}/${r}/${b}/${path}?t=${Date.now()}`;
-    const res = await fetch(rawUrl);
+    const res = await fetch(rawUrl, { cache: 'no-store' });
 
     if (res.status === 404) return { content: [], sha: null };
     if (!res.ok) throw new Error(`읽기 실패: ${res.status}`);
 
     const content = await res.json();
-
-    // 쓰기(writeFile)에 필요한 sha는 별도로 API에서 가져옴
-    const sha = await fetchSha(path);
+    const sha = token ? await fetchSha(path) : null;
     return { content, sha };
   }
 
