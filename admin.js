@@ -344,53 +344,77 @@
 
   let quillInstance = null;
 
+  // ── Quill에 table 태그 허용 등록 ─────────────
+  // Quill 1.x는 기본적으로 <table>을 허용하지 않으므로
+  // BlockEmbed Blot으로 등록해 삭제되지 않도록 함
+  (function registerTableBlot() {
+    try {
+      const BlockEmbed = Quill.import('blots/block/embed');
+      const Block      = Quill.import('blots/block');
+      const Container  = Quill.import('blots/container');
+
+      // <table> Blot
+      class TableBlot extends BlockEmbed {
+        static create(value) {
+          const node = super.create();
+          node.innerHTML = value || '';
+          return node;
+        }
+        static value(node) { return node.innerHTML; }
+      }
+      TableBlot.blotName = 'table';
+      TableBlot.tagName  = 'table';
+
+      // <tr>, <td>, <th>, <thead>, <tbody> — Block으로 허용
+      ['tr','td','th','thead','tbody'].forEach(tag => {
+        class T extends Block {}
+        T.blotName = tag;
+        T.tagName  = tag;
+        try { Quill.register(T, true); } catch(e) {}
+      });
+
+      Quill.register(TableBlot, true);
+    } catch(e) {
+      // Quill 미로드 시 무시
+    }
+  })();
+
   // ── Quill 초기화 ─────────────────────────────
   function initQuill() {
     // 이미 있으면 기존 인스턴스 반환
     if (quillInstance) return quillInstance;
 
-    // 이미지 붙여넣기/드롭 핸들러
-    function imageHandler() {
-      // Quill 기본 이미지 핸들러(파일 선택 dialog)는 base64로 삽입하므로
-      // 우리는 override해서 newFiles에 추가하고 GitHub 업로드 후 URL로 교체
-      const input = document.createElement('input');
-      input.setAttribute('type', 'file');
-      input.setAttribute('accept', 'image/*');
-      input.onchange = async () => {
-        const file = input.files[0];
-        if (!file) return;
-        await insertImageFile(file);
-      };
-      input.click();
-    }
-
     const quill = new Quill('#quill-editor', {
       theme: 'snow',
-      placeholder: '내용을 입력하세요. 이미지는 Ctrl+V 또는 툴바로 삽입할 수 있습니다.',
+      placeholder: '내용을 입력하세요. 이미지는 Ctrl+V로 붙여넣기 할 수 있습니다.',
       modules: {
         toolbar: {
           container: [
             ['bold', 'italic', 'underline'],
             [{ 'header': [1, 2, 3, false] }],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            ['link', 'image'],
-            [{ 'table': '표 삽입' }],
+            ['link'],
             ['clean'],
           ],
-          handlers: {
-            image: imageHandler,
-            table: function() { openTableDialog(); },
-          },
         },
         clipboard: { matchVisual: false },
       },
     });
 
-    // 툴바의 table 버튼 텍스트 설정
-    setTimeout(() => {
-      const btn = document.querySelector('.ql-table');
-      if (btn) { btn.textContent = '표'; btn.title = '표 삽입'; }
-    }, 0);
+    // 툴바에 표 버튼 직접 추가
+    const toolbar = document.querySelector('#quill-editor .ql-toolbar');
+    if (toolbar) {
+      const span = document.createElement('span');
+      span.className = 'ql-formats';
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = '표 삽입';
+      btn.title = '표 삽입';
+      btn.style.cssText = 'width:auto;padding:0 8px;font-size:0.8rem;font-weight:600;';
+      btn.addEventListener('click', () => openTableDialog());
+      span.appendChild(btn);
+      toolbar.appendChild(span);
+    }
 
     // ── 이미지 Ctrl+V 붙여넣기 처리 ─────────────
     quill.root.addEventListener('paste', function(e) {
@@ -415,52 +439,84 @@
   window.cancelInsertTable = function() {
     document.getElementById('table-dialog').style.display = 'none';
   };
+
   window.confirmInsertTable = function() {
     const rows = Math.max(1, Math.min(20, parseInt(document.getElementById('tbl-rows').value) || 3));
     const cols = Math.max(1, Math.min(10, parseInt(document.getElementById('tbl-cols').value) || 3));
     document.getElementById('table-dialog').style.display = 'none';
 
-    const quill = quillInstance;
+    const quill  = quillInstance;
     if (!quill) return;
+    const editor = quill.root;
 
-    // 현재 커서 위치 파악
-    const range = quill.getSelection(true);
-    const index = range ? range.index : quill.getLength() - 1;
+    // 표 DOM 생성
+    const table  = document.createElement('table');
+    table.setAttribute('style', 'border-collapse:collapse;width:100%;margin:12px 0;');
 
-    // HTML 테이블 생성 (셀에 contenteditable 별도 설정 불필요 — ql-editor 자체가 editable)
-    const thCells = Array.from({length: cols}, () =>
-      `<th style="border:1px solid #d0d5dd;padding:8px 12px;background:#f0f3f7;font-weight:600;min-width:60px;"></th>`
-    ).join('');
-    const tdCells = Array.from({length: cols}, () =>
-      `<td style="border:1px solid #d0d5dd;padding:8px 12px;min-width:60px;"></td>`
-    ).join('');
-    const bodyRows = Array.from({length: rows - 1}, () => `<tr>${tdCells}</tr>`).join('');
+    const thead   = document.createElement('thead');
+    const headRow = document.createElement('tr');
+    for (let c = 0; c < cols; c++) {
+      const th = document.createElement('th');
+      th.setAttribute('style', 'border:1px solid #d0d5dd;padding:8px 12px;background:#f0f3f7;font-weight:600;min-width:80px;');
+      th.textContent = '\u00a0';
+      headRow.appendChild(th);
+    }
+    thead.appendChild(headRow);
+    table.appendChild(thead);
 
-    const tableHtml = `
-      <table class="post-table" style="border-collapse:collapse;width:100%;margin:12px 0;">
-        <thead><tr>${thCells}</tr></thead>
-        <tbody>${bodyRows}</tbody>
-      </table>`;
-
-    // Quill에 HTML 블록 삽입
-    quill.clipboard.dangerouslyPasteHTML(index, tableHtml);
-
-    // 삽입 후 첫 번째 셀로 커서 이동
-    setTimeout(() => {
-      const firstTh = quill.root.querySelector('table th');
-      if (firstTh) {
-        firstTh.focus();
-        // Quill 커서를 테이블 직후로
-        const tableEl = quill.root.querySelector('table');
-        if (tableEl) {
-          const after = quill.root.innerHTML.indexOf('</table>');
-          quill.setSelection(quill.getLength() - 1);
-        }
+    const tbody = document.createElement('tbody');
+    for (let r = 0; r < rows - 1; r++) {
+      const tr = document.createElement('tr');
+      for (let c = 0; c < cols; c++) {
+        const td = document.createElement('td');
+        td.setAttribute('style', 'border:1px solid #d0d5dd;padding:8px 12px;min-width:80px;');
+        td.textContent = '\u00a0';
+        tr.appendChild(td);
       }
-    }, 50);
+      tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
+
+    // Quill disable → MutationObserver 중단 → DOM 삽입 → enable
+    quill.disable();
+
+    const sel = window.getSelection();
+    let refNode = null;
+    if (sel && sel.rangeCount > 0) {
+      let node = sel.getRangeAt(0).commonAncestorContainer;
+      while (node && node.parentNode !== editor) node = node.parentNode;
+      refNode = node;
+    }
+
+    if (refNode && editor.contains(refNode)) {
+      editor.insertBefore(table, refNode.nextSibling);
+    } else {
+      editor.appendChild(table);
+    }
+
+    // 표 뒤 빈 단락
+    const p = document.createElement('p');
+    p.innerHTML = '<br>';
+    if (table.nextSibling) editor.insertBefore(p, table.nextSibling);
+    else editor.appendChild(p);
+
+    quill.enable();
+
+    // 첫 번째 셀에 커서
+    setTimeout(() => {
+      const firstCell = table.querySelector('th');
+      if (firstCell) {
+        firstCell.textContent = '';
+        const r = document.createRange();
+        r.setStart(firstCell, 0);
+        r.collapse(true);
+        const s = window.getSelection();
+        s.removeAllRanges();
+        s.addRange(r);
+      }
+    }, 30);
   };
 
-  // ── 표 행/열 추가·삭제 (셀 우클릭 컨텍스트 메뉴) ─
   function initTableContextMenu() {
     const editor = document.querySelector('#quill-editor .ql-editor');
     if (!editor) return;
@@ -604,13 +660,31 @@
   }
 
   // ── 저장된 HTML → Quill에 로드 ───────────────
-  function loadHtmlToQuill(html) {
-    const quill    = quillInstance || initQuill();
-    const editorEl = document.querySelector('#quill-editor .ql-editor');
-    if (!editorEl) return;
-    // Quill에 HTML 직접 세팅
-    quill.root.innerHTML = html || '';
-    // 커서를 끝으로
+  // 저장된 content → Quill에 로드 (HTML / 레거시 텍스트 모두 처리)
+  function loadHtmlToQuill(content) {
+    const quill = quillInstance || initQuill();
+    if (!quill) return;
+
+    const raw = content || '';
+
+    // HTML 여부 판별 (Quill로 저장한 글은 <p> 등으로 시작)
+    const isHtml = /^\s*<[a-zA-Z]/.test(raw.trim());
+
+    if (isHtml) {
+      // Quill HTML — 그대로 삽입
+      quill.root.innerHTML = raw;
+    } else {
+      // 레거시 텍스트 포맷 → HTML 변환 후 삽입
+      // \n → <br>, **bold** → <strong>, [텍스트](URL) → <a>
+      let html = raw
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
+          '<a href="$2" target="_blank" rel="noopener">$1</a>')
+        .replace(/\n/g, '<br>');
+      quill.root.innerHTML = `<p>${html}</p>`;
+    }
+
     quill.setSelection(quill.getLength(), 0);
   }
 
