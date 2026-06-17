@@ -63,6 +63,15 @@
     editorEl.addEventListener('mouseup', saveSelection);
     editorEl.addEventListener('keyup',   saveSelection);
 
+    // Tab 키: 포커스 이동 차단 → 에디터 내 들여쓰기(공백 4칸) 삽입
+    editorEl.addEventListener('keydown', function(e) {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        e.stopPropagation();
+        document.execCommand('insertText', false, '    ');
+      }
+    });
+
     // 표 우클릭
     editorEl.addEventListener('contextmenu', function(e) {
       const cell = e.target.closest('td, th');

@@ -22,11 +22,13 @@
   /* 툴바 */
   .tiptap-toolbar {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    align-items: center;
     gap: 2px;
-    padding: 8px 10px;
+    padding: 6px 10px;
     background: #f0f3f7;
     border-bottom: 1px solid var(--color-border);
+    overflow-x: auto;
   }
   .tiptap-toolbar button {
     display: inline-flex;
@@ -305,7 +307,7 @@
           <!-- Tiptap 에디터 -->
           <div class="tiptap-wrap">
             <div class="tiptap-toolbar" id="tiptap-toolbar">
-              <select id="tt-fontsize" title="글자 크기" style="height:30px;padding:0 4px;border:1px solid transparent;border-radius:4px;font-family:var(--font-sans);font-size:0.82rem;background:none;cursor:pointer;color:var(--color-text);">
+              <select id="tt-fontsize" title="글자 크기" style="height:30px;width:58px;flex-shrink:0;padding:0 2px;border:1px solid transparent;border-radius:4px;font-family:var(--font-sans);font-size:0.82rem;background:none;cursor:pointer;color:var(--color-text);">
                 <option value="9">9pt</option>
                 <option value="10" selected>10pt</option>
                 <option value="11">11pt</option>
