@@ -179,7 +179,39 @@
         </div>
         <div class="form-group">
           <label>내용 <span class="required">*</span></label>
-          <textarea id="write-content" rows="10" placeholder="내용을 입력하세요"></textarea>
+          <!-- 에디터 툴바 -->
+          <div class="editor-toolbar">
+            <button type="button" class="editor-btn" id="btn-bold" title="굵게 (Bold)" onclick="editorCmd('bold')">
+              <strong>B</strong>
+            </button>
+            <div class="editor-sep"></div>
+            <button type="button" class="editor-btn" id="btn-link" title="하이퍼링크 삽입" onclick="editorInsertLink()">
+              🔗 링크
+            </button>
+            <div class="editor-sep"></div>
+            <span class="editor-hint">선택한 텍스트에 적용 | 미리보기는 우측에서 확인</span>
+          </div>
+          <!-- 분할 편집 패널 -->
+          <div class="editor-split">
+            <div class="editor-pane">
+              <div class="editor-pane-label">✏️ 편집</div>
+              <textarea id="write-content" placeholder="내용을 입력하세요"></textarea>
+            </div>
+            <div class="editor-divider"></div>
+            <div class="editor-pane">
+              <div class="editor-pane-label">👁️ 미리보기</div>
+              <div id="write-preview" class="editor-preview post-body"></div>
+            </div>
+          </div>
+          <!-- 숨겨진 링크 삽입 다이얼로그 -->
+          <div id="link-dialog" class="link-dialog" style="display:none;">
+            <input type="text" id="link-text"  placeholder="링크 텍스트" />
+            <input type="text" id="link-url"   placeholder="https://..." />
+            <div class="link-dialog-btns">
+              <button type="button" onclick="confirmInsertLink()">삽입</button>
+              <button type="button" onclick="cancelInsertLink()">취소</button>
+            </div>
+          </div>
         </div>
 
         <div class="form-group">

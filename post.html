@@ -7,6 +7,18 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="board.css" />
   <style>
+    /* ── 게시글 본문 링크/Bold ── */
+    .post-body a {
+      color: var(--color-navy-mid, #2a5080);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .post-body a:hover {
+      color: var(--color-navy, #1a2c4e);
+    }
+    .post-body strong {
+      font-weight: 700;
+    }
     /* ── 게시글 본문 표 ── */
     .post-table-wrap {
       overflow-x: auto;
@@ -260,7 +272,7 @@
       // 1) [TABLE]...[/TABLE] 블록을 실제 <table>로 변환 (이스케이프 전에 먼저 추출)
       const TABLE_RE = /\[TABLE\]([\s\S]*?)\[\/TABLE\]/g;
       const placeholders = [];
-      const withPlaceholders = raw.replace(TABLE_RE, (_, inner) => {
+      let withPlaceholders = raw.replace(TABLE_RE, (_, inner) => {
         const rows = [];
         // THEAD
         const theadMatch = inner.match(/\[THEAD\]([\s\S]*?)\[\/THEAD\]/);
@@ -281,11 +293,24 @@
         return `\x00TABLE${placeholders.length - 1}\x00`;
       });
 
-      // 2) 나머지 텍스트 이스케이프 + 줄바꿈
+      // 2) **텍스트** → Bold 플레이스홀더
+      withPlaceholders = withPlaceholders.replace(/\*\*([^*\n]+)\*\*/g,
+        '\x00BOLD_S\x00$1\x00BOLD_E\x00');
+
+      // 3) [링크텍스트](URL) → 링크 플레이스홀더
+      withPlaceholders = withPlaceholders.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
+        '\x00LINK_S_$2\x00$1\x00LINK_E\x00');
+
+      // 4) 나머지 텍스트 이스케이프 + 줄바꿈
       const escaped = escHtml(withPlaceholders).replace(/\n/g,'<br>');
 
-      // 3) 플레이스홀더를 실제 테이블 HTML로 복원
-      return escaped.replace(/\x00TABLE(\d+)\x00/g, (_, i) => placeholders[+i]);
+      // 5) 플레이스홀더를 실제 HTML로 복원
+      let result = escaped.replace(/\x00TABLE(\d+)\x00/g, (_, i) => placeholders[+i]);
+      result = result.replace(/\x00BOLD_S\x00([\s\S]*?)\x00BOLD_E\x00/g, '<strong>$1</strong>');
+      result = result.replace(/\x00LINK_S_(https?:\/\/[^\x00]+)\x00([\s\S]*?)\x00LINK_E\x00/g,
+        '<a href="$1" target="_blank" rel="noopener">$2</a>');
+
+      return result;
     }
 
     const bodyHtml = renderContent(post.content || '');

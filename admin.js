@@ -334,6 +334,140 @@
     if (e.key === 'Escape') { closeModal(); closeDeleteModal(); }
   });
 
+  // ── 에디터: 미리보기 렌더링 ──────────────────
+  function renderEditorPreview() {
+    const textarea = document.getElementById('write-content');
+    const preview  = document.getElementById('write-preview');
+    if (!textarea || !preview) return;
+    preview.innerHTML = renderContent(textarea.value);
+  }
+
+  // post.html과 동일한 renderContent 함수 (관리자용 복사본)
+  function renderContent(raw) {
+    if (!raw) return '<span style="color:#aaa;font-size:0.85rem;">미리보기가 여기에 표시됩니다.</span>';
+
+    function escHtml(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // [TABLE]...[/TABLE] 블록 처리
+    const TABLE_RE = /\[TABLE\]([\s\S]*?)\[\/TABLE\]/g;
+    const placeholders = [];
+    let withPlaceholders = raw.replace(TABLE_RE, (_, inner) => {
+      const rows = [];
+      const theadMatch = inner.match(/\[THEAD\]([\s\S]*?)\[\/THEAD\]/);
+      if (theadMatch) {
+        const cells = [...theadMatch[1].matchAll(/\[TD\]([\s\S]*?)\[\/TD\]/g)]
+          .map(m => `<th>${escHtml(m[1])}</th>`).join('');
+        rows.push(`<thead><tr>${cells}</tr></thead>`);
+      }
+      const tbodyRows = [...inner.matchAll(/\[TR\]([\s\S]*?)\[\/TR\]/g)].map(rm => {
+        const cells = [...rm[1].matchAll(/\[TD\]([\s\S]*?)\[\/TD\]/g)]
+          .map(m => `<td>${escHtml(m[1])}</td>`).join('');
+        return `<tr>${cells}</tr>`;
+      });
+      if (tbodyRows.length) rows.push(`<tbody>${tbodyRows.join('')}</tbody>`);
+      const tableHtml = `<div class="post-table-wrap"><table class="post-table">${rows.join('')}</table></div>`;
+      placeholders.push(tableHtml);
+      return `\x00TABLE${placeholders.length - 1}\x00`;
+    });
+
+    // **텍스트** → <strong>
+    withPlaceholders = withPlaceholders.replace(/\*\*([^*\n]+)\*\*/g, '\x00BOLD_S\x00$1\x00BOLD_E\x00');
+
+    // [링크텍스트](URL) → <a href="URL">링크텍스트</a>
+    withPlaceholders = withPlaceholders.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
+      '\x00LINK_S_$2\x00$1\x00LINK_E\x00');
+
+    // HTML 이스케이프 + 줄바꿈
+    const escaped = escHtml(withPlaceholders).replace(/\n/g,'<br>');
+
+    // 플레이스홀더 복원
+    let result = escaped.replace(/\x00TABLE(\d+)\x00/g, (_, i) => placeholders[+i]);
+    result = result.replace(/\x00BOLD_S\x00([\s\S]*?)\x00BOLD_E\x00/g, '<strong>$1</strong>');
+    result = result.replace(/\x00LINK_S_(https?:\/\/[^\\x00]+)\x00([\s\S]*?)\x00LINK_E\x00/g,
+      '<a href="$1" target="_blank" rel="noopener">$2</a>');
+
+    return result;
+  }
+
+  // 에디터에 텍스트 삽입 / 선택 영역 감싸기
+  function wrapSelection(prefix, suffix) {
+    const ta    = document.getElementById('write-content');
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end   = ta.selectionEnd;
+    const sel   = ta.value.substring(start, end);
+    const before = ta.value.substring(0, start);
+    const after  = ta.value.substring(end);
+    ta.value = before + prefix + sel + suffix + after;
+    ta.selectionStart = start + prefix.length;
+    ta.selectionEnd   = end   + prefix.length;
+    ta.focus();
+    renderEditorPreview();
+  }
+
+  // Bold 버튼
+  window.editorCmd = function(cmd) {
+    if (cmd === 'bold') {
+      wrapSelection('**', '**');
+    }
+  };
+
+  // 링크 삽입 버튼
+  let _linkSelStart = 0, _linkSelEnd = 0;
+  window.editorInsertLink = function() {
+    const ta = document.getElementById('write-content');
+    if (!ta) return;
+    _linkSelStart = ta.selectionStart;
+    _linkSelEnd   = ta.selectionEnd;
+    const selText = ta.value.substring(_linkSelStart, _linkSelEnd);
+    document.getElementById('link-text').value = selText || '';
+    document.getElementById('link-url').value  = '';
+    document.getElementById('link-dialog').style.display = 'flex';
+    document.getElementById('link-url').focus();
+  };
+
+  window.confirmInsertLink = function() {
+    const text = document.getElementById('link-text').value.trim();
+    const url  = document.getElementById('link-url').value.trim();
+    if (!text || !url) { alert('링크 텍스트와 URL을 모두 입력하세요.'); return; }
+    const ta     = document.getElementById('write-content');
+    const before = ta.value.substring(0, _linkSelStart);
+    const after  = ta.value.substring(_linkSelEnd);
+    const insert = `[${text}](${url})`;
+    ta.value = before + insert + after;
+    ta.selectionStart = ta.selectionEnd = _linkSelStart + insert.length;
+    document.getElementById('link-dialog').style.display = 'none';
+    ta.focus();
+    renderEditorPreview();
+  };
+
+  window.cancelInsertLink = function() {
+    document.getElementById('link-dialog').style.display = 'none';
+  };
+
+  // textarea 입력 시 실시간 미리보기
+  document.addEventListener('DOMContentLoaded', function() {
+    const ta = document.getElementById('write-content');
+    if (ta) {
+      ta.addEventListener('input', renderEditorPreview);
+      ta.addEventListener('keyup', renderEditorPreview);
+    }
+  });
+
+  // 모달 열 때마다 미리보기 초기화
+  const _origOpenWrite = window.openWriteModal;
+  window.openWriteModal = function(board) {
+    _origOpenWrite(board);
+    setTimeout(renderEditorPreview, 50);
+  };
+  const _origOpenEdit = window.openEditModal;
+  window.openEditModal = function(board, id) {
+    _origOpenEdit(board, id);
+    setTimeout(renderEditorPreview, 50);
+  };
+
   // ── 새로고침 후 자동 로그인 복원 ─────────────
   (function restoreSession() {
     const token = localStorage.getItem('hwaseo_token');
