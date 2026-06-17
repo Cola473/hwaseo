@@ -181,32 +181,34 @@
           <label>내용 <span class="required">*</span></label>
           <!-- 에디터 툴바 -->
           <div class="editor-toolbar">
-            <button type="button" class="editor-btn" id="btn-bold" title="굵게 (Bold)" onclick="editorCmd('bold')">
-              <strong>B</strong>
-            </button>
+            <!-- 탭 버튼 -->
+            <button type="button" class="editor-tab-btn active" id="tab-btn-edit"    onclick="switchEditorTab('edit')">✏️ 편집</button>
+            <button type="button" class="editor-tab-btn"        id="tab-btn-preview" onclick="switchEditorTab('preview')">👁️ 미리보기</button>
             <div class="editor-sep"></div>
-            <button type="button" class="editor-btn" id="btn-link" title="하이퍼링크 삽입" onclick="editorInsertLink()">
-              🔗 링크
-            </button>
+            <!-- 서식 버튼 (편집 탭에서만 동작) -->
+            <button type="button" class="editor-btn" id="fmt-bold"  title="굵게" onclick="wysiwygBold()"><strong>B</strong></button>
+            <button type="button" class="editor-btn" id="fmt-link"  title="링크 삽입" onclick="wysiwygLink()">🔗 링크</button>
             <div class="editor-sep"></div>
-            <span class="editor-hint">선택한 텍스트에 적용 | 미리보기는 우측에서 확인</span>
+            <span class="editor-hint">이미지 Ctrl+V 붙여넣기 지원</span>
           </div>
-          <!-- 분할 편집 패널 -->
-          <div class="editor-split">
-            <div class="editor-pane">
-              <div class="editor-pane-label">✏️ 편집</div>
-              <textarea id="write-content" placeholder="내용을 입력하세요"></textarea>
-            </div>
-            <div class="editor-divider"></div>
-            <div class="editor-pane">
-              <div class="editor-pane-label">👁️ 미리보기</div>
-              <div id="write-preview" class="editor-preview post-body"></div>
-            </div>
+          <!-- WYSIWYG 편집 패널 -->
+          <div class="editor-panel" id="editor-panel-edit">
+            <div id="wysiwyg-editor"
+                 class="editor-wysiwyg post-body"
+                 contenteditable="true"
+                 spellcheck="false"
+                 data-placeholder="내용을 입력하세요. 이미지는 Ctrl+V로 붙여넣기 할 수 있습니다."></div>
           </div>
-          <!-- 숨겨진 링크 삽입 다이얼로그 -->
+          <!-- 미리보기 패널 (편집 내용과 동일, 읽기 전용) -->
+          <div class="editor-panel" id="editor-panel-preview" style="display:none;">
+            <div id="write-preview" class="editor-wysiwyg post-body"></div>
+          </div>
+          <!-- 숨겨진 textarea (저장용 텍스트 포맷 보관) -->
+          <textarea id="write-content" style="display:none;"></textarea>
+          <!-- 링크 삽입 다이얼로그 -->
           <div id="link-dialog" class="link-dialog" style="display:none;">
-            <input type="text" id="link-text"  placeholder="링크 텍스트" />
-            <input type="text" id="link-url"   placeholder="https://..." />
+            <input type="text" id="link-text" placeholder="링크 텍스트" />
+            <input type="text" id="link-url"  placeholder="https://..." />
             <div class="link-dialog-btns">
               <button type="button" onclick="confirmInsertLink()">삽입</button>
               <button type="button" onclick="cancelInsertLink()">취소</button>

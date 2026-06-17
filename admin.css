@@ -340,8 +340,40 @@
   border: 1px solid var(--color-border);
   border-bottom: none;
   border-radius: var(--radius) var(--radius) 0 0;
+  flex-wrap: wrap;
 }
 
+/* 탭 버튼 */
+.editor-tab-btn {
+  padding: 5px 14px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px 4px 0 0;
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--color-gray-dk);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.editor-tab-btn.active {
+  background: var(--color-white);
+  border-color: var(--color-border);
+  border-bottom-color: var(--color-white);
+  color: var(--color-navy);
+  font-weight: 600;
+  margin-bottom: -1px;
+  position: relative;
+  z-index: 1;
+}
+
+.editor-tab-btn:not(.active):hover {
+  background: rgba(255,255,255,0.6);
+  color: var(--color-navy-mid);
+}
+
+/* 서식 버튼 */
 .editor-btn {
   padding: 4px 12px;
   background: var(--color-white);
@@ -366,6 +398,7 @@
   height: 20px;
   background: var(--color-border);
   margin: 0 4px;
+  flex-shrink: 0;
 }
 
 .editor-hint {
@@ -374,101 +407,87 @@
   margin-left: 4px;
 }
 
-.editor-split {
-  display: flex;
+/* 패널 공통 */
+.editor-panel {
   border: 1px solid var(--color-border);
   border-radius: 0 0 var(--radius) var(--radius);
-  overflow: hidden;
+}
+
+/* WYSIWYG 편집/미리보기 공통 영역 */
+.editor-wysiwyg {
   min-height: 320px;
-}
-
-.editor-pane {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.editor-pane-label {
-  padding: 6px 12px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--color-gray);
-  letter-spacing: 0.04em;
-  background: #f8f9fb;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.editor-pane textarea#write-content {
-  flex: 1;
-  resize: none;
-  border: none;
-  border-radius: 0;
-  padding: 14px;
-  font-size: 0.88rem;
-  line-height: 1.75;
-  min-height: 280px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding: 16px 18px;
   font-family: var(--font-sans);
-  color: var(--color-text);
-  outline: none;
-  background: var(--color-white);
-}
-
-.editor-pane textarea#write-content:focus {
-  box-shadow: none;
-  border-color: transparent;
-  background: #fdfeff;
-}
-
-.editor-divider {
-  width: 1px;
-  background: var(--color-border);
-  flex-shrink: 0;
-}
-
-.editor-preview {
-  flex: 1;
-  padding: 14px 16px;
-  font-size: 0.88rem;
+  font-size: 0.92rem;
   line-height: 1.8;
   color: var(--color-text);
-  background: #fafbfd;
-  overflow-y: auto;
-  min-height: 280px;
-  /* 방문자 페이지 post-body 와 동일한 스타일 */
+  background: var(--color-white);
+  outline: none;
   word-break: break-word;
 }
 
-.editor-preview a {
+/* 편집 탭 포커스 */
+#wysiwyg-editor:focus {
+  background: #fdfeff;
+}
+
+/* placeholder */
+#wysiwyg-editor:empty::before {
+  content: attr(data-placeholder);
+  color: #bbb;
+  pointer-events: none;
+}
+
+/* 편집/미리보기 내 공통 인라인 스타일 */
+.editor-wysiwyg a {
   color: var(--color-navy-mid);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
-.editor-preview strong, .editor-preview b {
+.editor-wysiwyg a:hover { color: var(--color-navy); }
+
+.editor-wysiwyg strong, .editor-wysiwyg b {
   font-weight: 700;
   color: var(--color-navy-dark);
 }
 
-.editor-preview .post-table-wrap {
+.editor-wysiwyg img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 8px 0;
+  border-radius: 4px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.10);
+}
+
+.editor-wysiwyg p {
+  margin: 0 0 0.5em 0;
+}
+
+.editor-wysiwyg br { line-height: 1.8; }
+
+.editor-wysiwyg .post-table-wrap {
   overflow-x: auto;
   margin: 1em 0;
 }
 
-.editor-preview .post-table {
+.editor-wysiwyg .post-table {
   border-collapse: collapse;
   width: 100%;
   font-size: 0.92em;
 }
 
-.editor-preview .post-table th,
-.editor-preview .post-table td {
+.editor-wysiwyg .post-table th,
+.editor-wysiwyg .post-table td {
   border: 1px solid #d0d5dd;
   padding: 8px 14px;
   text-align: left;
 }
 
-.editor-preview .post-table thead th {
+.editor-wysiwyg .post-table thead th {
   background: #f0f3f7;
   font-weight: 600;
   color: #1a2c4e;
@@ -524,9 +543,7 @@
   border-color: var(--color-navy);
 }
 
-.link-dialog-btns button:first-child:hover {
-  background: var(--color-navy-dark);
-}
+.link-dialog-btns button:first-child:hover { background: var(--color-navy-dark); }
 
 .link-dialog-btns button:last-child {
   background: var(--color-white);
@@ -536,7 +553,7 @@
 
 .link-dialog-btns button:last-child:hover { background: var(--color-gray-lt); }
 
-/* 모달 너비 확장 (에디터 분할 패널을 위해) */
+/* 모달 너비 확장 */
 /* ── 모달 ── */
 .modal-backdrop {
   position: fixed;
@@ -554,7 +571,7 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   width: 100%;
-  max-width: 900px;
+  max-width: 700px;
   max-height: 92vh;
   overflow-y: auto;
   display: flex;

@@ -174,6 +174,8 @@
       if (el) el.value = id === 'write-author' ? '관리자'
                        : id === 'write-date'   ? GithubDB.today() : '';
     });
+    const ed = document.getElementById('wysiwyg-editor');
+    if (ed) ed.innerHTML = '';
     renderNewFiles();
     renderExistingFiles([]);
     const errEl = document.getElementById('modal-error');
@@ -334,30 +336,98 @@
     if (e.key === 'Escape') { closeModal(); closeDeleteModal(); }
   });
 
-  // ── 에디터: 미리보기 렌더링 ──────────────────
-  function renderEditorPreview() {
-    const textarea = document.getElementById('write-content');
-    const preview  = document.getElementById('write-preview');
-    if (!textarea || !preview) return;
-    preview.innerHTML = renderContent(textarea.value);
-  }
 
-  // post.html과 동일한 renderContent 함수 (관리자용 복사본)
-  function renderContent(raw) {
-    if (!raw) return '<span style="color:#aaa;font-size:0.85rem;">미리보기가 여기에 표시됩니다.</span>';
+  // ══════════════════════════════════════════════
+  //  WYSIWYG 에디터
+  // ══════════════════════════════════════════════
 
-    function escHtml(str) {
-      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // ── 탭 전환 ──────────────────────────────────
+  window.switchEditorTab = function(tab) {
+    const editPanel    = document.getElementById('editor-panel-edit');
+    const previewPanel = document.getElementById('editor-panel-preview');
+    const btnEdit      = document.getElementById('tab-btn-edit');
+    const btnPreview   = document.getElementById('tab-btn-preview');
+    const fmtBold      = document.getElementById('fmt-bold');
+    const fmtLink      = document.getElementById('fmt-link');
+    const linkDlg      = document.getElementById('link-dialog');
+
+    if (tab === 'edit') {
+      editPanel.style.display    = '';
+      previewPanel.style.display = 'none';
+      btnEdit.classList.add('active');
+      btnPreview.classList.remove('active');
+      if (fmtBold) fmtBold.style.opacity = '1';
+      if (fmtLink) fmtLink.style.opacity = '1';
+    } else {
+      // 미리보기: 편집 내용을 그대로 복사 (동일 HTML)
+      const editor  = document.getElementById('wysiwyg-editor');
+      const preview = document.getElementById('write-preview');
+      if (editor && preview) preview.innerHTML = editor.innerHTML;
+      editPanel.style.display    = 'none';
+      previewPanel.style.display = '';
+      btnEdit.classList.remove('active');
+      btnPreview.classList.add('active');
+      if (fmtBold) fmtBold.style.opacity = '0.4';
+      if (fmtLink) fmtLink.style.opacity = '0.4';
+      if (linkDlg) linkDlg.style.display = 'none';
+    }
+  };
+
+  // ── HTML → 저장 포맷(텍스트) ─────────────────
+  function htmlToText(html) {
+    if (!html) return '';
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+
+    function nodeToText(node) {
+      if (node.nodeType === Node.TEXT_NODE) return node.textContent;
+      const tag = node.tagName ? node.tagName.toLowerCase() : '';
+
+      if (tag === 'img') {
+        const src = node.getAttribute('src') || '';
+        if (src.startsWith('data:')) return ''; // 아직 업로드 안 된 base64는 빈 문자열(업로드 후 재삽입)
+        return `[IMG:${src}]`;
+      }
+      if (tag === 'br') return '\n';
+      if (tag === 'strong' || tag === 'b') {
+        const inner = [...node.childNodes].map(nodeToText).join('');
+        return `**${inner}**`;
+      }
+      if (tag === 'a') {
+        const href  = node.getAttribute('href') || '';
+        const inner = [...node.childNodes].map(nodeToText).join('');
+        return `[${inner}](${href})`;
+      }
+      const block = ['p','div','li','h1','h2','h3','h4','h5','h6'];
+      if (block.includes(tag)) {
+        const inner = [...node.childNodes].map(nodeToText).join('');
+        const text  = inner.replace(/\n$/, '');
+        return text ? text + '\n' : '\n';
+      }
+      return [...node.childNodes].map(nodeToText).join('');
     }
 
-    // [TABLE]...[/TABLE] 블록 처리
+    let result = [...tmp.childNodes].map(nodeToText).join('');
+    result = result.replace(/\n{3,}/g, '\n\n');
+    return result.trim();
+  }
+
+  // ── 저장 포맷(텍스트) → WYSIWYG HTML ────────
+  function textToHtml(raw) {
+    if (!raw) return '';
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // [TABLE] 블록 추출
     const TABLE_RE = /\[TABLE\]([\s\S]*?)\[\/TABLE\]/g;
-    const placeholders = [];
-    let withPlaceholders = raw.replace(TABLE_RE, (_, inner) => {
+    const holders  = [];
+    let text = raw.replace(TABLE_RE, (_, inner) => {
       const rows = [];
-      const theadMatch = inner.match(/\[THEAD\]([\s\S]*?)\[\/THEAD\]/);
-      if (theadMatch) {
-        const cells = [...theadMatch[1].matchAll(/\[TD\]([\s\S]*?)\[\/TD\]/g)]
+      const theadM = inner.match(/\[THEAD\]([\s\S]*?)\[\/THEAD\]/);
+      if (theadM) {
+        const cells = [...theadM[1].matchAll(/\[TD\]([\s\S]*?)\[\/TD\]/g)]
           .map(m => `<th>${escHtml(m[1])}</th>`).join('');
         rows.push(`<thead><tr>${cells}</tr></thead>`);
       }
@@ -367,63 +437,70 @@
         return `<tr>${cells}</tr>`;
       });
       if (tbodyRows.length) rows.push(`<tbody>${tbodyRows.join('')}</tbody>`);
-      const tableHtml = `<div class="post-table-wrap"><table class="post-table">${rows.join('')}</table></div>`;
-      placeholders.push(tableHtml);
-      return `\x00TABLE${placeholders.length - 1}\x00`;
+      const tbl = `<div class="post-table-wrap"><table class="post-table">${rows.join('')}</table></div>`;
+      holders.push(tbl);
+      return `\x00T${holders.length - 1}\x00`;
     });
 
-    // **텍스트** → <strong>
-    withPlaceholders = withPlaceholders.replace(/\*\*([^*\n]+)\*\*/g, '\x00BOLD_S\x00$1\x00BOLD_E\x00');
+    // **bold** → 플레이스홀더
+    text = text.replace(/\*\*([^*\n]+)\*\*/g, '\x00BS\x00$1\x00BE\x00');
+    // [텍스트](URL) → 플레이스홀더
+    text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '\x00LS_$2\x00$1\x00LE\x00');
+    // [IMG:URL] → 플레이스홀더
+    text = text.replace(/\[IMG:(https?:\/\/[^\]]+)\]/g, '\x00IMG_$1\x00');
 
-    // [링크텍스트](URL) → <a href="URL">링크텍스트</a>
-    withPlaceholders = withPlaceholders.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
-      '\x00LINK_S_$2\x00$1\x00LINK_E\x00');
+    const esc  = escHtml(text);
+    let   html = esc.replace(/\n/g, '<br>');
 
-    // HTML 이스케이프 + 줄바꿈
-    const escaped = escHtml(withPlaceholders).replace(/\n/g,'<br>');
-
-    // 플레이스홀더 복원
-    let result = escaped.replace(/\x00TABLE(\d+)\x00/g, (_, i) => placeholders[+i]);
-    result = result.replace(/\x00BOLD_S\x00([\s\S]*?)\x00BOLD_E\x00/g, '<strong>$1</strong>');
-    result = result.replace(/\x00LINK_S_(https?:\/\/[^\\x00]+)\x00([\s\S]*?)\x00LINK_E\x00/g,
+    html = html.replace(/\x00T(\d+)\x00/g, (_, i) => holders[+i]);
+    html = html.replace(/\x00BS\x00([\s\S]*?)\x00BE\x00/g, '<strong>$1</strong>');
+    html = html.replace(/\x00LS_(https?:\/\/[^\x00]+)\x00([\s\S]*?)\x00LE\x00/g,
       '<a href="$1" target="_blank" rel="noopener">$2</a>');
+    html = html.replace(/\x00IMG_(https?:\/\/[^\x00]+)\x00/g,
+      '<img src="$1" style="max-width:100%;display:block;margin:8px 0;">');
 
-    return result;
+    return html;
   }
 
-  // 에디터에 텍스트 삽입 / 선택 영역 감싸기
-  function wrapSelection(prefix, suffix) {
-    const ta    = document.getElementById('write-content');
-    if (!ta) return;
-    const start = ta.selectionStart;
-    const end   = ta.selectionEnd;
-    const sel   = ta.value.substring(start, end);
-    const before = ta.value.substring(0, start);
-    const after  = ta.value.substring(end);
-    ta.value = before + prefix + sel + suffix + after;
-    ta.selectionStart = start + prefix.length;
-    ta.selectionEnd   = end   + prefix.length;
-    ta.focus();
-    renderEditorPreview();
+  // ── 에디터에 텍스트 로드 ─────────────────────
+  function loadContentToEditor(text) {
+    const editor = document.getElementById('wysiwyg-editor');
+    if (!editor) return;
+    editor.innerHTML = textToHtml(text || '');
   }
 
-  // Bold 버튼
-  window.editorCmd = function(cmd) {
-    if (cmd === 'bold') {
-      wrapSelection('**', '**');
-    }
+  // ── 에디터 → hidden textarea 동기화 ─────────
+  function syncContentFromEditor() {
+    const editor = document.getElementById('wysiwyg-editor');
+    const ta     = document.getElementById('write-content');
+    if (!editor || !ta) return;
+    ta.value = htmlToText(editor.innerHTML);
+  }
+
+  // ── Bold ─────────────────────────────────────
+  window.wysiwygBold = function() {
+    const editor = document.getElementById('wysiwyg-editor');
+    if (!editor) return;
+    editor.focus();
+    document.execCommand('bold', false, null);
   };
 
-  // 링크 삽입 버튼
-  let _linkSelStart = 0, _linkSelEnd = 0;
-  window.editorInsertLink = function() {
-    const ta = document.getElementById('write-content');
-    if (!ta) return;
-    _linkSelStart = ta.selectionStart;
-    _linkSelEnd   = ta.selectionEnd;
-    const selText = ta.value.substring(_linkSelStart, _linkSelEnd);
-    document.getElementById('link-text').value = selText || '';
-    document.getElementById('link-url').value  = '';
+  // ── 링크 삽입 ─────────────────────────────────
+  let _savedRange = null;
+
+  window.wysiwygLink = function() {
+    const editor = document.getElementById('wysiwyg-editor');
+    if (!editor) return;
+    editor.focus();
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      _savedRange = sel.getRangeAt(0).cloneRange();
+      document.getElementById('link-text').value = sel.toString() || '';
+    } else {
+      _savedRange = null;
+      document.getElementById('link-text').value = '';
+    }
+    document.getElementById('link-url').value = '';
     document.getElementById('link-dialog').style.display = 'flex';
     document.getElementById('link-url').focus();
   };
@@ -432,41 +509,148 @@
     const text = document.getElementById('link-text').value.trim();
     const url  = document.getElementById('link-url').value.trim();
     if (!text || !url) { alert('링크 텍스트와 URL을 모두 입력하세요.'); return; }
-    const ta     = document.getElementById('write-content');
-    const before = ta.value.substring(0, _linkSelStart);
-    const after  = ta.value.substring(_linkSelEnd);
-    const insert = `[${text}](${url})`;
-    ta.value = before + insert + after;
-    ta.selectionStart = ta.selectionEnd = _linkSelStart + insert.length;
+
+    const editor = document.getElementById('wysiwyg-editor');
+    editor.focus();
+
+    if (_savedRange) {
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(_savedRange);
+    }
+
+    const a = document.createElement('a');
+    a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = text;
+
+    const sel2 = window.getSelection();
+    if (sel2 && sel2.rangeCount > 0) {
+      const range = sel2.getRangeAt(0);
+      range.deleteContents();
+      range.insertNode(a);
+      range.setStartAfter(a);
+      range.collapse(true);
+      sel2.removeAllRanges();
+      sel2.addRange(range);
+    } else {
+      editor.appendChild(a);
+    }
+
     document.getElementById('link-dialog').style.display = 'none';
-    ta.focus();
-    renderEditorPreview();
+    _savedRange = null;
   };
 
   window.cancelInsertLink = function() {
     document.getElementById('link-dialog').style.display = 'none';
   };
 
-  // textarea 입력 시 실시간 미리보기
-  document.addEventListener('DOMContentLoaded', function() {
-    const ta = document.getElementById('write-content');
-    if (ta) {
-      ta.addEventListener('input', renderEditorPreview);
-      ta.addEventListener('keyup', renderEditorPreview);
-    }
-  });
+  // ── 이미지 붙여넣기 ───────────────────────────
+  function initPasteImage() {
+    const editor = document.getElementById('wysiwyg-editor');
+    if (!editor) return;
 
-  // 모달 열 때마다 미리보기 초기화
+    editor.addEventListener('paste', function(e) {
+      const items = (e.clipboardData || window.clipboardData || {}).items || [];
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          e.preventDefault();
+          const file   = item.getAsFile();
+          const reader = new FileReader();
+          reader.onload = function(ev) {
+            const img = document.createElement('img');
+            img.src   = ev.target.result;
+            img.style.cssText = 'max-width:100%;display:block;margin:8px 0;border-radius:4px;';
+
+            // 파일 객체를 newFiles에 추가
+            const pseudoFile = new File(
+              [file],
+              `paste_${Date.now()}.${(file.type.split('/')[1] || 'png')}`,
+              { type: file.type }
+            );
+            img.setAttribute('data-pending-idx', newFiles.length);
+            newFiles.push(pseudoFile);
+            renderNewFiles();
+
+            // 커서 위치에 삽입
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0) {
+              const range = sel.getRangeAt(0);
+              range.deleteContents();
+              range.insertNode(img);
+              range.setStartAfter(img);
+              range.collapse(true);
+              sel.removeAllRanges();
+              sel.addRange(range);
+            } else {
+              editor.appendChild(img);
+            }
+          };
+          reader.readAsDataURL(file);
+          return; // 첫 이미지만 처리
+        }
+      }
+    });
+  }
+
+  // ── openWriteModal 오버라이드 ─────────────────
   const _origOpenWrite = window.openWriteModal;
   window.openWriteModal = function(board) {
     _origOpenWrite(board);
-    setTimeout(renderEditorPreview, 50);
+    loadContentToEditor('');
+    switchEditorTab('edit');
+    setTimeout(() => {
+      const ed = document.getElementById('wysiwyg-editor');
+      if (ed) ed.focus();
+      initPasteImage();
+    }, 80);
   };
+
+  // ── openEditModal 오버라이드 ──────────────────
   const _origOpenEdit = window.openEditModal;
   window.openEditModal = function(board, id) {
     _origOpenEdit(board, id);
-    setTimeout(renderEditorPreview, 50);
+    const post = (cache[board]?.content || []).find(p => p.id === id);
+    loadContentToEditor(post?.content || '');
+    switchEditorTab('edit');
+    setTimeout(() => initPasteImage(), 80);
   };
+
+  // ── submitPost 오버라이드: 이미지 먼저 업로드 ─
+  const _origSubmit = window.submitPost;
+  window.submitPost = async function() {
+    const editor = document.getElementById('wysiwyg-editor');
+
+    // 붙여넣기 이미지(base64) → GitHub 업로드 → src 교체
+    if (editor) {
+      const pendingImgs = editor.querySelectorAll('img[data-pending-idx]');
+      if (pendingImgs.length > 0) {
+        const token = localStorage.getItem('hwaseo_token');
+        for (const img of pendingImgs) {
+          const idx  = parseInt(img.getAttribute('data-pending-idx'));
+          const file = newFiles[idx];
+          if (!file) continue;
+          try {
+            const result = await GithubDB.uploadFile(file, token, currentBoard);
+            img.src = result.rawUrl;
+            img.removeAttribute('data-pending-idx');
+            newFiles[idx] = null;
+          } catch (e) {
+            alert(`이미지 업로드 실패: ${e.message}`);
+            return;
+          }
+        }
+        newFiles = newFiles.filter(Boolean);
+        renderNewFiles();
+      }
+    }
+
+    syncContentFromEditor();
+    await _origSubmit();
+  };
+
+  // ── DOMContentLoaded 초기화 ───────────────────
+  document.addEventListener('DOMContentLoaded', function() {
+    initPasteImage();
+  });
 
   // ── 새로고침 후 자동 로그인 복원 ─────────────
   (function restoreSession() {
