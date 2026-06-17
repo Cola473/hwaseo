@@ -447,6 +447,15 @@
   padding: 8px 10px;
 }
 
+.ql-container {
+  position: relative;
+}
+
+.ql-snow .ql-tooltip {
+  left: 10px !important;
+  top: 10px !important;
+}
+
 /* Quill 편집 영역 */
 .quill-wrap .ql-container {
   border: none;
