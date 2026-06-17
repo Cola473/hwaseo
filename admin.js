@@ -400,31 +400,40 @@
     return quill;
   }
 
-  // ── 이미지 파일 → 업로드 → Quill에 삽입 ──────
+  // ── 이미지 파일 → 즉시 미리보기 → 업로드 → URL 교체 ──
   async function insertImageFile(file) {
     const token = localStorage.getItem('hwaseo_token');
     if (!token) { alert('로그인 토큰이 없습니다.'); return; }
 
-    const quill = quillInstance;
-    const range = quill.getSelection(true);
-    const insertAt = range ? range.index : quill.getLength() - 1;
+    const quill   = quillInstance;
+    const range   = quill.getSelection(true);
+    const insertAt = range ? range.index : Math.max(0, quill.getLength() - 1);
 
-    // 업로드 중 표시
-    quill.insertText(insertAt, '⏳ 이미지 업로드 중...', { color: '#aaa' }, 'user');
-    const tempLen = '⏳ 이미지 업로드 중...'.length;
-    quill.setSelection(insertAt + tempLen);
+    // 1) base64로 에디터에 즉시 삽입 (사용자에게 바로 보임)
+    const dataUrl = await fileToDataUrl(file);
+    quill.insertEmbed(insertAt, 'image', dataUrl);
+    quill.insertText(insertAt + 1, '\n');
+    quill.setSelection(insertAt + 2);
 
+    // 2) 백그라운드 업로드
     try {
       const result = await GithubDB.uploadFile(file, token, currentBoard);
-      // 임시 텍스트 제거 후 이미지 삽입
-      quill.deleteText(insertAt, tempLen);
-      quill.insertEmbed(insertAt, 'image', result.rawUrl);
-      quill.insertText(insertAt + 1, '\n');
-      quill.setSelection(insertAt + 2);
+
+      // 3) 에디터 DOM에서 해당 img의 src를 GitHub URL로 교체
+      const imgs = quill.root.querySelectorAll(`img[src="${dataUrl}"]`);
+      imgs.forEach(img => { img.src = result.rawUrl; });
     } catch (e) {
-      quill.deleteText(insertAt, tempLen);
-      alert(`이미지 업로드 실패: ${e.message}`);
+      alert(`이미지 업로드 실패: ${e.message}\n(이미지는 에디터에 표시되지만 저장 시 포함되지 않을 수 있습니다.)`);
     }
+  }
+
+  function fileToDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload  = e => resolve(e.target.result);
+      reader.onerror = () => reject(new Error('파일 읽기 실패'));
+      reader.readAsDataURL(file);
+    });
   }
 
   // ── Quill HTML → write-content textarea 동기화 ─
@@ -468,6 +477,14 @@
   // ── submitPost 오버라이드 ─────────────────────
   const _origSubmit = window.submitPost;
   window.submitPost = async function() {
+    // 아직 업로드 중인 base64 이미지가 있으면 잠시 대기
+    if (quillInstance) {
+      const base64Imgs = quillInstance.root.querySelectorAll('img[src^="data:"]');
+      if (base64Imgs.length > 0) {
+        alert('이미지 업로드가 아직 완료되지 않았습니다. 잠시 후 다시 저장하세요.');
+        return;
+      }
+    }
     syncQuillToTextarea();
     await _origSubmit();
   };
