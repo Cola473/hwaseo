@@ -95,7 +95,7 @@
     // 파일명 충돌 방지: 타임스탬프 + 원본명
     const safeName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._\-가-힣]/g, '_')}`;
     const isImage  = file.type.startsWith('image/');
-    const path     = `assets/${boardFolder}/${safeName}`;`${folder}/${safeName}`;
+    const path     = `assets/${boardFolder}/${safeName}`;
 
     // File → ArrayBuffer → base64
     const buffer  = await file.arrayBuffer();
