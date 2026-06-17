@@ -77,6 +77,7 @@
     color: var(--color-text);
   }
   .tiptap-editor:focus { outline: none; }
+  .tiptap-editor { font-size: 13px; } /* 기본 10pt */
   /* placeholder */
   .tiptap-editor.is-empty:before {
     content: attr(data-placeholder);
@@ -304,6 +305,17 @@
           <!-- Tiptap 에디터 -->
           <div class="tiptap-wrap">
             <div class="tiptap-toolbar" id="tiptap-toolbar">
+              <select id="tt-fontsize" title="글자 크기" style="height:30px;padding:0 4px;border:1px solid transparent;border-radius:4px;font-family:var(--font-sans);font-size:0.82rem;background:none;cursor:pointer;color:var(--color-text);">
+                <option value="9">9pt</option>
+                <option value="10" selected>10pt</option>
+                <option value="11">11pt</option>
+                <option value="12">12pt</option>
+                <option value="13">13pt</option>
+                <option value="14">14pt</option>
+                <option value="15">15pt</option>
+                <option value="16">16pt</option>
+              </select>
+              <div class="tiptap-toolbar-sep"></div>
               <button id="tt-bold"      title="굵게 (Ctrl+B)"><b>B</b></button>
               <button id="tt-italic"    title="기울임 (Ctrl+I)"><i>I</i></button>
               <button id="tt-underline" title="밑줄 (Ctrl+U)"><u>U</u></button>

@@ -124,6 +124,23 @@
 
     B('tt-link').addEventListener('mousedown',  e => { e.preventDefault(); promptLink(); });
     B('tt-table').addEventListener('mousedown', e => { e.preventDefault(); toggleTableDialog(); });
+    // 글자 크기
+    const fsEl = document.getElementById('tt-fontsize');
+    if (fsEl) {
+      fsEl.addEventListener('change', function() {
+        const pt  = parseInt(this.value, 10);
+        const px  = Math.round(pt * 96 / 72); // pt → px 변환
+        restoreSelection();
+        document.execCommand('fontSize', false, '7'); // 임시 fontSize 마크 삽입
+        // fontSize=7 로 삽입된 font 태그를 직접 px 스타일로 교체
+        editorEl.querySelectorAll('font[size="7"]').forEach(el => {
+          el.removeAttribute('size');
+          el.style.fontSize = px + 'px';
+        });
+        editorEl.focus();
+      });
+    }
+
     B('tt-undo').addEventListener('mousedown',  e => { e.preventDefault(); exec('undo'); });
     B('tt-redo').addEventListener('mousedown',  e => { e.preventDefault(); exec('redo'); });
     B('tt-clear').addEventListener('mousedown', e => { e.preventDefault(); exec('removeFormat'); });
@@ -210,6 +227,27 @@
       const el = document.getElementById(id);
       if (el) el.classList.toggle('is-active', !!active);
     }
+    // 현재 커서 위치 글자 크기 → select 동기화
+    try {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) {
+        const node = sel.getRangeAt(0).startContainer;
+        const el   = node.nodeType === 3 ? node.parentElement : node;
+        const fs   = window.getComputedStyle(el).fontSize; // px
+        if (fs) {
+          const px = parseFloat(fs);
+          const pt = Math.round(px * 72 / 96);
+          const fsEl = document.getElementById('tt-fontsize');
+          if (fsEl) {
+            // 가장 가까운 옵션 선택
+            const opts = [...fsEl.options].map(o => parseInt(o.value));
+            const closest = opts.reduce((a, b) => Math.abs(b - pt) < Math.abs(a - pt) ? b : a);
+            fsEl.value = String(closest);
+          }
+        }
+      }
+    } catch(e) {}
+
     try {
       setActive('tt-bold',      document.queryCommandState('bold'));
       setActive('tt-italic',    document.queryCommandState('italic'));
@@ -438,7 +476,11 @@
     if (!editorEl) return;
     editorEl.innerHTML = '';
     editorEl.classList.add('is-empty');
+    editorEl.style.fontSize = '13px'; // 기본 10pt
     savedRange = null;
+    // select도 기본값으로
+    const fsEl = document.getElementById('tt-fontsize');
+    if (fsEl) fsEl.value = '10';
   }
 
   // ── 첨부파일 UI ──────────────────────────────
