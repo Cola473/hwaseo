@@ -362,7 +362,10 @@
         .replace(/\*\*([^*\n]+)\*\*/g, '\x00BS\x00$1\x00BE\x00')
         .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '\x00LS_$2\x00$1\x00LE\x00')
         .replace(/\[IMG:(https?:\/\/[^\]]+)\]/g, '\x00IMG_$1\x00');
-      let result = escHtml(withPlaceholders).replace(/\n/g,'<br>');
+      let result = escHtml(withPlaceholders)
+        .replace(/\n{2,}/g, '</p><p>')   // 빈 줄 → 단락 구분
+        .replace(/\n/g, '<br>');          // 단일 줄바꿈 → br
+      result = '<p>' + result + '</p>';   // 전체를 p로 감쌈
       result = result
         .replace(/\x00T(\d+)\x00/g, (_, i) => placeholders[+i])
         .replace(/\x00BS\x00([\s\S]*?)\x00BE\x00/g, '<strong>$1</strong>')
