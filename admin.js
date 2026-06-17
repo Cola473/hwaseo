@@ -176,6 +176,7 @@
     });
     const ed = document.getElementById('wysiwyg-editor');
     if (ed) ed.innerHTML = '';
+    if (quillInstance) quillInstance.root.innerHTML = '';
     renderNewFiles();
     renderExistingFiles([]);
     const errEl = document.getElementById('modal-error');
@@ -338,253 +339,119 @@
 
 
   // ══════════════════════════════════════════════
-  //  WYSIWYG 에디터
+  //  Quill.js 에디터
   // ══════════════════════════════════════════════
 
-  // ── HTML → 저장 포맷(텍스트) ─────────────────
-  function htmlToText(html) {
-    if (!html) return '';
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
+  let quillInstance = null;
 
-    function nodeToText(node) {
-      if (node.nodeType === Node.TEXT_NODE) return node.textContent;
-      const tag = node.tagName ? node.tagName.toLowerCase() : '';
+  // ── Quill 초기화 ─────────────────────────────
+  function initQuill() {
+    // 이미 있으면 기존 인스턴스 반환
+    if (quillInstance) return quillInstance;
 
-      if (tag === 'img') {
-        const src = node.getAttribute('src') || '';
-        if (src.startsWith('data:')) return ''; // 아직 업로드 안 된 base64는 빈 문자열(업로드 후 재삽입)
-        return `[IMG:${src}]`;
-      }
-      if (tag === 'br') return '\n';
-      if (tag === 'strong' || tag === 'b') {
-        const inner = [...node.childNodes].map(nodeToText).join('');
-        return `**${inner}**`;
-      }
-      if (tag === 'a') {
-        const href  = node.getAttribute('href') || '';
-        const inner = [...node.childNodes].map(nodeToText).join('');
-        return `[${inner}](${href})`;
-      }
-      const block = ['p','div','li','h1','h2','h3','h4','h5','h6'];
-      if (block.includes(tag)) {
-        const inner = [...node.childNodes].map(nodeToText).join('');
-        const text  = inner.replace(/\n$/, '');
-        return text ? text + '\n' : '\n';
-      }
-      return [...node.childNodes].map(nodeToText).join('');
+    // 이미지 붙여넣기/드롭 핸들러
+    function imageHandler() {
+      // Quill 기본 이미지 핸들러(파일 선택 dialog)는 base64로 삽입하므로
+      // 우리는 override해서 newFiles에 추가하고 GitHub 업로드 후 URL로 교체
+      const input = document.createElement('input');
+      input.setAttribute('type', 'file');
+      input.setAttribute('accept', 'image/*');
+      input.onchange = async () => {
+        const file = input.files[0];
+        if (!file) return;
+        await insertImageFile(file);
+      };
+      input.click();
     }
 
-    let result = [...tmp.childNodes].map(nodeToText).join('');
-    result = result.replace(/\n{3,}/g, '\n\n');
-    return result.trim();
-  }
-
-  // ── 저장 포맷(텍스트) → WYSIWYG HTML ────────
-  function textToHtml(raw) {
-    if (!raw) return '';
-
-    function escHtml(s) {
-      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
-
-    // [TABLE] 블록 추출
-    const TABLE_RE = /\[TABLE\]([\s\S]*?)\[\/TABLE\]/g;
-    const holders  = [];
-    let text = raw.replace(TABLE_RE, (_, inner) => {
-      const rows = [];
-      const theadM = inner.match(/\[THEAD\]([\s\S]*?)\[\/THEAD\]/);
-      if (theadM) {
-        const cells = [...theadM[1].matchAll(/\[TD\]([\s\S]*?)\[\/TD\]/g)]
-          .map(m => `<th>${escHtml(m[1])}</th>`).join('');
-        rows.push(`<thead><tr>${cells}</tr></thead>`);
-      }
-      const tbodyRows = [...inner.matchAll(/\[TR\]([\s\S]*?)\[\/TR\]/g)].map(rm => {
-        const cells = [...rm[1].matchAll(/\[TD\]([\s\S]*?)\[\/TD\]/g)]
-          .map(m => `<td>${escHtml(m[1])}</td>`).join('');
-        return `<tr>${cells}</tr>`;
-      });
-      if (tbodyRows.length) rows.push(`<tbody>${tbodyRows.join('')}</tbody>`);
-      const tbl = `<div class="post-table-wrap"><table class="post-table">${rows.join('')}</table></div>`;
-      holders.push(tbl);
-      return `\x00T${holders.length - 1}\x00`;
+    const quill = new Quill('#quill-editor', {
+      theme: 'snow',
+      placeholder: '내용을 입력하세요. 이미지는 Ctrl+V 또는 툴바로 삽입할 수 있습니다.',
+      modules: {
+        toolbar: {
+          container: [
+            ['bold', 'italic', 'underline'],
+            [{ 'header': [1, 2, 3, false] }],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            ['link', 'image'],
+            ['clean'],
+          ],
+          handlers: { image: imageHandler },
+        },
+        clipboard: {
+          // 붙여넣기 시 외부 HTML의 불필요한 스타일 제거
+          matchVisual: false,
+        },
+      },
     });
 
-    // **bold** → 플레이스홀더
-    text = text.replace(/\*\*([^*\n]+)\*\*/g, '\x00BS\x00$1\x00BE\x00');
-    // [텍스트](URL) → 플레이스홀더
-    text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '\x00LS_$2\x00$1\x00LE\x00');
-    // [IMG:URL] → 플레이스홀더
-    text = text.replace(/\[IMG:(https?:\/\/[^\]]+)\]/g, '\x00IMG_$1\x00');
-
-    const esc  = escHtml(text);
-    let   html = esc.replace(/\n/g, '<br>');
-
-    html = html.replace(/\x00T(\d+)\x00/g, (_, i) => holders[+i]);
-    html = html.replace(/\x00BS\x00([\s\S]*?)\x00BE\x00/g, '<strong>$1</strong>');
-    html = html.replace(/\x00LS_(https?:\/\/[^\x00]+)\x00([\s\S]*?)\x00LE\x00/g,
-      '<a href="$1" target="_blank" rel="noopener">$2</a>');
-    html = html.replace(/\x00IMG_(https?:\/\/[^\x00]+)\x00/g,
-      '<img src="$1" style="max-width:100%;display:block;margin:8px 0;">');
-
-    return html;
-  }
-
-  // ── 에디터에 텍스트 로드 ─────────────────────
-  function loadContentToEditor(text) {
-    const editor = document.getElementById('wysiwyg-editor');
-    if (!editor) return;
-    editor.innerHTML = textToHtml(text || '');
-  }
-
-  // ── 에디터 → hidden textarea 동기화 ─────────
-  function syncContentFromEditor() {
-    const editor = document.getElementById('wysiwyg-editor');
-    const ta     = document.getElementById('write-content');
-    if (!editor || !ta) return;
-    ta.value = htmlToText(editor.innerHTML);
-  }
-
-  // ── Bold ─────────────────────────────────────
-  window.wysiwygBold = function() {
-    const editor = document.getElementById('wysiwyg-editor');
-    if (!editor) return;
-    editor.focus();
-    document.execCommand('bold', false, null);
-  };
-
-  // ── 링크 삽입 ─────────────────────────────────
-  let _savedRange = null;
-
-  window.wysiwygLink = function() {
-    const editor = document.getElementById('wysiwyg-editor');
-    if (!editor) return;
-    editor.focus();
-    const sel = window.getSelection();
-    if (sel && sel.rangeCount > 0) {
-      _savedRange = sel.getRangeAt(0).cloneRange();
-      document.getElementById('link-text').value = sel.toString() || '';
-    } else {
-      _savedRange = null;
-      document.getElementById('link-text').value = '';
-    }
-    document.getElementById('link-url').value = '';
-    document.getElementById('link-dialog').style.display = 'flex';
-    document.getElementById('link-url').focus();
-  };
-
-  window.confirmInsertLink = function() {
-    const text = document.getElementById('link-text').value.trim();
-    const url  = document.getElementById('link-url').value.trim();
-    if (!text || !url) { alert('링크 텍스트와 URL을 모두 입력하세요.'); return; }
-
-    const editor = document.getElementById('wysiwyg-editor');
-    editor.focus();
-
-    if (_savedRange) {
-      const sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(_savedRange);
-    }
-
-    const a = document.createElement('a');
-    a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = text;
-
-    const sel2 = window.getSelection();
-    if (sel2 && sel2.rangeCount > 0) {
-      const range = sel2.getRangeAt(0);
-      range.deleteContents();
-      range.insertNode(a);
-      range.setStartAfter(a);
-      range.collapse(true);
-      sel2.removeAllRanges();
-      sel2.addRange(range);
-    } else {
-      editor.appendChild(a);
-    }
-
-    document.getElementById('link-dialog').style.display = 'none';
-    _savedRange = null;
-  };
-
-  window.cancelInsertLink = function() {
-    document.getElementById('link-dialog').style.display = 'none';
-  };
-
-
-  // ── 이미지 붙여넣기 (AbortController로 이전 리스너 확실히 제거) ──
-  let _pasteAbort = null;
-
-  function initPasteImage() {
-    const editor = document.getElementById('wysiwyg-editor');
-    if (!editor) return;
-
-    // 이전 리스너 제거
-    if (_pasteAbort) { _pasteAbort.abort(); }
-    _pasteAbort = new AbortController();
-
-    // Tab 키 → 들여쓰기 (포커스 이동 막기)
-    editor.addEventListener('keydown', function(e) {
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        document.execCommand('insertText', false, '\u00a0\u00a0\u00a0\u00a0'); // 공백 4개
-      }
-    }, { signal: _pasteAbort.signal });
-
-    // paste 이벤트 — 이미지 항목이 있으면 그것만 처리
-    editor.addEventListener('paste', function(e) {
-      const items = Array.from((e.clipboardData || window.clipboardData || {}).items || []);
+    // ── 이미지 Ctrl+V 붙여넣기 처리 ─────────────
+    quill.root.addEventListener('paste', function(e) {
+      const items = Array.from((e.clipboardData || {}).items || []);
       const imageItem = items.find(it => it.type.startsWith('image/'));
-      if (!imageItem) return; // 텍스트 붙여넣기는 기본 동작 유지
+      if (!imageItem) return; // 이미지 아니면 Quill 기본 처리
 
-      e.preventDefault(); // 이미지일 때만 기본 동작 차단
+      e.preventDefault();
+      const file = imageItem.getAsFile();
+      if (file) insertImageFile(file);
+    });
 
-      const file   = imageItem.getAsFile();
-      const reader = new FileReader();
-      reader.onload = function(ev) {
-        // 에디터에 이미지 삽입
-        const img = document.createElement('img');
-        img.src = ev.target.result;
-        img.style.cssText = 'max-width:100%;display:block;margin:8px 0;border-radius:4px;';
+    quillInstance = quill;
+    return quill;
+  }
 
-        // newFiles에 추가 (저장 시 업로드)
-        const pseudoFile = new File(
-          [file],
-          `paste_${Date.now()}.${file.type.split('/')[1] || 'png'}`,
-          { type: file.type }
-        );
-        img.setAttribute('data-pending-idx', newFiles.length);
-        newFiles.push(pseudoFile);
-        renderNewFiles();
+  // ── 이미지 파일 → 업로드 → Quill에 삽입 ──────
+  async function insertImageFile(file) {
+    const token = localStorage.getItem('hwaseo_token');
+    if (!token) { alert('로그인 토큰이 없습니다.'); return; }
 
-        // 현재 커서 위치에 삽입
-        const sel = window.getSelection();
-        if (sel && sel.rangeCount > 0) {
-          const range = sel.getRangeAt(0);
-          range.deleteContents();
-          range.insertNode(img);
-          range.setStartAfter(img);
-          range.collapse(true);
-          sel.removeAllRanges();
-          sel.addRange(range);
-        } else {
-          editor.appendChild(img);
-        }
-      };
-      reader.readAsDataURL(file);
-    }, { signal: _pasteAbort.signal });
+    // 로딩 표시: 임시 placeholder 텍스트 삽입
+    const quill   = quillInstance;
+    const range   = quill.getSelection(true);
+    const tempIdx = range ? range.index : quill.getLength();
+
+    quill.insertText(tempIdx, '⏳ 이미지 업로드 중...', 'user');
+    quill.setSelection(tempIdx + 12);
+
+    try {
+      const result = await GithubDB.uploadFile(file, token, currentBoard);
+      // 임시 텍스트 삭제 후 이미지 삽입
+      quill.deleteText(tempIdx, 12);
+      quill.insertEmbed(tempIdx, 'image', result.rawUrl);
+      quill.setSelection(tempIdx + 1);
+    } catch (e) {
+      quill.deleteText(tempIdx, 12);
+      alert(`이미지 업로드 실패: ${e.message}`);
+    }
+  }
+
+  // ── Quill HTML → write-content textarea 동기화 ─
+  function syncQuillToTextarea() {
+    const ta = document.getElementById('write-content');
+    if (!ta || !quillInstance) return;
+    // Quill 에디터의 실제 HTML (quill-editor > .ql-editor 내부)
+    const editorEl = document.querySelector('#quill-editor .ql-editor');
+    ta.value = editorEl ? editorEl.innerHTML : '';
+  }
+
+  // ── 저장된 HTML → Quill에 로드 ───────────────
+  function loadHtmlToQuill(html) {
+    const quill    = quillInstance || initQuill();
+    const editorEl = document.querySelector('#quill-editor .ql-editor');
+    if (!editorEl) return;
+    // Quill에 HTML 직접 세팅
+    quill.root.innerHTML = html || '';
+    // 커서를 끝으로
+    quill.setSelection(quill.getLength(), 0);
   }
 
   // ── openWriteModal 오버라이드 ─────────────────
   const _origOpenWrite = window.openWriteModal;
   window.openWriteModal = function(board) {
     _origOpenWrite(board);
-    loadContentToEditor('');
-    setTimeout(() => {
-      initPasteImage();
-      const ed = document.getElementById('wysiwyg-editor');
-      if (ed) ed.focus();
-    }, 80);
+    const quill = initQuill();
+    quill.root.innerHTML = '';
+    quill.focus();
   };
 
   // ── openEditModal 오버라이드 ──────────────────
@@ -592,39 +459,14 @@
   window.openEditModal = function(board, id) {
     _origOpenEdit(board, id);
     const post = (cache[board]?.content || []).find(p => p.id === id);
-    loadContentToEditor(post?.content || '');
-    setTimeout(() => initPasteImage(), 80);
+    initQuill();
+    loadHtmlToQuill(post?.content || '');
   };
 
-  // ── submitPost 오버라이드: base64 이미지 먼저 업로드 ─
+  // ── submitPost 오버라이드 ─────────────────────
   const _origSubmit = window.submitPost;
   window.submitPost = async function() {
-    const editor = document.getElementById('wysiwyg-editor');
-
-    if (editor) {
-      const pendingImgs = editor.querySelectorAll('img[data-pending-idx]');
-      if (pendingImgs.length > 0) {
-        const token = localStorage.getItem('hwaseo_token');
-        for (const img of pendingImgs) {
-          const idx  = parseInt(img.getAttribute('data-pending-idx'));
-          const file = newFiles[idx];
-          if (!file) continue;
-          try {
-            const result = await GithubDB.uploadFile(file, token, currentBoard);
-            img.src = result.rawUrl;
-            img.removeAttribute('data-pending-idx');
-            newFiles[idx] = null;
-          } catch (e) {
-            alert(`이미지 업로드 실패: ${e.message}`);
-            return;
-          }
-        }
-        newFiles = newFiles.filter(Boolean);
-        renderNewFiles();
-      }
-    }
-
-    syncContentFromEditor();
+    syncQuillToTextarea();
     await _origSubmit();
   };
 

@@ -8,7 +8,7 @@
   const BASE = 'https://api.github.com';
 
   function getToken() {
-    return sessionStorage.getItem('hwaseo_token') || '';
+    return localStorage.getItem('hwaseo_token') || '';
   }
 
   function apiHeaders(token) {

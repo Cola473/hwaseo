@@ -13,12 +13,20 @@
       text-decoration: underline;
       text-underline-offset: 2px;
     }
-    .post-body a:hover {
-      color: var(--color-navy, #1a2c4e);
-    }
-    .post-body strong {
-      font-weight: 700;
-    }
+    .post-body a:hover { color: var(--color-navy, #1a2c4e); }
+    .post-body strong, .post-body b { font-weight: 700; }
+    /* Quill HTML 요소 스타일 */
+    .post-body p { margin: 0 0 0.6em 0; line-height: 1.8; }
+    .post-body h1 { font-size: 1.4rem; font-weight: 700; margin: 1.2em 0 0.5em; color: var(--color-navy-dark, #1a2c4e); }
+    .post-body h2 { font-size: 1.2rem; font-weight: 700; margin: 1em 0 0.4em; color: var(--color-navy-dark, #1a2c4e); }
+    .post-body h3 { font-size: 1.05rem; font-weight: 700; margin: 0.8em 0 0.3em; }
+    .post-body ul, .post-body ol { padding-left: 1.5em; margin: 0.5em 0 0.8em; }
+    .post-body ul li { list-style: disc; margin-bottom: 0.3em; line-height: 1.7; }
+    .post-body ol li { list-style: decimal; margin-bottom: 0.3em; line-height: 1.7; }
+    .post-body blockquote { border-left: 4px solid var(--color-border, #ddd); padding-left: 1em; color: #666; margin: 0.8em 0; }
+    .post-body img { max-width: 100%; height: auto; display: block; margin: 8px 0; border-radius: 4px; }
+    .post-body em { font-style: italic; }
+    .post-body u  { text-decoration: underline; }
     /* ── 게시글 본문 표 ── */
     .post-table-wrap {
       overflow-x: auto;
@@ -264,52 +272,61 @@
     function renderContent(raw) {
       if (!raw) return '';
 
-      // 0) HTML 이스케이프 헬퍼 (먼저 정의)
+      // Quill HTML 판별: <p>, <h1~3>, <ul>, <ol>, <strong>, <em> 등으로 시작하면 HTML로 간주
+      const looksLikeHtml = /^\s*<(p|h[1-6]|ul|ol|li|div|strong|em|br|img|a)[\s>]/i.test(raw.trim());
+
+      if (looksLikeHtml) {
+        // Quill이 저장한 HTML — 그대로 렌더링
+        // 단, 외부 링크에 target=_blank 보장
+        const tmp = document.createElement('div');
+        tmp.innerHTML = raw;
+        tmp.querySelectorAll('a').forEach(a => {
+          a.target = '_blank'; a.rel = 'noopener';
+        });
+        tmp.querySelectorAll('img').forEach(img => {
+          img.style.maxWidth = '100%';
+          img.style.display  = 'block';
+          img.style.margin   = '8px 0';
+          img.style.borderRadius = '4px';
+        });
+        return tmp.innerHTML;
+      }
+
+      // ── 레거시 텍스트 포맷 (이전 글 하위 호환) ──
       function escHtml(str) {
         return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       }
-
-      // 1) [TABLE]...[/TABLE] 블록을 실제 <table>로 변환 (이스케이프 전에 먼저 추출)
       const TABLE_RE = /\[TABLE\]([\s\S]*?)\[\/TABLE\]/g;
       const placeholders = [];
       let withPlaceholders = raw.replace(TABLE_RE, (_, inner) => {
         const rows = [];
-        // THEAD
         const theadMatch = inner.match(/\[THEAD\]([\s\S]*?)\[\/THEAD\]/);
         if (theadMatch) {
           const cells = [...theadMatch[1].matchAll(/\[TD\]([\s\S]*?)\[\/TD\]/g)]
             .map(m => `<th>${escHtml(m[1])}</th>`).join('');
           rows.push(`<thead><tr>${cells}</tr></thead>`);
         }
-        // TR
         const tbodyRows = [...inner.matchAll(/\[TR\]([\s\S]*?)\[\/TR\]/g)].map(rm => {
           const cells = [...rm[1].matchAll(/\[TD\]([\s\S]*?)\[\/TD\]/g)]
             .map(m => `<td>${escHtml(m[1])}</td>`).join('');
           return `<tr>${cells}</tr>`;
         });
         if (tbodyRows.length) rows.push(`<tbody>${tbodyRows.join('')}</tbody>`);
-        const tableHtml = `<div class="post-table-wrap"><table class="post-table">${rows.join('')}</table></div>`;
-        placeholders.push(tableHtml);
-        return `\x00TABLE${placeholders.length - 1}\x00`;
+        placeholders.push(`<div class="post-table-wrap"><table class="post-table">${rows.join('')}</table></div>`);
+        return `\x00T${placeholders.length-1}\x00`;
       });
-
-      // 2) **텍스트** → Bold 플레이스홀더
-      withPlaceholders = withPlaceholders.replace(/\*\*([^*\n]+)\*\*/g,
-        '\x00BOLD_S\x00$1\x00BOLD_E\x00');
-
-      // 3) [링크텍스트](URL) → 링크 플레이스홀더
-      withPlaceholders = withPlaceholders.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
-        '\x00LINK_S_$2\x00$1\x00LINK_E\x00');
-
-      // 4) 나머지 텍스트 이스케이프 + 줄바꿈
-      const escaped = escHtml(withPlaceholders).replace(/\n/g,'<br>');
-
-      // 5) 플레이스홀더를 실제 HTML로 복원
-      let result = escaped.replace(/\x00TABLE(\d+)\x00/g, (_, i) => placeholders[+i]);
-      result = result.replace(/\x00BOLD_S\x00([\s\S]*?)\x00BOLD_E\x00/g, '<strong>$1</strong>');
-      result = result.replace(/\x00LINK_S_(https?:\/\/[^\x00]+)\x00([\s\S]*?)\x00LINK_E\x00/g,
-        '<a href="$1" target="_blank" rel="noopener">$2</a>');
-
+      withPlaceholders = withPlaceholders
+        .replace(/\*\*([^*\n]+)\*\*/g, '\x00BS\x00$1\x00BE\x00')
+        .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '\x00LS_$2\x00$1\x00LE\x00')
+        .replace(/\[IMG:(https?:\/\/[^\]]+)\]/g, '\x00IMG_$1\x00');
+      let result = escHtml(withPlaceholders).replace(/\n/g,'<br>');
+      result = result
+        .replace(/\x00T(\d+)\x00/g, (_, i) => placeholders[+i])
+        .replace(/\x00BS\x00([\s\S]*?)\x00BE\x00/g, '<strong>$1</strong>')
+        .replace(/\x00LS_(https?:\/\/[^\x00]+)\x00([\s\S]*?)\x00LE\x00/g,
+          '<a href="$1" target="_blank" rel="noopener">$2</a>')
+        .replace(/\x00IMG_(https?:\/\/[^\x00]+)\x00/g,
+          '<img src="$1" style="max-width:100%;display:block;margin:8px 0;border-radius:4px;">');
       return result;
     }
 
