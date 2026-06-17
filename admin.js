@@ -405,22 +405,24 @@
     const token = localStorage.getItem('hwaseo_token');
     if (!token) { alert('로그인 토큰이 없습니다.'); return; }
 
-    // 로딩 표시: 임시 placeholder 텍스트 삽입
-    const quill   = quillInstance;
-    const range   = quill.getSelection(true);
-    const tempIdx = range ? range.index : quill.getLength();
+    const quill = quillInstance;
+    const range = quill.getSelection(true);
+    const insertAt = range ? range.index : quill.getLength() - 1;
 
-    quill.insertText(tempIdx, '⏳ 이미지 업로드 중...', 'user');
-    quill.setSelection(tempIdx + 12);
+    // 업로드 중 표시
+    quill.insertText(insertAt, '⏳ 이미지 업로드 중...', { color: '#aaa' }, 'user');
+    const tempLen = '⏳ 이미지 업로드 중...'.length;
+    quill.setSelection(insertAt + tempLen);
 
     try {
       const result = await GithubDB.uploadFile(file, token, currentBoard);
-      // 임시 텍스트 삭제 후 이미지 삽입
-      quill.deleteText(tempIdx, 12);
-      quill.insertEmbed(tempIdx, 'image', result.rawUrl);
-      quill.setSelection(tempIdx + 1);
+      // 임시 텍스트 제거 후 이미지 삽입
+      quill.deleteText(insertAt, tempLen);
+      quill.insertEmbed(insertAt, 'image', result.rawUrl);
+      quill.insertText(insertAt + 1, '\n');
+      quill.setSelection(insertAt + 2);
     } catch (e) {
-      quill.deleteText(tempIdx, 12);
+      quill.deleteText(insertAt, tempLen);
       alert(`이미지 업로드 실패: ${e.message}`);
     }
   }

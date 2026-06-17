@@ -131,8 +131,9 @@
 
     const result = await res.json();
     // raw 파일 URL (GitHub Pages에서 직접 접근 가능)
-    const rawUrl = `https://${o}.github.io/${r}/${path}`;
-    return { path, rawUrl, name: file.name, size: file.size, isImage };
+    const rawUrl     = `https://raw.githubusercontent.com/${o}/${r}/${b}/${path}`;
+    const pagesUrl   = `https://${o}.github.io/${r}/${path}`;
+    return { path, rawUrl, pagesUrl, name: file.name, size: file.size, isImage };
   }
 
   // ── 파일 삭제 ───────────────────────────────
