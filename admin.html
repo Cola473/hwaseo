@@ -184,6 +184,16 @@
           <div id="quill-editor" class="quill-wrap"></div>
           <!-- 저장용 hidden textarea -->
           <textarea id="write-content" style="display:none;"></textarea>
+          <!-- 표 삽입 다이얼로그 -->
+          <div id="table-dialog" class="table-dialog" style="display:none;">
+            <span class="table-dialog-title">📋 표 삽입</span>
+            <label>행 <input type="number" id="tbl-rows" value="3" min="1" max="20" /></label>
+            <label>열 <input type="number" id="tbl-cols" value="3" min="1" max="10" /></label>
+            <div class="link-dialog-btns">
+              <button type="button" onclick="confirmInsertTable()">삽입</button>
+              <button type="button" onclick="cancelInsertTable()">취소</button>
+            </div>
+          </div>
         </div>
 
         <div class="form-group">

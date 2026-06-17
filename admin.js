@@ -374,16 +374,23 @@
             [{ 'header': [1, 2, 3, false] }],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
             ['link', 'image'],
+            [{ 'table': '표 삽입' }],
             ['clean'],
           ],
-          handlers: { image: imageHandler },
+          handlers: {
+            image: imageHandler,
+            table: function() { openTableDialog(); },
+          },
         },
-        clipboard: {
-          // 붙여넣기 시 외부 HTML의 불필요한 스타일 제거
-          matchVisual: false,
-        },
+        clipboard: { matchVisual: false },
       },
     });
+
+    // 툴바의 table 버튼 텍스트 설정
+    setTimeout(() => {
+      const btn = document.querySelector('.ql-table');
+      if (btn) { btn.textContent = '표'; btn.title = '표 삽입'; }
+    }, 0);
 
     // ── 이미지 Ctrl+V 붙여넣기 처리 ─────────────
     quill.root.addEventListener('paste', function(e) {
@@ -398,6 +405,135 @@
 
     quillInstance = quill;
     return quill;
+  }
+
+  // ── 표 삽입 ──────────────────────────────────
+  window.openTableDialog = function() {
+    document.getElementById('table-dialog').style.display = 'flex';
+    document.getElementById('tbl-rows').focus();
+  };
+  window.cancelInsertTable = function() {
+    document.getElementById('table-dialog').style.display = 'none';
+  };
+  window.confirmInsertTable = function() {
+    const rows = Math.max(1, Math.min(20, parseInt(document.getElementById('tbl-rows').value) || 3));
+    const cols = Math.max(1, Math.min(10, parseInt(document.getElementById('tbl-cols').value) || 3));
+    document.getElementById('table-dialog').style.display = 'none';
+
+    const quill = quillInstance;
+    if (!quill) return;
+
+    // 현재 커서 위치 파악
+    const range = quill.getSelection(true);
+    const index = range ? range.index : quill.getLength() - 1;
+
+    // HTML 테이블 생성 (셀에 contenteditable 별도 설정 불필요 — ql-editor 자체가 editable)
+    const thCells = Array.from({length: cols}, () =>
+      `<th style="border:1px solid #d0d5dd;padding:8px 12px;background:#f0f3f7;font-weight:600;min-width:60px;"></th>`
+    ).join('');
+    const tdCells = Array.from({length: cols}, () =>
+      `<td style="border:1px solid #d0d5dd;padding:8px 12px;min-width:60px;"></td>`
+    ).join('');
+    const bodyRows = Array.from({length: rows - 1}, () => `<tr>${tdCells}</tr>`).join('');
+
+    const tableHtml = `
+      <table class="post-table" style="border-collapse:collapse;width:100%;margin:12px 0;">
+        <thead><tr>${thCells}</tr></thead>
+        <tbody>${bodyRows}</tbody>
+      </table>`;
+
+    // Quill에 HTML 블록 삽입
+    quill.clipboard.dangerouslyPasteHTML(index, tableHtml);
+
+    // 삽입 후 첫 번째 셀로 커서 이동
+    setTimeout(() => {
+      const firstTh = quill.root.querySelector('table th');
+      if (firstTh) {
+        firstTh.focus();
+        // Quill 커서를 테이블 직후로
+        const tableEl = quill.root.querySelector('table');
+        if (tableEl) {
+          const after = quill.root.innerHTML.indexOf('</table>');
+          quill.setSelection(quill.getLength() - 1);
+        }
+      }
+    }, 50);
+  };
+
+  // ── 표 행/열 추가·삭제 (셀 우클릭 컨텍스트 메뉴) ─
+  function initTableContextMenu() {
+    const editor = document.querySelector('#quill-editor .ql-editor');
+    if (!editor) return;
+
+    // 기존 메뉴 제거
+    const old = document.getElementById('table-ctx-menu');
+    if (old) old.remove();
+
+    const menu = document.createElement('div');
+    menu.id = 'table-ctx-menu';
+    menu.className = 'table-ctx-menu';
+    menu.style.display = 'none';
+    menu.innerHTML = `
+      <button onclick="tableCtx('addRow')">행 추가 (아래)</button>
+      <button onclick="tableCtx('addCol')">열 추가 (오른쪽)</button>
+      <hr style="margin:4px 0;border-color:#eee;">
+      <button onclick="tableCtx('delRow')" style="color:#c00;">행 삭제</button>
+      <button onclick="tableCtx('delCol')" style="color:#c00;">열 삭제</button>
+      <button onclick="tableCtx('delTable')" style="color:#c00;">표 전체 삭제</button>
+    `;
+    document.body.appendChild(menu);
+
+    let ctxCell = null;
+
+    editor.addEventListener('contextmenu', function(e) {
+      const cell = e.target.closest('td, th');
+      if (!cell) return;
+      e.preventDefault();
+      ctxCell = cell;
+      menu.style.display = 'block';
+      menu.style.left = e.pageX + 'px';
+      menu.style.top  = e.pageY + 'px';
+    });
+
+    document.addEventListener('click', () => { menu.style.display = 'none'; });
+
+    window.tableCtx = function(action) {
+      if (!ctxCell) return;
+      const table = ctxCell.closest('table');
+      const row   = ctxCell.closest('tr');
+      const cellIdx = [...row.children].indexOf(ctxCell);
+
+      if (action === 'addRow') {
+        const cols = row.children.length;
+        const newRow = document.createElement('tr');
+        Array.from({length: cols}, () => {
+          const td = document.createElement('td');
+          td.style.cssText = 'border:1px solid #d0d5dd;padding:8px 12px;min-width:60px;';
+          newRow.appendChild(td);
+        });
+        row.parentNode.insertBefore(newRow, row.nextSibling);
+      } else if (action === 'addCol') {
+        table.querySelectorAll('tr').forEach((r, ri) => {
+          const isHead = r.parentNode.tagName === 'THEAD';
+          const cell = document.createElement(isHead ? 'th' : 'td');
+          cell.style.cssText = isHead
+            ? 'border:1px solid #d0d5dd;padding:8px 12px;background:#f0f3f7;font-weight:600;min-width:60px;'
+            : 'border:1px solid #d0d5dd;padding:8px 12px;min-width:60px;';
+          const ref = r.children[cellIdx + 1] || null;
+          r.insertBefore(cell, ref ? ref.nextSibling : null);
+        });
+      } else if (action === 'delRow') {
+        if (table.querySelectorAll('tr').length > 1) row.remove();
+        else table.remove();
+      } else if (action === 'delCol') {
+        const allRows = table.querySelectorAll('tr');
+        if (allRows[0].children.length <= 1) { table.remove(); return; }
+        allRows.forEach(r => { if (r.children[cellIdx]) r.children[cellIdx].remove(); });
+      } else if (action === 'delTable') {
+        table.remove();
+      }
+      menu.style.display = 'none';
+    };
   }
 
   // ── 이미지 파일 → 즉시 미리보기 → 업로드 → URL 교체 ──
@@ -440,9 +576,31 @@
   function syncQuillToTextarea() {
     const ta = document.getElementById('write-content');
     if (!ta || !quillInstance) return;
-    // Quill 에디터의 실제 HTML (quill-editor > .ql-editor 내부)
-    const editorEl = document.querySelector('#quill-editor .ql-editor');
-    ta.value = editorEl ? editorEl.innerHTML : '';
+
+    // Quill 편집 영역 HTML 복사 후 정제
+    const editorEl = quillInstance.root;
+    if (!editorEl) return;
+
+    // DOM을 복제해서 Quill 전용 속성/클래스 제거
+    const clone = editorEl.cloneNode(true);
+
+    // contenteditable 속성 제거
+    clone.removeAttribute('contenteditable');
+    clone.removeAttribute('spellcheck');
+
+    // Quill이 추가하는 data-* 속성 및 class 중 ql-* 제거
+    clone.querySelectorAll('[class]').forEach(el => {
+      const cleaned = [...el.classList]
+        .filter(c => !c.startsWith('ql-'))
+        .join(' ');
+      if (cleaned) el.className = cleaned;
+      else el.removeAttribute('class');
+    });
+
+    // ql-* 클래스만 있던 최상위 div wrapper 내용을 바로 사용
+    ta.value = clone.innerHTML.trim();
+
+    console.log('[저장 내용 확인] content:', ta.value.substring(0, 200));
   }
 
   // ── 저장된 HTML → Quill에 로드 ───────────────
@@ -463,6 +621,7 @@
     const quill = initQuill();
     quill.root.innerHTML = '';
     quill.focus();
+    setTimeout(initTableContextMenu, 100);
   };
 
   // ── openEditModal 오버라이드 ──────────────────
@@ -472,6 +631,7 @@
     const post = (cache[board]?.content || []).find(p => p.id === id);
     initQuill();
     loadHtmlToQuill(post?.content || '');
+    setTimeout(initTableContextMenu, 100);
   };
 
   // ── submitPost 오버라이드 ─────────────────────
