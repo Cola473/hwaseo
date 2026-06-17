@@ -401,6 +401,25 @@
       },
     });
 
+    const Link = Quill.import('formats/link');
+
+class CustomLink extends Link {
+  static sanitize(url) {
+    if (
+      url &&
+      !url.startsWith('http://') &&
+      !url.startsWith('https://') &&
+      !url.startsWith('mailto:')
+    ) {
+      url = 'https://' + url;
+    }
+
+    return url;
+  }
+}
+
+Quill.register(CustomLink, true); 
+     
     // ── 이미지 Ctrl+V 붙여넣기 처리 ─────────────
     quill.root.addEventListener('paste', function(e) {
       const items = Array.from((e.clipboardData || {}).items || []);
