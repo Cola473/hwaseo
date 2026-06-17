@@ -181,15 +181,11 @@
           <label>내용 <span class="required">*</span></label>
           <!-- 에디터 툴바 -->
           <div class="editor-toolbar">
-            <!-- 탭 버튼 -->
-            <button type="button" class="editor-tab-btn active" id="tab-btn-edit"    onclick="switchEditorTab('edit')">✏️ 편집</button>
-            <button type="button" class="editor-tab-btn"        id="tab-btn-preview" onclick="switchEditorTab('preview')">👁️ 미리보기</button>
-            <div class="editor-sep"></div>
-            <!-- 서식 버튼 (편집 탭에서만 동작) -->
+            <!-- 서식 버튼 -->
             <button type="button" class="editor-btn" id="fmt-bold"  title="굵게" onclick="wysiwygBold()"><strong>B</strong></button>
             <button type="button" class="editor-btn" id="fmt-link"  title="링크 삽입" onclick="wysiwygLink()">🔗 링크</button>
             <div class="editor-sep"></div>
-            <span class="editor-hint">이미지 Ctrl+V 붙여넣기 지원</span>
+            <span class="editor-hint">이미지 Ctrl+V 붙여넣기 지원 · Tab = 들여쓰기</span>
           </div>
           <!-- WYSIWYG 편집 패널 -->
           <div class="editor-panel" id="editor-panel-edit">
@@ -198,10 +194,6 @@
                  contenteditable="true"
                  spellcheck="false"
                  data-placeholder="내용을 입력하세요. 이미지는 Ctrl+V로 붙여넣기 할 수 있습니다."></div>
-          </div>
-          <!-- 미리보기 패널 (편집 내용과 동일, 읽기 전용) -->
-          <div class="editor-panel" id="editor-panel-preview" style="display:none;">
-            <div id="write-preview" class="editor-wysiwyg post-body"></div>
           </div>
           <!-- 숨겨진 textarea (저장용 텍스트 포맷 보관) -->
           <textarea id="write-content" style="display:none;"></textarea>

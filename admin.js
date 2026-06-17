@@ -341,38 +341,6 @@
   //  WYSIWYG 에디터
   // ══════════════════════════════════════════════
 
-  // ── 탭 전환 ──────────────────────────────────
-  window.switchEditorTab = function(tab) {
-    const editPanel    = document.getElementById('editor-panel-edit');
-    const previewPanel = document.getElementById('editor-panel-preview');
-    const btnEdit      = document.getElementById('tab-btn-edit');
-    const btnPreview   = document.getElementById('tab-btn-preview');
-    const fmtBold      = document.getElementById('fmt-bold');
-    const fmtLink      = document.getElementById('fmt-link');
-    const linkDlg      = document.getElementById('link-dialog');
-
-    if (tab === 'edit') {
-      editPanel.style.display    = '';
-      previewPanel.style.display = 'none';
-      btnEdit.classList.add('active');
-      btnPreview.classList.remove('active');
-      if (fmtBold) fmtBold.style.opacity = '1';
-      if (fmtLink) fmtLink.style.opacity = '1';
-    } else {
-      // 미리보기: 편집 내용을 그대로 복사 (동일 HTML)
-      const editor  = document.getElementById('wysiwyg-editor');
-      const preview = document.getElementById('write-preview');
-      if (editor && preview) preview.innerHTML = editor.innerHTML;
-      editPanel.style.display    = 'none';
-      previewPanel.style.display = '';
-      btnEdit.classList.remove('active');
-      btnPreview.classList.add('active');
-      if (fmtBold) fmtBold.style.opacity = '0.4';
-      if (fmtLink) fmtLink.style.opacity = '0.4';
-      if (linkDlg) linkDlg.style.display = 'none';
-    }
-  };
-
   // ── HTML → 저장 포맷(텍스트) ─────────────────
   function htmlToText(html) {
     if (!html) return '';
@@ -543,52 +511,68 @@
     document.getElementById('link-dialog').style.display = 'none';
   };
 
-  // ── 이미지 붙여넣기 ───────────────────────────
+
+  // ── 이미지 붙여넣기 (AbortController로 이전 리스너 확실히 제거) ──
+  let _pasteAbort = null;
+
   function initPasteImage() {
     const editor = document.getElementById('wysiwyg-editor');
     if (!editor) return;
 
-    editor.addEventListener('paste', function(e) {
-      const items = (e.clipboardData || window.clipboardData || {}).items || [];
-      for (const item of items) {
-        if (item.type.startsWith('image/')) {
-          e.preventDefault();
-          const file   = item.getAsFile();
-          const reader = new FileReader();
-          reader.onload = function(ev) {
-            const img = document.createElement('img');
-            img.src   = ev.target.result;
-            img.style.cssText = 'max-width:100%;display:block;margin:8px 0;border-radius:4px;';
+    // 이전 리스너 제거
+    if (_pasteAbort) { _pasteAbort.abort(); }
+    _pasteAbort = new AbortController();
 
-            // 파일 객체를 newFiles에 추가
-            const pseudoFile = new File(
-              [file],
-              `paste_${Date.now()}.${(file.type.split('/')[1] || 'png')}`,
-              { type: file.type }
-            );
-            img.setAttribute('data-pending-idx', newFiles.length);
-            newFiles.push(pseudoFile);
-            renderNewFiles();
-
-            // 커서 위치에 삽입
-            const sel = window.getSelection();
-            if (sel && sel.rangeCount > 0) {
-              const range = sel.getRangeAt(0);
-              range.deleteContents();
-              range.insertNode(img);
-              range.setStartAfter(img);
-              range.collapse(true);
-              sel.removeAllRanges();
-              sel.addRange(range);
-            } else {
-              editor.appendChild(img);
-            }
-          };
-          reader.readAsDataURL(file);
-          return; // 첫 이미지만 처리
-        }
+    // Tab 키 → 들여쓰기 (포커스 이동 막기)
+    editor.addEventListener('keydown', function(e) {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        document.execCommand('insertText', false, '\u00a0\u00a0\u00a0\u00a0'); // 공백 4개
       }
-    });
+    }, { signal: _pasteAbort.signal });
+
+    // paste 이벤트 — 이미지 항목이 있으면 그것만 처리
+    editor.addEventListener('paste', function(e) {
+      const items = Array.from((e.clipboardData || window.clipboardData || {}).items || []);
+      const imageItem = items.find(it => it.type.startsWith('image/'));
+      if (!imageItem) return; // 텍스트 붙여넣기는 기본 동작 유지
+
+      e.preventDefault(); // 이미지일 때만 기본 동작 차단
+
+      const file   = imageItem.getAsFile();
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        // 에디터에 이미지 삽입
+        const img = document.createElement('img');
+        img.src = ev.target.result;
+        img.style.cssText = 'max-width:100%;display:block;margin:8px 0;border-radius:4px;';
+
+        // newFiles에 추가 (저장 시 업로드)
+        const pseudoFile = new File(
+          [file],
+          `paste_${Date.now()}.${file.type.split('/')[1] || 'png'}`,
+          { type: file.type }
+        );
+        img.setAttribute('data-pending-idx', newFiles.length);
+        newFiles.push(pseudoFile);
+        renderNewFiles();
+
+        // 현재 커서 위치에 삽입
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount > 0) {
+          const range = sel.getRangeAt(0);
+          range.deleteContents();
+          range.insertNode(img);
+          range.setStartAfter(img);
+          range.collapse(true);
+          sel.removeAllRanges();
+          sel.addRange(range);
+        } else {
+          editor.appendChild(img);
+        }
+      };
+      reader.readAsDataURL(file);
+    }, { signal: _pasteAbort.signal });
   }
 
   // ── openWriteModal 오버라이드 ─────────────────
@@ -596,11 +580,10 @@
   window.openWriteModal = function(board) {
     _origOpenWrite(board);
     loadContentToEditor('');
-    switchEditorTab('edit');
     setTimeout(() => {
+      initPasteImage();
       const ed = document.getElementById('wysiwyg-editor');
       if (ed) ed.focus();
-      initPasteImage();
     }, 80);
   };
 
@@ -610,16 +593,14 @@
     _origOpenEdit(board, id);
     const post = (cache[board]?.content || []).find(p => p.id === id);
     loadContentToEditor(post?.content || '');
-    switchEditorTab('edit');
     setTimeout(() => initPasteImage(), 80);
   };
 
-  // ── submitPost 오버라이드: 이미지 먼저 업로드 ─
+  // ── submitPost 오버라이드: base64 이미지 먼저 업로드 ─
   const _origSubmit = window.submitPost;
   window.submitPost = async function() {
     const editor = document.getElementById('wysiwyg-editor');
 
-    // 붙여넣기 이미지(base64) → GitHub 업로드 → src 교체
     if (editor) {
       const pendingImgs = editor.querySelectorAll('img[data-pending-idx]');
       if (pendingImgs.length > 0) {
@@ -646,11 +627,6 @@
     syncContentFromEditor();
     await _origSubmit();
   };
-
-  // ── DOMContentLoaded 초기화 ───────────────────
-  document.addEventListener('DOMContentLoaded', function() {
-    initPasteImage();
-  });
 
   // ── 새로고침 후 자동 로그인 복원 ─────────────
   (function restoreSession() {
