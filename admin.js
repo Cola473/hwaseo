@@ -143,7 +143,6 @@
 
     B('tt-undo').addEventListener('mousedown',  e => { e.preventDefault(); exec('undo'); });
     B('tt-redo').addEventListener('mousedown',  e => { e.preventDefault(); exec('redo'); });
-    B('tt-clear').addEventListener('mousedown', e => { e.preventDefault(); exec('removeFormat'); });
 
     // 에디터 내 키 입력 시 툴바 상태 갱신
     editorEl.addEventListener('keyup',   updateToolbarState);
