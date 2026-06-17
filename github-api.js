@@ -32,8 +32,12 @@
           { headers: apiHeaders(token) }
         );
         if (res.ok) {
-          const data = await res.json();
-          const content = JSON.parse(atob(data.content.replace(/\n/g, '')));
+          const data    = await res.json();
+          const raw     = data.content.replace(/\n/g, '');
+          // writeFile이 btoa(unescape(encodeURIComponent(json))) 로 인코딩했으므로
+          // 역순: decodeURIComponent(escape(atob(raw)))
+          const decoded = decodeURIComponent(escape(atob(raw)));
+          const content = JSON.parse(decoded);
           return { content, sha: data.sha };
         }
         if (res.status === 404) return { content: [], sha: null };
