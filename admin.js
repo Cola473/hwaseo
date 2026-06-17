@@ -401,21 +401,6 @@
       },
     });
 
-    // 툴바에 표 버튼 직접 추가
-    const toolbar = document.querySelector('#quill-editor .ql-toolbar');
-    if (toolbar) {
-      const span = document.createElement('span');
-      span.className = 'ql-formats';
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.textContent = '표 삽입';
-      btn.title = '표 삽입';
-      btn.style.cssText = 'width:auto;padding:0 8px;font-size:0.8rem;font-weight:600;';
-      btn.addEventListener('click', () => openTableDialog());
-      span.appendChild(btn);
-      toolbar.appendChild(span);
-    }
-
     // ── 이미지 Ctrl+V 붙여넣기 처리 ─────────────
     quill.root.addEventListener('paste', function(e) {
       const items = Array.from((e.clipboardData || {}).items || []);
