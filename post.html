@@ -16,6 +16,7 @@
     .post-body a:hover { color: var(--color-navy, #1a2c4e); }
     .post-body strong, .post-body b { font-weight: 700; }
     /* Quill HTML 요소 스타일 */
+    .post-body { max-width: 800px; margin: 0 auto; }
     .post-body p { margin: 0 0 0.6em 0; line-height: 1.8; }
     .post-body h1 { font-size: 1.4rem; font-weight: 700; margin: 1.2em 0 0.5em; color: var(--color-navy-dark, #1a2c4e); }
     .post-body h2 { font-size: 1.2rem; font-weight: 700; margin: 1em 0 0.4em; color: var(--color-navy-dark, #1a2c4e); }
@@ -312,7 +313,38 @@
       }
     }
 
+    // ── 줄 자동 들여쓰기 ──────────────────────────
+    // 기호·번호로 시작하는 줄을 hanging-indent 스타일로 변환
+    // 위계 판단: 줄 맨 앞 공백/탭/전각공백/&nbsp; 개수가 2 이상이면 2단계
+    function applyIndent(html) {
+      return html.split(/<br\s*\/?>\s*/i).map(line => {
+        // HTML 태그 제거 후 원시 텍스트
+        const raw = line.replace(/<[^>]+>/g, '');
 
+        // 앞쪽 들여쓰기 문자열 추출 (공백·탭·전각공백·non-breaking space·&nbsp;)
+        const indentMatch = raw.match(/^(?:[ \t\u00a0\u3000]|&nbsp;)*/);
+        const indentStr   = indentMatch ? indentMatch[0] : '';
+        // &nbsp; 1개를 1칸으로 환산해서 들여쓰기 깊이 계산
+        const indentCount = indentStr.replace(/&nbsp;/g, ' ').length;
+
+        // 들여쓰기 제거 후 실제 내용
+        const plain = raw.replace(/^(?:[ \t\u00a0\u3000]|&nbsp;)*/, '').replace(/&nbsp;/g, ' ').trim();
+        if (!plain) return line;
+
+        const isBullet   = /^(○|●|◎|◆|◇|■|□|▪|▸|▶|•|·|~|※|✓|✔|√)/.test(plain);
+        const isNumbered = /^(\d+\.|[①-⑳]|[㉠-㉻]|\([0-9]+\)|\([가-힣a-zA-Z]\)|[가-힣]\.)/.test(plain);
+
+        if (!isBullet && !isNumbered) return line;
+
+        if (indentCount >= 2) {
+          // 2단계: 명시적으로 2칸 이상 들여쓴 경우
+          return `<span style="display:block;padding-left:3.2em;text-indent:-1.6em;">${line}</span>`;
+        } else {
+          // 1단계: 들여쓰기 없거나 1칸
+          return `<span style="display:block;padding-left:1.6em;text-indent:-1.6em;">${line}</span>`;
+        }
+      }).join('<br>');
+    }
     function renderContent(raw) {
       if (!raw) return '';
 
@@ -381,7 +413,7 @@
           const href = /^https?:\/\//i.test(url) ? url : 'https://' + url;
           return `<a href="${href}" target="_blank" rel="noopener">${url}</a>${trail}`;
         });
-      return result;
+      return applyIndent(result);
     }
 
     const bodyHtml = renderContent(post.content || '');
