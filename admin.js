@@ -283,7 +283,7 @@
       }
 
       const result = await GithubDB.writeFile(dataFile(currentBoard), posts, cached.sha, token);
-      cache[currentBoard] = { content: posts, sha: result.content.sha };
+      cache[currentBoard] = { content: posts, sha: result?.content?.sha || cached.sha };
       renderList(currentBoard, posts);
       closeModal();
     } catch (e) {
@@ -322,7 +322,7 @@
       const posts  = cached.content.filter(p => p.id !== id);
       const token  = localStorage.getItem('hwaseo_token');
       const result = await GithubDB.writeFile(dataFile(board), posts, cached.sha, token);
-      cache[board] = { content: posts, sha: result.content.sha };
+      cache[board] = { content: posts, sha: result?.content?.sha || cached.sha };
       renderList(board, posts);
       closeDeleteModal();
     } catch (e) {

@@ -57,6 +57,10 @@
   // ── JSON 파일 쓰기 ──────────────────────────
   async function writeFile(path, content, sha, token) {
     const { GITHUB_OWNER: o, GITHUB_REPO: r, GITHUB_BRANCH: b } = SITE_CONFIG;
+
+    // 캐시된 sha가 없으면 저장 직전 최신 sha 조회 (409 충돌 방지)
+    let fileSha = sha || await fetchSha(path);
+
     const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2))));
     const res = await fetch(`${BASE}/repos/${o}/${r}/contents/${path}`, {
       method: 'PUT',
@@ -65,14 +69,20 @@
         message: `게시글 업데이트: ${path}`,
         content: encoded,
         branch: b,
-        ...(sha ? { sha } : {}),
+        ...(fileSha ? { sha: fileSha } : {}),
       }),
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.message || `쓰기 실패: ${res.status}`);
     }
-    return res.json();
+    const result = await res.json();
+    // admin.js가 result.content.sha 로 캐시 갱신하므로 구조 보장
+    if (result && !result.content) result.content = {};
+    if (result && result.content && !result.content.sha) {
+      result.content.sha = fileSha; // 응답에 sha 없으면 기존 값 유지
+    }
+    return result;
   }
 
   // ── 바이너리 파일 업로드 (이미지·첨부파일) ──
