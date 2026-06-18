@@ -315,34 +315,32 @@
     }
 
     // ── 줄 자동 들여쓰기 ──────────────────────────
-    // 기호·번호로 시작하는 줄을 hanging-indent 스타일로 변환
-    // 위계 판단: 줄 맨 앞 공백/탭/전각공백/&nbsp; 개수가 2 이상이면 2단계
+    // 기호·번호로 시작하는 줄 → hanging-indent 유지
+    // 일반 줄 → 앞쪽 공백 문자(전각공백·&nbsp; 포함)만 제거
     function applyIndent(html) {
       return html.split(/<br\s*\/?>\s*/i).map(line => {
-        // HTML 태그 제거 후 원시 텍스트
         const raw = line.replace(/<[^>]+>/g, '');
 
-        // 앞쪽 들여쓰기 문자열 추출 (공백·탭·전각공백·non-breaking space·&nbsp;)
         const indentMatch = raw.match(/^(?:[ \t\u00a0\u3000]|&nbsp;)*/);
         const indentStr   = indentMatch ? indentMatch[0] : '';
-        // &nbsp; 1개를 1칸으로 환산해서 들여쓰기 깊이 계산
         const indentCount = indentStr.replace(/&nbsp;/g, ' ').length;
 
-        // 들여쓰기 제거 후 실제 내용
         const plain = raw.replace(/^(?:[ \t\u00a0\u3000]|&nbsp;)*/, '').replace(/&nbsp;/g, ' ').trim();
         if (!plain) return line;
 
         const isBullet   = /^(○|●|◎|◆|◇|■|□|▪|▸|▶|•|·|~|※|✓|✔|√)/.test(plain);
         const isNumbered = /^(\d+\.|[①-⑳]|[㉠-㉻]|\([0-9]+\)|\([가-힣a-zA-Z]\)|[가-힣]\.)/.test(plain);
 
-        if (!isBullet && !isNumbered) return line;
-
-        if (indentCount >= 2) {
-          // 2단계: 명시적으로 2칸 이상 들여쓴 경우
-          return `<span style="display:block;padding-left:3.2em;text-indent:-1.6em;">${line}</span>`;
+        if (isBullet || isNumbered) {
+          // 기호/번호 줄: hanging-indent 적용
+          if (indentCount >= 2) {
+            return `<span style="display:block;padding-left:3.2em;text-indent:-1.6em;">${line}</span>`;
+          } else {
+            return `<span style="display:block;padding-left:1.6em;text-indent:-1.6em;">${line}</span>`;
+          }
         } else {
-          // 1단계: 들여쓰기 없거나 1칸
-          return `<span style="display:block;padding-left:1.6em;text-indent:-1.6em;">${line}</span>`;
+          // 일반 줄: 앞 공백만 제거 (내어쓰기 현상 방지)
+          return line.replace(/^(?:[ \t\u00a0\u3000]|&nbsp;)+/, '');
         }
       }).join('<br>');
     }
