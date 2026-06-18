@@ -1542,6 +1542,7 @@ body.consult-modal-open {
   padding: 0.35rem 0 0.35rem 0.75rem;
   margin: 0 0 1rem 0;
   line-height: 1.5;
+  word-break: keep-all;
 }
 
 /* ── Lv2: 중제목 ── */
@@ -1551,6 +1552,7 @@ body.consult-modal-open {
   color: #3a5a3a;
   margin: 1.4rem 0 0.38rem 0;
   line-height: 1.5;
+  word-break: keep-all;
 }
 
 /* ── Lv3: 소제목 ── */
@@ -1560,6 +1562,7 @@ body.consult-modal-open {
   color: var(--color-text);
   margin: 0.95rem 0 0.28rem 0;
   line-height: 1.5;
+  word-break: keep-all;
 }
 
 /* ── 본문 단락 ── */
@@ -1609,7 +1612,7 @@ hr.divider {
 .support-img {
   display: block;
   margin: 1rem auto;
-  max-width: 100%;
+  max-width: 85%;
   width: auto;
   height: auto;
 }
