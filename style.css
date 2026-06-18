@@ -1582,7 +1582,7 @@ body.consult-modal-open {
   color: #555;
   line-height: 1.71;   /* 원래 1.8 대비 약 5% 축소 */
   padding-left: 1em;
-  text-indent: -1em;
+  text-indent: -0.5em;
   word-break: keep-all;
 }
 
