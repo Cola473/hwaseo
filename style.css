@@ -431,7 +431,7 @@ img { max-width: 100%; height: auto; display: block; }
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 22px 24px;
+  padding: 22px 20px;
   height: 100%;
   transition: background var(--transition);
 }
@@ -463,7 +463,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .icon-fallback {
-  font-size: 1.8rem;
+  font-size: 2rem;
 }
 
 .blog-badge {
@@ -485,7 +485,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .quick-text strong {
-  font-size: 1.0rem;
+  font-size: 1.15rem;
   font-weight: 600;
   color: var(--color-navy-dark);
   letter-spacing: -0.01em;
