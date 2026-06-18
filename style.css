@@ -524,7 +524,7 @@ img { max-width: 100%; height: auto; display: block; }
 
 .content-grid {
   display: grid;
-  grid-template-columns: 1fr 300px 280px;
+  grid-template-columns: 1fr 300px;
   gap: 28px;
   align-items: start;
 }
@@ -622,10 +622,8 @@ img { max-width: 100%; height: auto; display: block; }
 .center-section {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 12px;
   border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
 }
 
 .center-img-wrap {
@@ -633,6 +631,21 @@ img { max-width: 100%; height: auto; display: block; }
   aspect-ratio: 4/3;
   overflow: hidden;
   background: var(--color-navy-mid);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.consult-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  background: var(--color-gold);
+  color: var(--color-white);
+  transition: background var(--transition);
+  text-align: center;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  box-shadow: var(--shadow-md);
 }
 
 .center-img {
@@ -663,19 +676,7 @@ img { max-width: 100%; height: auto; display: block; }
 
 .center-img-wrap.img-placeholder .img-placeholder-text { display: block; }
 
-.consult-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 20px;
-  background: var(--color-gold);
-  color: var(--color-white);
-  transition: background var(--transition);
-  text-align: center;
-}
 
-.consult-btn:hover { background: var(--color-gold-lt); }
 
 .consult-icon { font-size: 1.3rem; }
 
@@ -694,10 +695,14 @@ img { max-width: 100%; height: auto; display: block; }
 /* 관련기관 */
 .links-section {
   background: var(--color-white);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  border: 1px solid var(--color-border);
+  border-top: none;
+  box-shadow: none;
+  overflow: hidden;
+  margin-top: 12px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
 }
 
 .links-title {
@@ -1603,3 +1608,4 @@ hr.divider {
   margin-top: 1.6rem;
   color: var(--color-navy-dark);
 }
+.consult-btn:hover { background: var(--color-gold-lt); }
