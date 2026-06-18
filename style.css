@@ -527,6 +527,8 @@ img { max-width: 100%; height: auto; display: block; }
   grid-template-columns: 1fr 300px;
   gap: 28px;
   align-items: stretch;
+  /* grid 자식이 셀 전체 높이를 차지하도록 */
+  grid-auto-rows: 1fr;
 }
 
 /* 게시판 */
@@ -534,11 +536,17 @@ img { max-width: 100%; height: auto; display: block; }
   display: flex;
   flex-direction: column;
   gap: 24px;
-  height: 100%;
 }
 
 /* 학계소식이 남은 공간을 채워 전체 높이를 오른쪽과 맞춤 */
 .board-section .board-box:first-child {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 학계소식 게시글 목록도 늘어나도록 */
+.board-section .board-box:first-child .board-list {
   flex: 1;
 }
 
@@ -629,7 +637,6 @@ img { max-width: 100%; height: auto; display: block; }
   display: flex;
   flex-direction: column;
   gap: 24px;
-  height: 100%;
 }
 
 /* 이미지 + 상담문의 버튼을 하나의 박스로 묶음 */
@@ -639,7 +646,7 @@ img { max-width: 100%; height: auto; display: block; }
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-md);
-  flex: 1;                  /* 관련기관 아래에 남은 공간 채움 */
+  flex: 1;
 }
 
 .center-img-wrap {
