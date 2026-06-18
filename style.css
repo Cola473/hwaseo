@@ -526,7 +526,7 @@ img { max-width: 100%; height: auto; display: block; }
   display: grid;
   grid-template-columns: 1fr 300px;
   gap: 28px;
-  align-items: start;
+  align-items: stretch;
 }
 
 /* 게시판 */
@@ -534,6 +534,12 @@ img { max-width: 100%; height: auto; display: block; }
   display: flex;
   flex-direction: column;
   gap: 24px;
+  height: 100%;
+}
+
+/* 학계소식이 남은 공간을 채워 전체 높이를 오른쪽과 맞춤 */
+.board-section .board-box:first-child {
+  flex: 1;
 }
 
 .board-box {
@@ -618,20 +624,33 @@ img { max-width: 100%; height: auto; display: block; }
   font-family: var(--font-en);
 }
 
-/* 센터 이미지 + 상담문의 */
+/* 센터 컬럼 전체: 이미지+버튼 박스 + 관련기관 박스를 세로로, 간격은 게시판과 동일한 24px */
 .center-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 24px;
+  height: 100%;
+}
+
+/* 이미지 + 상담문의 버튼을 하나의 박스로 묶음 */
+.img-consult-wrap {
+  display: flex;
+  flex-direction: column;
   border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  flex: 1;                  /* 관련기관 아래에 남은 공간 채움 */
 }
 
 .center-img-wrap {
   position: relative;
-  aspect-ratio: 4/3;
   overflow: hidden;
   background: var(--color-navy-mid);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  flex: 1;                  /* 이미지가 남은 세로 공간을 채움 */
+  min-height: 180px;
+  isolation: isolate;
+  will-change: transform;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
 }
 
 .consult-btn {
@@ -644,8 +663,7 @@ img { max-width: 100%; height: auto; display: block; }
   color: var(--color-white);
   transition: background var(--transition);
   text-align: center;
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  flex-shrink: 0;           /* 버튼 높이 고정 */
 }
 
 .center-img {
@@ -653,9 +671,11 @@ img { max-width: 100%; height: auto; display: block; }
   height: 100%;
   object-fit: cover;
   transition: transform 0.5s ease;
+  position: absolute;
+  top: 0; left: 0;
 }
 
-.center-section:hover .center-img { transform: scale(1.04); }
+.img-consult-wrap:hover .center-img { transform: scale(1.04); }
 
 .img-placeholder {
   display: flex;
@@ -695,14 +715,11 @@ img { max-width: 100%; height: auto; display: block; }
 /* 관련기관 */
 .links-section {
   background: var(--color-white);
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-  border: 1px solid var(--color-border);
-  border-top: none;
-  box-shadow: none;
-  overflow: hidden;
-  margin-top: 12px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
 .links-title {
