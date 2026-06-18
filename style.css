@@ -756,7 +756,7 @@ img { max-width: 100%; height: auto; display: block; }
   background: var(--color-white);
   text-align: center;
   transition: background var(--transition);
-  min-height: 80px;
+  min-height: 74px;
 }
 
 .link-card:hover {
