@@ -1591,7 +1591,7 @@ body.consult-modal-open {
   font-size: 0.85rem;
   color: #666;
   line-height: 1.66;   /* 원래 1.75 대비 약 5% 축소 */
-  padding-left: 1.1rem;
+  padding-left: 0.5rem;
   word-break: keep-all;
 }
 
