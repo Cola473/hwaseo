@@ -1465,7 +1465,7 @@ img { max-width: 100%; height: auto; display: block; }
 .consult-contact-value {
   color: var(--color-text);
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.45;
   word-break: keep-all;
 }
