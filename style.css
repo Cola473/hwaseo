@@ -1483,9 +1483,9 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .consult-ready-title {
-  margin: 0 0 12px;
+  margin: 0 0 14px;
   color: var(--color-navy);
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: 0;
   text-align: center;
@@ -1493,7 +1493,7 @@ img { max-width: 100%; height: auto; display: block; }
 
 .consult-ready-list {
   display: grid;
-  gap: 8px;
+  gap: 4px;
   margin: 0;
   padding-left: 20px;
 }
