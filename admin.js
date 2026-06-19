@@ -127,7 +127,7 @@
     B('tt-h2').addEventListener('mousedown', e => { e.preventDefault(); toggleBlock('h2'); });
     B('tt-h3').addEventListener('mousedown', e => { e.preventDefault(); toggleBlock('h3'); });
 
-    B('tt-ul').addEventListener('mousedown', e => { e.preventDefault(); exec('insertUnorderedList'); });
+    B('tt-ul').addEventListener('mousedown', e => { e.preventDefault(); exec('indent'); });
     B('tt-ol').addEventListener('mousedown', e => { e.preventDefault(); exec('insertOrderedList'); });
     B('tt-bq').addEventListener('mousedown', e => { e.preventDefault(); toggleBlockquote(); });
 
@@ -273,7 +273,6 @@
 
         const ancestor = sel.getRangeAt(0).commonAncestorContainer;
         const node     = ancestor.nodeType === 3 ? ancestor.parentElement : ancestor;
-        setActive('tt-ul', !!node.closest('ul'));
         setActive('tt-ol', !!node.closest('ol'));
       }
     } catch(e) { /* queryCommandState 지원 안 하는 경우 무시 */ }
