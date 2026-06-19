@@ -127,7 +127,7 @@
     B('tt-h2').addEventListener('mousedown', e => { e.preventDefault(); toggleBlock('h2'); });
     B('tt-h3').addEventListener('mousedown', e => { e.preventDefault(); toggleBlock('h3'); });
 
-    B('tt-ul').addEventListener('mousedown', e => { e.preventDefault(); exec('indent'); });
+    B('tt-ul').addEventListener('mousedown', e => { e.preventDefault(); toggleIndent(); });
     B('tt-ol').addEventListener('mousedown', e => { e.preventDefault(); exec('insertOrderedList'); });
     B('tt-bq').addEventListener('mousedown', e => { e.preventDefault(); toggleBlockquote(); });
 
@@ -187,7 +187,53 @@
     return null;
   }
 
-  // ── 인용 토글 ────────────────────────────────
+  // ── 들여쓰기 (블록 요소에 margin-left만 적용, 색상 변경 없음) ──
+  const INDENT_STEP = 27; // 브라우저 기본 들여쓰기(40px) 대비 약 1.5배 축소
+
+  function toggleIndent() {
+    restoreSelection();
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+
+    // 선택 범위 내 모든 블록 요소 수집
+    const range = sel.getRangeAt(0);
+    const blocks = new Set();
+
+    if (range.collapsed) {
+      const block = getBlockAncestor(range.commonAncestorContainer);
+      if (block) blocks.add(block);
+    } else {
+      const walker = document.createTreeWalker(
+        range.commonAncestorContainer.nodeType === 1
+          ? range.commonAncestorContainer
+          : range.commonAncestorContainer.parentElement,
+        NodeFilter.SHOW_ELEMENT
+      );
+      const startBlock = getBlockAncestor(range.startContainer);
+      const endBlock   = getBlockAncestor(range.endContainer);
+      let node;
+      let collecting = false;
+      while ((node = walker.nextNode())) {
+        if (node === startBlock) collecting = true;
+        if (collecting && ['P','H1','H2','H3','H4','H5','H6','LI','BLOCKQUOTE','DIV'].includes(node.tagName)) {
+          if (range.intersectsNode(node)) blocks.add(node);
+        }
+        if (node === endBlock) break;
+      }
+      if (startBlock) blocks.add(startBlock);
+      if (endBlock) blocks.add(endBlock);
+    }
+
+    blocks.forEach(block => {
+      const current = parseInt(block.style.marginLeft || '0', 10);
+      block.style.marginLeft = (current + INDENT_STEP) + 'px';
+    });
+
+    editorEl.focus();
+    updateToolbarState();
+  }
+
+
   function toggleBlockquote() {
     restoreSelection();
     const sel = window.getSelection();
