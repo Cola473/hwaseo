@@ -129,7 +129,6 @@
 
     B('tt-ul').addEventListener('mousedown', e => { e.preventDefault(); toggleIndent(); });
     B('tt-ol').addEventListener('mousedown', e => { e.preventDefault(); exec('insertOrderedList'); });
-    B('tt-bq').addEventListener('mousedown', e => { e.preventDefault(); toggleBlockquote(); });
 
     B('tt-link').addEventListener('mousedown',  e => { e.preventDefault(); promptLink(); });
     B('tt-table').addEventListener('mousedown', e => { e.preventDefault(); toggleTableDialog(); });
@@ -187,42 +186,24 @@
     return null;
   }
 
-  // ── 들여쓰기 (execCommand 기반: Undo 정상 동작 + 텍스트 노드도 처리) ──
+  // ── 들여쓰기 토글 (execCommand 기반: Undo 정상 동작 + 모든 텍스트 처리) ──
+  // bold/italic처럼 재클릭 시 들여쓰기 해제
   function toggleIndent() {
     restoreSelection();
-    document.execCommand('indent', false, null);
-
-    // execCommand('indent')가 생성한 blockquote에 색상 무효화 클래스 부여
-    // (인용 블록과 시각적으로 구분되도록 들여쓰기 전용 마커 추가)
     const sel = window.getSelection();
+    let alreadyIndented = false;
     if (sel && sel.rangeCount > 0) {
       let node = sel.getRangeAt(0).commonAncestorContainer;
       node = node.nodeType === 3 ? node.parentElement : node;
-      const bq = node ? node.closest('blockquote') : null;
-      if (bq && !bq.classList.contains('tt-indent-block')) {
-        bq.classList.add('tt-indent-block');
-      }
+      alreadyIndented = !!(node && node.closest('blockquote'));
     }
 
-    editorEl.focus();
-    updateToolbarState();
-  }
-
-
-  function toggleBlockquote() {
-    restoreSelection();
-    const sel = window.getSelection();
-    if (!sel || sel.rangeCount === 0) return;
-    const ancestor = sel.getRangeAt(0).commonAncestorContainer;
-    const bq = (ancestor.nodeType === 3 ? ancestor.parentElement : ancestor).closest('blockquote');
-    if (bq) {
-      // blockquote 해제: 내용을 바깥으로
-      const frag = document.createDocumentFragment();
-      while (bq.firstChild) frag.appendChild(bq.firstChild);
-      bq.parentNode.replaceChild(frag, bq);
+    if (alreadyIndented) {
+      document.execCommand('outdent', false, null);
     } else {
-      document.execCommand('formatBlock', false, 'blockquote');
+      document.execCommand('indent', false, null);
     }
+
     editorEl.focus();
     updateToolbarState();
   }
@@ -290,10 +271,10 @@
         setActive('tt-h1', tag === 'h1');
         setActive('tt-h2', tag === 'h2');
         setActive('tt-h3', tag === 'h3');
-        setActive('tt-bq', tag === 'blockquote');
 
         const ancestor = sel.getRangeAt(0).commonAncestorContainer;
         const node     = ancestor.nodeType === 3 ? ancestor.parentElement : ancestor;
+        setActive('tt-ul', !!node.closest('blockquote'));
         setActive('tt-ol', !!node.closest('ol'));
       }
     } catch(e) { /* queryCommandState 지원 안 하는 경우 무시 */ }

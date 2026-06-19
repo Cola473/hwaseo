@@ -101,19 +101,15 @@
   .tiptap-editor em  { font-style:italic; }
   .tiptap-editor u   { text-decoration:underline; }
   .tiptap-editor s   { text-decoration:line-through; }
+  /* blockquote는 들여쓰기 전용 컨테이너로만 사용 (인용 스타일 없음) */
   .tiptap-editor blockquote {
-    border-left:3px solid var(--color-navy-mid);
-    margin:.8em 0; padding:.4em 1em;
-    color:var(--color-gray-dk); background:var(--color-off-white);
-  }
-  /* 들여쓰기 전용 블록: 인용 스타일(색상/배경/테두리) 무효화, 너비만 축소 */
-  .tiptap-editor blockquote.tt-indent-block {
-    border-left: none;
-    background: none;
-    color: inherit;
     margin: 0;
     padding: 0;
     margin-left: 27px; /* 브라우저 기본 들여쓰기(40px) 대비 약 1.5배 축소 */
+  }
+  /* 들여쓰기 중첩 시 단계별로 누적 */
+  .tiptap-editor blockquote blockquote {
+    margin-left: 27px;
   }
   .tiptap-editor img {
     max-width:100%; height:auto;
@@ -338,7 +334,6 @@
               <div class="tiptap-toolbar-sep"></div>
               <button id="tt-ul"   title="들여쓰기">⇥</button>
               <button id="tt-ol"   title="번호 목록">①</button>
-              <button id="tt-bq"   title="인용">❝</button>
               <div class="tiptap-toolbar-sep"></div>
               <button id="tt-link"  title="링크 삽입">🔗</button>
               <button id="tt-table" title="표 삽입">⊞</button>
