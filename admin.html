@@ -106,6 +106,15 @@
     margin:.8em 0; padding:.4em 1em;
     color:var(--color-gray-dk); background:var(--color-off-white);
   }
+  /* 들여쓰기 전용 블록: 인용 스타일(색상/배경/테두리) 무효화, 너비만 축소 */
+  .tiptap-editor blockquote.tt-indent-block {
+    border-left: none;
+    background: none;
+    color: inherit;
+    margin: 0;
+    padding: 0;
+    margin-left: 27px; /* 브라우저 기본 들여쓰기(40px) 대비 약 1.5배 축소 */
+  }
   .tiptap-editor img {
     max-width:100%; height:auto;
     display:block; margin:8px 0; border-radius:4px;
