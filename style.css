@@ -1456,15 +1456,15 @@ img { max-width: 100%; height: auto; display: block; }
 
 .consult-contact-label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   color: var(--color-navy);
-  font-size: 0.9rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .consult-contact-value {
   color: var(--color-text);
-  font-size: 0.94rem;
+  font-size: 1rem;
   font-weight: 600;
   line-height: 1.45;
   word-break: keep-all;
