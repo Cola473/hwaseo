@@ -331,9 +331,9 @@
   }
 
   window.tableCtxCmd = function(cmd) {
+    const cell = ctxTargetCell;   // hideTableCtxMenu()가 ctxTargetCell을 null로 만들기 전에 보관
     hideTableCtxMenu();
-    if (!ctxTargetCell) return;
-    const cell  = ctxTargetCell;
+    if (!cell) return;
     const row   = cell.parentElement;
     const tbody = row.parentElement;
     const table = tbody.closest('table');
