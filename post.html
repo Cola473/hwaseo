@@ -95,16 +95,16 @@
     <div class="container">
       <div class="sub-layout">
 
-        <!-- 좌측 사이드바 (JS로 active 처리) -->
+        <!-- 좌측 사이드바 (JS로 board 종류에 맞게 교체) -->
         <aside class="sub-sidebar">
-          <div class="sidebar-section-title">
+          <div class="sidebar-section-title" id="sidebar-section-title">
             <span class="section-name">
               <img src="images/logo-icon.png" alt="" class="section-logo" onerror="this.style.display='none';" />
               게시판
             </span>
             <span class="sidebar-section-arrow">▶</span>
           </div>
-          <nav class="sidebar-nav">
+          <nav class="sidebar-nav" id="sidebar-nav">
             <a href="board-news.html" id="nav-news">학계소식</a>
             <a href="board-free.html" id="nav-free">자유게시판</a>
           </nav>
@@ -201,14 +201,41 @@
     const board    = GithubDB.getParam('board');
     const targetId = GithubDB.getParam('id');
 
+    const SIDEBAR_CATS = {
+      board: {
+        title: '게시판',
+        iconHtml: '<img src="images/logo-icon.png" alt="" class="section-logo" onerror="this.style.display=\'none\';" />',
+        items: [
+          { href: 'board-news.html', id: 'nav-news', label: '학계소식' },
+          { href: 'board-free.html', id: 'nav-free', label: '자유게시판' },
+        ],
+      },
+      research: {
+        title: '조사현황',
+        iconHtml: '<span style="font-size:1.1rem;">🗺️</span>',
+        items: [
+          { href: 'research-surface.html',    id: 'nav-surface',    label: '지표조사' },
+          { href: 'research-excavation.html', id: 'nav-excavation', label: '발굴조사' },
+          { href: 'research-academic.html',   id: 'nav-academic',   label: '학술연구용역' },
+        ],
+      },
+      archive: {
+        title: '자료실',
+        iconHtml: '<span style="font-size:1.1rem;">📚</span>',
+        items: [
+          { href: 'archive-report.html', id: 'nav-report', label: '발간보고서' },
+        ],
+      },
+    };
+
     const META = {
-      news:       { label: '학계소식',    dataFile: SITE_CONFIG.DATA_FILE_NEWS,    listUrl: 'board-news.html',          navId: 'nav-news' },
-      free:       { label: '자유게시판',  dataFile: SITE_CONFIG.DATA_FILE_FREE,    listUrl: 'board-free.html',          navId: 'nav-free' },
-      notice:     { label: '공지사항',    dataFile: SITE_CONFIG.DATA_FILE_NOTICE,  listUrl: 'board-notice.html',        navId: null },
-      surface:    { label: '지표조사',    dataFile: SITE_CONFIG.DATA_FILE_SURVEY1, listUrl: 'research-surface.html',    navId: null },
-      excavation: { label: '발굴조사',    dataFile: SITE_CONFIG.DATA_FILE_SURVEY2, listUrl: 'research-excavation.html', navId: null },
-      academic:   { label: '학술연구용역',dataFile: SITE_CONFIG.DATA_FILE_SURVEY3, listUrl: 'research-academic.html',   navId: null },
-      report:     { label: '발간보고서',  dataFile: SITE_CONFIG.DATA_FILE_REPORT,  listUrl: 'archive-report.html',      navId: null },
+      news:       { label: '학계소식',    dataFile: SITE_CONFIG.DATA_FILE_NEWS,    listUrl: 'board-news.html',          navId: 'nav-news',    sidebarCat: 'board',    catLabel: '게시판' },
+      free:       { label: '자유게시판',  dataFile: SITE_CONFIG.DATA_FILE_FREE,    listUrl: 'board-free.html',          navId: 'nav-free',    sidebarCat: 'board',    catLabel: '게시판' },
+      notice:     { label: '공지사항',    dataFile: SITE_CONFIG.DATA_FILE_NOTICE,  listUrl: 'board-notice.html',        navId: null,           sidebarCat: 'board',    catLabel: '게시판' },
+      surface:    { label: '지표조사',    dataFile: SITE_CONFIG.DATA_FILE_SURVEY1, listUrl: 'research-surface.html',    navId: 'nav-surface',    sidebarCat: 'research', catLabel: '조사현황' },
+      excavation: { label: '발굴조사',    dataFile: SITE_CONFIG.DATA_FILE_SURVEY2, listUrl: 'research-excavation.html', navId: 'nav-excavation', sidebarCat: 'research', catLabel: '조사현황' },
+      academic:   { label: '학술연구용역',dataFile: SITE_CONFIG.DATA_FILE_SURVEY3, listUrl: 'research-academic.html',   navId: 'nav-academic',   sidebarCat: 'research', catLabel: '조사현황' },
+      report:     { label: '발간보고서',  dataFile: SITE_CONFIG.DATA_FILE_REPORT,  listUrl: 'archive-report.html',      navId: 'nav-report',     sidebarCat: 'archive',  catLabel: '자료실' },
     };
 
     const meta = META[board];
@@ -217,6 +244,26 @@
       headerEl.innerHTML = '<div class="error-box" style="margin:0;">잘못된 접근입니다.</div>';
       wrapEl.innerHTML   = '';
       return;
+    }
+
+    // 사이드바를 현재 글의 카테고리(게시판/조사현황/자료실)에 맞게 교체
+    const cat = SIDEBAR_CATS[meta.sidebarCat];
+    if (cat) {
+      const titleEl = document.getElementById('sidebar-section-title');
+      const navEl2  = document.getElementById('sidebar-nav');
+      if (titleEl) {
+        titleEl.innerHTML = `
+          <span class="section-name">
+            ${cat.iconHtml}
+            ${cat.title}
+          </span>
+          <span class="sidebar-section-arrow">▶</span>`;
+      }
+      if (navEl2) {
+        navEl2.innerHTML = cat.items
+          .map(it => `<a href="${it.href}" id="${it.id}">${it.label}</a>`)
+          .join('\n');
+      }
     }
 
     // 사이드바 active
@@ -268,7 +315,7 @@
       <div class="content-breadcrumb">
         <a href="index.html">HOME</a>
         <span>›</span>
-        <a href="${meta.listUrl}">게시판</a>
+        <a href="${meta.listUrl}">${meta.catLabel}</a>
         <span>›</span>
         <a href="${meta.listUrl}">${meta.label}</a>
         <span>›</span>
