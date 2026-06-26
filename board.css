@@ -147,13 +147,13 @@
 .tag-notice {
   flex-shrink: 0;
   display: inline-block;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 500;
   color: var(--color-white);
   background: var(--color-navy);
   padding: 2px 4px;
   border-radius: 2px;
-  letter-spacing: 0.1em;
+  letter-spacing: -0.05em;
 }
 
 .row-notice-pinned { background: var(--color-off-white); }
