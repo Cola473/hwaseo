@@ -148,12 +148,12 @@
   flex-shrink: 0;
   display: inline-block;
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--color-white);
   background: var(--color-navy);
   padding: 2px 2px;
   border-radius: 2px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.1em;
 }
 
 .row-notice-pinned { background: var(--color-off-white); }
