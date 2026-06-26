@@ -156,6 +156,9 @@
   letter-spacing: 0.02em;
 }
 
+.row-notice-pinned { background: var(--color-off-white); }
+.row-notice-pinned:hover { background: var(--color-gray-lt); }
+
 /* ── 로딩 / 빈 상태 ── */
 .board-state {
   text-align: center;

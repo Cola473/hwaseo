@@ -19,4 +19,5 @@ const SITE_CONFIG = {
   ADMIN_PASSWORD:  'hwaseo2024!',
   MAIN_LIST_COUNT: 5,
   PAGE_SIZE:       15,
+  NOTICE_PIN_MAX:  5, // 게시판 목록 1페이지 상단에 고정 노출할 공지 최대 개수
 };

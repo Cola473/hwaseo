@@ -12,6 +12,7 @@
   let cache        = {};
   let newFiles     = [];
   let keepAttach   = [];
+  let isNotice     = false;
 
   function dataFile(board) {
     const map = {
@@ -635,10 +636,22 @@
       </div>`).join('');
   }
 
+  // ── 공지 토글 ────────────────────────────────
+  function setNoticeState(active) {
+    isNotice = !!active;
+    const btn = document.getElementById('btn-notice-toggle');
+    if (btn) btn.classList.toggle('is-active', isNotice);
+  }
+
+  window.toggleNotice = function () {
+    setNoticeState(!isNotice);
+  };
+
   // ── 모달 열기/닫기 ───────────────────────────
   function resetForm() {
     newFiles   = [];
     keepAttach = [];
+    setNoticeState(false);
     const fields = { 'write-title': '', 'write-date': GithubDB.today(), 'write-author': '관리자' };
     Object.entries(fields).forEach(([id, val]) => {
       const el = document.getElementById(id);
@@ -683,6 +696,7 @@
     document.getElementById('write-date').value          = post.date   || '';
     document.getElementById('write-author').value        = post.author || '관리자';
     document.getElementById('btn-submit').textContent    = '수정 저장';
+    setNoticeState(post.type === '공지');
     renderExistingFiles(post.attachments || []);
     document.getElementById('write-modal').style.display = 'flex';
 
@@ -745,14 +759,7 @@
 
     const post = {
       id:    editingId || ('post_' + Date.now()),
-      type:  (() => {
-               if (editingId) {
-                 const existing = (cache[currentBoard] && cache[currentBoard].content || [])
-                   .find(p => p.id === editingId);
-                 return (existing && existing.type) || '';
-               }
-               return '';
-             })(),
+      type:  isNotice ? '공지' : '',
       title,
       date:        document.getElementById('write-date').value || GithubDB.today(),
       author:      document.getElementById('write-author').value || '관리자',

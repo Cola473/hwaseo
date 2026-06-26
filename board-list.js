@@ -7,8 +7,10 @@ async function initBoardList({ dataFile, boardSlug, boardLabel }) {
   const paginEl   = document.getElementById('pagination');
   const totalEl   = document.getElementById('total-count');
   const pageSize  = SITE_CONFIG.PAGE_SIZE;
+  const NOTICE_PIN_MAX = SITE_CONFIG.NOTICE_PIN_MAX || 5; // 상단 고정 공지 최대 노출 개수
   let currentPage = parseInt(GithubDB.getParam('page') || '1', 10);
   let allRows     = [];
+  let pinnedNotices = []; // 1페이지 상단에 고정 노출할 공지 (최신순 최대 5개)
 
   // ── 데이터 로드 ──
   try {
@@ -26,12 +28,42 @@ async function initBoardList({ dataFile, boardSlug, boardLabel }) {
     return;
   }
 
+  // 배열은 최신 작성순으로 저장되어 있으므로(unshift) 그 순서 그대로
+  // 앞에서부터 최대 5개의 공지를 뽑아 1페이지 상단에 고정 노출한다.
+  pinnedNotices = allRows.filter(row => row.type === '공지').slice(0, NOTICE_PIN_MAX);
+  const pinnedIds = new Set(pinnedNotices.map(row => row.id));
+
   // ── 렌더 ──
+  function buildRow(row, globalIdx, { pinned = false } = {}) {
+    const isNotice = row.type === '공지';
+    const url      = GithubDB.postUrl(boardSlug, row.id);
+    return `<tr class="${pinned ? 'row-notice-pinned' : ''}">
+      <td>${isNotice ? '<span class="tag-notice">공지</span>' : globalIdx}</td>
+      <td class="col-title">
+        <a href="${url}">${row.title || '(제목 없음)'}</a>
+      </td>
+      <td>${row.author || '관리자'}</td>
+      <td>${row.date || ''}</td>
+    </tr>`;
+  }
+
   function render(page) {
     currentPage = page;
     const totalPages = Math.ceil(allRows.length / pageSize);
     const start      = (page - 1) * pageSize;
     const pageRows   = allRows.slice(start, start + pageSize);
+
+    // 1페이지에서만 공지 상단 고정 영역을 보여준다.
+    // 본문 목록에서는 상단에 고정된 공지와 같은 글(중복)을 제외한다.
+    const pinnedHtml = (page === 1 && pinnedNotices.length)
+      ? pinnedNotices.map(row => buildRow(row, '', { pinned: true })).join('')
+      : '';
+
+    const bodyHtml = pageRows
+      .map((row, i) => ({ row, globalIdx: allRows.length - start - i }))
+      .filter(({ row }) => !(page === 1 && pinnedIds.has(row.id)))
+      .map(({ row, globalIdx }) => buildRow(row, globalIdx))
+      .join('');
 
     container.innerHTML = `
       <table class="board-table">
@@ -44,19 +76,8 @@ async function initBoardList({ dataFile, boardSlug, boardLabel }) {
           </tr>
         </thead>
         <tbody>
-          ${pageRows.map((row, i) => {
-            const globalIdx = allRows.length - start - i;
-            const isNotice  = row.type === '공지';
-            const url       = GithubDB.postUrl(boardSlug, row.id);
-            return `<tr>
-              <td>${isNotice ? '<span class="tag-notice">공지</span>' : globalIdx}</td>
-              <td class="col-title">
-                <a href="${url}">${row.title || '(제목 없음)'}</a>
-              </td>
-              <td>${row.author || '관리자'}</td>
-              <td>${row.date || ''}</td>
-            </tr>`;
-          }).join('')}
+          ${pinnedHtml}
+          ${bodyHtml}
         </tbody>
       </table>`;
 
