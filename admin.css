@@ -115,8 +115,8 @@
 .notice-toggle-btn:hover { border-color: var(--color-navy-mid); }
 
 .notice-toggle-btn.is-active {
-  background: #ff4545;
-  border-color: #ff4545;
+  background: #102640;
+  border-color: #102640;
   color: var(--color-white);
 }
 
