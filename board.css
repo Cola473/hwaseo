@@ -151,7 +151,7 @@
   font-weight: 500;
   color: var(--color-white);
   background: var(--color-navy);
-  padding: 2px 2px;
+  padding: 2px 4px;
   border-radius: 2px;
   letter-spacing: 0.1em;
 }
@@ -482,7 +482,7 @@
 /* 서브페이지에서 board-table 패딩 */
 .sub-content .board-table tbody td,
 .sub-content .board-table thead th {
-  padding: 12px 20px;
+  padding: 12px 4px;
 }
 
 /* board-toolbar 서브페이지용 */
