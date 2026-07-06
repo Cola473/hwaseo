@@ -628,8 +628,8 @@ img { max-width: 100%; height: auto; display: block; }
 
 .board-new {
   flex-shrink: 0;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   object-fit: contain;
 }
 
@@ -1071,6 +1071,16 @@ img { max-width: 100%; height: auto; display: block; }
   width: 28px;
   height: 28px;
   object-fit: contain;
+}
+
+.sq-icon-instagram {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  background-image: url('images/instagram.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .sq-text {

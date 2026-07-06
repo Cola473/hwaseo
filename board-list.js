@@ -34,13 +34,16 @@ async function initBoardList({ dataFile, boardSlug, boardLabel }) {
   const pinnedIds = new Set(pinnedNotices.map(row => row.id));
 
   // ── 렌더 ──
-  function buildRow(row, globalIdx, { pinned = false } = {}) {
+  function buildRow(row, globalIdx, { pinned = false, isNewest = false } = {}) {
     const isNotice = row.type === '공지';
     const url      = GithubDB.postUrl(boardSlug, row.id);
     return `<tr class="${pinned ? 'row-notice-pinned' : ''}">
       <td>${isNotice ? '<span class="tag-notice">공지</span>' : globalIdx}</td>
       <td class="col-title">
-        <a href="${url}">${row.title || '(제목 없음)'}</a>
+        <a href="${url}">
+          <span class="title-text">${row.title || '(제목 없음)'}</span>
+          ${isNewest ? '<img src="images/new.png" alt="신규" class="new-icon" />' : ''}
+        </a>
       </td>
       <td>${row.author || '관리자'}</td>
       <td>${row.date || ''}</td>
@@ -52,17 +55,18 @@ async function initBoardList({ dataFile, boardSlug, boardLabel }) {
     const totalPages = Math.ceil(allRows.length / pageSize);
     const start      = (page - 1) * pageSize;
     const pageRows   = allRows.slice(start, start + pageSize);
+    const newestId   = allRows[0] ? allRows[0].id : null;
 
     // 1페이지에서만 공지 상단 고정 영역을 보여준다.
     // 본문 목록에서는 상단에 고정된 공지와 같은 글(중복)을 제외한다.
     const pinnedHtml = (page === 1 && pinnedNotices.length)
-      ? pinnedNotices.map(row => buildRow(row, '', { pinned: true })).join('')
+      ? pinnedNotices.map(row => buildRow(row, '', { pinned: true, isNewest: row.id === newestId })).join('')
       : '';
 
     const bodyHtml = pageRows
       .map((row, i) => ({ row, globalIdx: allRows.length - start - i }))
       .filter(({ row }) => !(page === 1 && pinnedIds.has(row.id)))
-      .map(({ row, globalIdx }) => buildRow(row, globalIdx))
+      .map(({ row, globalIdx }) => buildRow(row, globalIdx, { isNewest: row.id === newestId }))
       .join('');
 
     container.innerHTML = `
