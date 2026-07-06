@@ -255,7 +255,7 @@
             <a href="post.html?board=${boardSlug}&id=${row.id}">
               ${row.type === '공지' ? '<span class="board-tag">공지</span>' : ''}
               <span class="board-text">${row.title || '(제목 없음)'}</span>
-              ${idx === 0 ? '<span class="board-new" title="새 글">N</span>' : ''}
+              ${idx === 0 ? '<img src="images/new.png" alt="신규" class="board-new" />' : ''}
               <span class="board-date">${row.date || ''}</span>
             </a>
           </li>`).join('');
