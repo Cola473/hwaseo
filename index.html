@@ -145,6 +145,17 @@
             </ul>
           </div>
 
+          <!-- 발간보고서 -->
+          <div class="board-box">
+            <div class="board-header">
+              <h2 class="board-title">발간보고서</h2>
+              <a href="archive-report.html" class="board-more">더보기 <span>›</span></a>
+            </div>
+            <ul class="board-list" id="main-report-list">
+              <li><a href="#"><span class="board-text" style="color:#aaa;">불러오는 중...</span></a></li>
+            </ul>
+          </div>
+
         </div>
 
         <!-- 가운데: 메인 이미지 + 상담문의 + 관련기관 -->
@@ -239,11 +250,12 @@
           ul.innerHTML = '<li><a href="#"><span class="board-text" style="color:#aaa;">등록된 글이 없습니다.</span></a></li>';
           return;
         }
-        ul.innerHTML = content.slice(0, SITE_CONFIG.MAIN_LIST_COUNT).map(row => `
+        ul.innerHTML = content.slice(0, SITE_CONFIG.MAIN_LIST_COUNT).map((row, idx) => `
           <li>
             <a href="post.html?board=${boardSlug}&id=${row.id}">
               ${row.type === '공지' ? '<span class="board-tag">공지</span>' : ''}
               <span class="board-text">${row.title || '(제목 없음)'}</span>
+              ${idx === 0 ? '<span class="board-new">NEW</span>' : ''}
               <span class="board-date">${row.date || ''}</span>
             </a>
           </li>`).join('');
@@ -254,6 +266,7 @@
 
     loadMainBoard(SITE_CONFIG.DATA_FILE_NEWS, 'main-news-list', 'news');
     loadMainBoard(SITE_CONFIG.DATA_FILE_FREE, 'main-free-list', 'free');
+    loadMainBoard(SITE_CONFIG.DATA_FILE_REPORT, 'main-report-list', 'report');
   </script>
 </body>
 </html>

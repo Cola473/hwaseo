@@ -538,15 +538,16 @@ img { max-width: 100%; height: auto; display: block; }
   gap: 24px;
 }
 
-/* 학계소식이 남은 공간을 채워 전체 높이를 오른쪽과 맞춤 */
-.board-section .board-box:first-child {
+/* 게시판 3개(학계소식/자유게시판/발간보고서)가 동일한 비율로 남은 공간을 채워
+   전체 높이를 오른쪽 센터 영역과 맞추고, 서로 같은 높이를 갖도록 함 */
+.board-section .board-box {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-/* 학계소식 게시글 목록도 늘어나도록 */
-.board-section .board-box:first-child .board-list {
+/* 각 게시판의 목록도 늘어나도록 */
+.board-section .board-box .board-list {
   flex: 1;
 }
 
@@ -623,6 +624,18 @@ img { max-width: 100%; height: auto; display: block; }
   overflow: hidden;
   text-overflow: ellipsis;
   letter-spacing: -0.01em;
+}
+
+.board-new {
+  flex-shrink: 0;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--color-white);
+  background: #e0453c;
+  padding: 2px 5px;
+  border-radius: 2px;
+  letter-spacing: 0.02em;
+  font-family: var(--font-en);
 }
 
 .board-date {
