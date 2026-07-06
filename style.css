@@ -628,11 +628,18 @@ img { max-width: 100%; height: auto; display: block; }
 
 .board-new {
   flex-shrink: 0;
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
   background: #e0453c;
+  color: var(--color-white);
+  font-size: 6px;
+  font-weight: 700;
+  line-height: 1;
+  font-family: var(--font-en);
 }
 
 .board-date {
