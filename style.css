@@ -416,12 +416,17 @@ img { max-width: 100%; height: auto; display: block; }
 
 .quick-list {
   display: flex;
+  flex-wrap: nowrap;
   align-items: stretch;
+  width: 1440px; /* 원래 항목 너비(288px) × 5개를 유지하기 위해 전체 폭을 늘림 */
+  margin: 0 auto;
 }
 
 .quick-item {
-  flex: 1;
+  flex: 0 0 288px; /* 기존 4등분 폭(1152px ÷ 4)을 그대로 유지 */
+  width: 288px;
   border-right: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
   transition: background var(--transition);
 }
 
