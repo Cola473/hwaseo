@@ -419,7 +419,9 @@ img { max-width: 100%; height: auto; display: block; }
   flex-wrap: nowrap;
   align-items: stretch;
   width: 1440px; /* 원래 항목 너비(288px) × 5개를 유지하기 위해 전체 폭을 늘림 */
-  margin: 0 auto;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .quick-item {
