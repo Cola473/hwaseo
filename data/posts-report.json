@@ -1,5 +1,31 @@
 [
   {
+    "id": "post_1783921821832",
+    "type": "",
+    "title": "[제40책]양주 부곡리 135-1번지 유적",
+    "date": "2026.07.13",
+    "author": "관리자",
+    "content": "&nbsp;이 책은 양주 부곡리(135-1번지 일원) 노유자시설 신축부지 내 유적 시·발굴조사 내용을 수록한 보고서 입니다.",
+    "attachments": [
+      {
+        "path": "assets/0401_publications/1783921818222_20260713142207.jpg",
+        "rawUrl": "https://raw.githubusercontent.com/Cola473/hwaseo/main/assets/0401_publications/1783921818222_20260713142207.jpg",
+        "pagesUrl": "https://Cola473.github.io/hwaseo/assets/0401_publications/1783921818222_20260713142207.jpg",
+        "name": "20260713142207.jpg",
+        "size": 100792,
+        "isImage": true
+      },
+      {
+        "path": "assets/0401_publications/1783921820160_20260713143103.jpg",
+        "rawUrl": "https://raw.githubusercontent.com/Cola473/hwaseo/main/assets/0401_publications/1783921820160_20260713143103.jpg",
+        "pagesUrl": "https://Cola473.github.io/hwaseo/assets/0401_publications/1783921820160_20260713143103.jpg",
+        "name": "20260713143103.jpg",
+        "size": 67303,
+        "isImage": true
+      }
+    ]
+  },
+  {
     "id": "post_1783494781644",
     "type": "공지",
     "title": "[제39책]서울 권농동 146번지 유적",
