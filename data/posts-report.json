@@ -1,5 +1,31 @@
 [
   {
+    "id": "post_1791420053853",
+    "type": "공지",
+    "title": "[제41책]서울 한남동 157번지 유적",
+    "date": "2026.10.08",
+    "author": "관리자",
+    "content": "<span style=\"font-size: 15.2px;\">이 책은 서울 한남동 157번지 유적의 표본·발굴조사 내용을 수록한 보고서 입니다.</span><div><br></div><div><a href=\"https://blog.naver.com/hwaseo130/224434907903\"><font style=\"font-size: 16px;\">[제41책]서울 한남동 157번지 유적 : 네이버 블로그</font></a></div>",
+    "attachments": [
+      {
+        "path": "assets/0401_publications/1791420050563_1.jpg",
+        "rawUrl": "https://raw.githubusercontent.com/Cola473/hwaseo/main/assets/0401_publications/1791420050563_1.jpg",
+        "pagesUrl": "https://Cola473.github.io/hwaseo/assets/0401_publications/1791420050563_1.jpg",
+        "name": "1.jpg",
+        "size": 88749,
+        "isImage": true
+      },
+      {
+        "path": "assets/0401_publications/1791420052600_14.jpg",
+        "rawUrl": "https://raw.githubusercontent.com/Cola473/hwaseo/main/assets/0401_publications/1791420052600_14.jpg",
+        "pagesUrl": "https://Cola473.github.io/hwaseo/assets/0401_publications/1791420052600_14.jpg",
+        "name": "14.jpg",
+        "size": 60918,
+        "isImage": true
+      }
+    ]
+  },
+  {
     "id": "post_1783921821832",
     "type": "공지",
     "title": "[제40책]양주 부곡리 135-1번지 유적",
